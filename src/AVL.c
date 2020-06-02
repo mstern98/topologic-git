@@ -172,8 +172,8 @@ void *remove(struct AVLTree *tree, int id) {
 void get_nodes_preorder(struct AVLNode *node, struct stack *stack) {
     if (!node) return;
     push(stack, node->data);
-    get_nodes_preorder(node->left);
-    get_nodes_preorder(node->right);
+    get_nodes_preorder(node->left, stack);
+    get_nodes_preorder(node->right, stack);
 }
 
 void get_nodes(struct AVLTree *tree, struct stack *stack) {
@@ -196,9 +196,9 @@ void destroy_avl_nodes(struct AVLNode *node) {
 
 void destroy_avl(struct AVLTree *tree) {
     if (!tree) return;
-    destroy_avl_nodes(tree->node);
+    destroy_avl_nodes(tree->root);
 
-    tree->root = NULL:
+    tree->root = NULL;
     tree->size = 0;
     free(tree);
     tree = NULL;

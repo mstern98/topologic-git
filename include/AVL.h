@@ -1,6 +1,7 @@
 #ifndef __TOPOLOGIC_AVL__
 #define __TOPOLOGIC_AVL__
 
+#include <stdio.h>
 #include "./stack.h"
 
 struct AVLNode {
