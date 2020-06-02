@@ -169,17 +169,17 @@ void *remove(struct AVLTree *tree, int id) {
     return data;
 }
 
-void get_nodes_preorder(struct AVLNode *node, struct stack *stack) {
+void preorder_nodes(struct AVLNode *node, struct stack *stack) {
     if (!node) return;
     push(stack, node->data);
-    get_nodes_preorder(node->left, stack);
-    get_nodes_preorder(node->right, stack);
+    preorder_nodes(node->left, stack);
+    preorder_nodes(node->right, stack);
 }
 
-void get_nodes(struct AVLTree *tree, struct stack *stack) {
+void preorder(struct AVLTree *tree, struct stack *stack) {
     if (!tree || !stack) return;
     if (tree->size <= 0) return;
-    get_nodes_preorder(tree->root, stack);
+    preorder_nodes(tree->root, stack);
 }
 
 void stackify_nodes(struct AVLNode *node, struct stack *stack) {
