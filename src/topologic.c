@@ -16,12 +16,12 @@ void fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum
 
 }
 
-int switch_vertex (struct graph *graph, struct vertex *vertex, void *args) {
+int switch_vertex(struct graph *graph, struct vertex *vertex, void *args) {
     return 0;
 }
 
 int clean_graph(struct graph *graph) {
-    
+
 }
 
 
