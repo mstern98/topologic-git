@@ -12,10 +12,10 @@ INCLUDES=header.h
 
 
 $(BIN): $(OBJ) $(INCLUDES)
-	$(AR) rcs libTopological.a $(OBJ)
+	$(AR) rcs libtopologic.a $(OBJ)
 all:$(BIN)
 .PHONY : clean
 
 clean:
-	rm -f libTopological.a
+	rm -f libtopologic.a
 	rm -f $(OBJ) $(BIN)
