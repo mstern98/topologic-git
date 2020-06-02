@@ -104,7 +104,7 @@ void *find(struct AVLTree *tree, int id) {
     return find_node(tree->root, id);  
 }
 
-struct AVLNode *delete_node(struct AVLNode *root, int id, void **data) {
+struct AVLNode *remove_node(struct AVLNode *root, int id, void **data) {
     int balance_factor = 0;
     if (!root)
         return root;
@@ -160,9 +160,9 @@ struct AVLNode *delete_node(struct AVLNode *root, int id, void **data) {
     return root;
 }
 
-void *delete(struct AVLTree *tree, int id) {
+void *remove(struct AVLTree *tree, int id) {
     if (!tree || !tree->root) return NULL;
     void *data = NULL;
-    tree->root = delete_node(tree->root, id, &data);
+    tree->root = remove_node(tree->root, id, &data);
     return data;
 }
