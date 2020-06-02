@@ -182,6 +182,31 @@ void get_nodes(struct AVLTree *tree, struct stack *stack) {
     get_nodes_preorder(tree->root, stack);
 }
 
+void stackify_nodes(struct AVLNode *node, struct stack *stack) {
+    if (!node) return;
+    push(stack, node->data);
+    get_nodes_preorder(node->left, stack);
+    get_nodes_preorder(node->right, stack);
+
+    node->data = NULL;
+    node->height = 0;
+    node->left = NULL;
+    node->right = NULL;
+    free(node);
+    node = NULL;
+}
+
+void stackify(struct AVLTree *tree, struct stack *stack) {
+    if (!tree || !stack) return;
+    if (tree->size <= 0) return;
+    stackify_nodes(tree->root, stack);
+
+    tree->root = NULL;
+    tree->size = 0;
+    free(tree);
+    tree = NULL;
+}
+
 void destroy_avl_nodes(struct AVLNode *node) {
     if (!node) return;
     node->data = NULL;
