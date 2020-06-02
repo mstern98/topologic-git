@@ -4,7 +4,7 @@ struct AVLTree *init_avl() {
     struct AVLTree *tree = malloc(sizeof(struct AVLTree));
     if (!tree) return NULL;
 
-    tree->height = 0;
+    tree->size = 0;
     tree->root = NULL;
 
     return tree;
@@ -88,6 +88,7 @@ int insert(struct AVLTree *tree, void *data, int id) {
     node->data = data; 
 
     tree->root = insert_node(tree->root, node);
+    tree->size++;
 
     return 0;
 }
@@ -164,5 +165,41 @@ void *remove(struct AVLTree *tree, int id) {
     if (!tree || !tree->root) return NULL;
     void *data = NULL;
     tree->root = remove_node(tree->root, id, &data);
+    if (data != NULL) tree->size--;
     return data;
+}
+
+void get_nodes_preorder(struct AVLNode *node, struct stack *stack) {
+    if (!node) return;
+    push(stack, node->data);
+    get_nodes_preorder(node->left);
+    get_nodes_preorder(node->right);
+}
+
+void get_nodes(struct AVLTree *tree, struct stack *stack) {
+    if (!tree || !stack) return;
+    if (tree->size <= 0) return;
+    get_nodes_preorder(tree->root, stack);
+}
+
+void destroy_avl_nodes(struct AVLNode *node) {
+    if (!node) return;
+    node->data = NULL;
+    node->height = 0;
+    if (!node->left) destroy_avl_nodes(node->left);
+    if (!node->right) destroy_avl_nodes(node->right);
+    node->left = NULL;
+    node->right = NULL;
+    free(node);
+    node = NULL;
+}
+
+void destroy_avl(struct AVLTree *tree) {
+    if (!tree) return;
+    destroy_avl_nodes(tree->node);
+
+    tree->root = NULL:
+    tree->size = 0;
+    free(tree);
+    tree = NULL;
 }
