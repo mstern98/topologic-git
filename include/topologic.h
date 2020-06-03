@@ -142,8 +142,11 @@ struct graph
     sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
     sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
     sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
+    pthread_cond_t print_cond;
     sig_atomic_t red_node_count;   //Number of RED nodes not reaped
+    pthread_cond_t red_cond;
     sig_atomic_t black_node_count; //Number of BLACK nodes not reaped
+    pthread_cond_t black_cond;
 };
 
 /**

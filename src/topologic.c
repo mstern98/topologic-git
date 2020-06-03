@@ -79,7 +79,42 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
 }
 
 void run(struct graph *graph) {
-
+    pthread_cond_signal(&graph->red_cond);
+    while(1) {
+        switch(graph->state) {
+            case RED:
+                if (graph->red_vertex_count == 0) {
+                    /** TODO: REAP RED **/
+                    /** TODO: Process Requests **/
+                    graph->state = PRINT;
+                    graph->prev_color = RED;
+                    pthread_cond_signal(&graph->print_cond);
+                    graph->print_flag = 1;
+                }
+            break;
+            case BLACK:
+                if (graph->black_vertex_count == 0) {
+                    /** TODO: REAP BLACK **/
+                    /** TODO: Process Requests **/
+                    graph->state = PRINT;
+                    graph->prev_color = BLACK;
+                    pthread_cond_signal(&graph->print_cond);
+                    graph->print_flag = 1;
+                }
+            break;
+            case PRINT:
+                if (graph->print_flag == 0) {
+                    if (graph->prev_color == RED) {
+                        pthread_cond_signal(&graph->black_cond);
+                    } else {
+                        pthread_cond_signal(&graph->red_cond);
+                    }
+                }
+            break;
+            default:
+                return;
+        }
+    }
 }
 
 
@@ -135,6 +170,36 @@ int submit_request(struct graph *graph, struct request *request) {
 }
 
 void fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
+    if (!graph || !vertex) return;
+    pthread_mutex_lock(&vertex->lock);
+    if (color == RED) {
+        pthread_cond_wait(&graph->red_cond, &vertex->lock);
+        
+        pthread_mutex_lock(&graph->lock);
+        graph->red_vertex_count++;
+        pthread_mutex_unlock(&graph->lock);
+    } else if (color == BLACK) {
+        pthread_cond_wait(&graph->black_cond, &vertex->lock);
+    } else {
+        pthread_mutex_unlock(&vertex->lock);
+        return;
+    }
+    if (argc != vertex->argc) {
+        pthread_mutex_unlock(&vertex->lock);
+        return;
+    }
+
+    vertex->f(args);
+
+    /**
+     * TODO: Compute edges and switch
+    **/
+
+    pthread_mutex_lock(&graph->lock);
+    graph->red_vertex_count++;
+    pthread_mutex_unlock(&graph->lock);
+
+    pthread_mutex_unlock(&vertex->lock);
     return 0;
 }
 
