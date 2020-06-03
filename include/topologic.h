@@ -158,7 +158,6 @@ struct vertex *create_vertex(struct graph *graph,
 #define create_vertex(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
 
 /**
-@PARAM graph: the graph
 @PARAM: id: edge i. MUST BE UNIQUE
 @PARAM a: A vertex
 @PARAM b: Another vertex (can be 'a')
@@ -171,15 +170,14 @@ Will create an edge from vertex a to b
 with some criteria determined by the function f.
 NOTE: NULL glbl will mean no global variables. f cannot be NULL.
 **/
-struct edge *create_edge(struct graph *graph,
-                         int id,
+struct edge *create_edge(int id,
                          struct vertex *a,
                          struct vertex *b,
                          void (*f)(void *),
                          int argc,
                          int glblc,
                          void *glbl);
-#define create_edge(graph, id, a, b, f, argc) create_edge(graph, id, a, b, f, argc, 0, NULL)
+#define create_edge(id, a, b, f, argc) create_edge(id, a, b, f, argc, 0, NULL)
 
 /**
 @RETURN two edges
@@ -187,17 +185,15 @@ See create_edge
 Will create an bidirectional edge between vertex a and b
 with some criteria determined by the function f.
 **/
-struct edge **create_bi_edge(struct graph *graph,
-                             struct vertex *a,
+struct edge **create_bi_edge(struct vertex *a,
                              struct vertex *b,
                              void (*f)(void *),
                              int argc,
                              int glblc,
                              void *glbl);
-#define create_bi_edge(graph, id, a, b, f, argc) create_bi_edge(graph, id, a, b, f, argc, 0, NULL)
+#define create_bi_edge(id, a, b, f, argc) create_bi_edge(id, a, b, f, argc, 0, NULL)
 
 /**
-@PARAM graph: the graph
 @PARAM a: a vertex
 @PARAM b: another vertex
 @PARAM id: id of edge in a
@@ -205,13 +201,11 @@ struct edge **create_bi_edge(struct graph *graph,
         -1 for fail
 Removes the edge connecting a to b
 **/
-int remove_edge(struct graph *graph,
-                struct vertex *a,
+int remove_edge(struct vertex *a,
                 struct vertex *b,
                 int id);
 
 /**
-@PARAM graph: the graph
 @PARAM a: a vertex
 @PARAM b: another vertex
 @PARAM id: id of edge in a and b
@@ -221,8 +215,7 @@ int remove_edge(struct graph *graph,
         -3 if only edge from b to a is removed
 Removes the edge connecting a to b
 **/
-int remove_bi_edge(struct graph *graph,
-                   struct vertex *a,
+int remove_bi_edge(struct vertex *a,
                    struct vertex *b,
                    int id);
 
@@ -267,14 +260,14 @@ int modify_vertex(struct graph *graph,
 Modifies the vertices shared variables with it's edges
 **/
 int modify_shared_edge_vars(struct graph *graph, 
-                         struct vertex *vertex, 
-                         int edgec, 
-                         void *edge_vars);
+                            struct vertex *vertex, 
+                            int edgec, 
+                            void *edge_vars);
 
 /**
-@PARAM graph: the graph
 @PARAM a: a vertex
 @PARAM b: another vertex
+@PARAM id: id of edge from a to b
 @PARAM f: a function
 @PARAM argc: number of arguments f takes
 @PARAM glblc: # of global variables
@@ -284,20 +277,20 @@ int modify_shared_edge_vars(struct graph *graph,
 Modifies the edge connecting a to b's function
 NOTE: NULL f, or glbl will mean no change.
 **/
-int modify_edge(struct graph *graph,
-                struct vertex *a,
+int modify_edge(struct vertex *a,
                 struct vertex *b,
+                int id,
                 void (*f)(void *),
                 int argc,
                 int glblc,
                 void *glbl);
-#define modify_edge(graph, a, b, f, argc) modify_edge(graph, a, b, f, argc, 0, NULL)
-#define modify_edge_global(graph, a, b, glblc, glbl) modify_edge(graph, a, b, NULL, 0, glblc, glbl)
+#define modify_edge(a, b, id, f, argc) modify_edge(a, b, id, f, argc, 0, NULL)
+#define modify_edge_global(a, b, id, glblc, glbl) modify_edge(a, b, id, NULL, 0, glblc, glbl)
 
 /**
-@PARAM graph: the graph
 @PARAM a: a vertex
 @PARAM b: another vertex
+@PARAM id: id of edge between a and b
 @PARAM f: a function
 @PARAM argc: number of arguments f takes
 @PARAM glblc: # of global variables
@@ -310,15 +303,15 @@ Modifies the edge between a and b's
 function and variables
 NOTE: NULL f, or glbl will mean no change.
 **/
-int modify_bi_edge(struct graph *graph,
-                   struct vertex *a,
+int modify_bi_edge(struct vertex *a,
                    struct vertex *b,
+                   int id,
                    void (*f)(void *),
                    int argc,
                    int glblc,
                    void *glbl);
-#define modify_bi_edge(graph, a, b, f, argc) modify_bi_edge(graph, a, b, f, argc, 0, NULL)
-#define modify_bi_edge_global(graph, a, b, glblc, glbl) modify_bi_edge(graph, a, b, NULL, 0, glblc, glbl)
+#define modify_bi_edge(a, b, id, f, argc) modify_bi_edge(a, b, id, f, argc, 0, NULL)
+#define modify_bi_edge_global(a, b, id, glblc, glbl) modify_bi_edge(a, b, id, NULL, 0, glblc, glbl)
 
 
 /**
