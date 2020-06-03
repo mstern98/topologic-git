@@ -5,61 +5,35 @@ struct edge *create_edge(struct graph *graph, int id, struct vertex *a, struct v
     if(!a || !b){ return NULL; }
     if(!f){ return NULL; }
 
+    struct stack *preorder = preorder(a->edge_tree);
+    if (!preorder) {
+        struct stack_node *node = pop(preorder);
+        while (node != NULL) {
+            if (((struct vertex *) node->data)->id == b->id)
+                return NULL;
+        }
+    }
+    
     struct edge* edge = malloc(sizeof(struct edge));
     if(!edge){ return NULL };
-    edge->a = malloc(sizeof(struct vertex));
-    if(!edge->a){
-        free(edge); return NULL;
-    }
-    edge->b = malloc(sizeof(struct vertex));
-    if(!edge->b){ free(edge-> a); free(edge); return NULL;}
-    
-    if(memcpy(edge->a, a, sizeof(struct vertex))==NULL){ 
-        free(edge->a); free(edge->b); free(edge);
-        return NULL; 
-    }
-    if(memcpy(edge->b, b, sizeof(struct vertex))==NULL){ 
-        free(edge->a); free(edge->b); free(edge);
-        return NULL; 
-    }
+    edge->a = a;
+    edge->b = b;
 
-    edge->glbl = malloc(sizeof(void *));
-    if(!edge->glbl){
-        free(edge->a); free(edge->b); free(edge);
-        return NULL;
-    }
-    if(memcpy(edgle->glbl, glbl, sizeof(void *))==NULL){
-        free(edge->glbl); free(edge->a); free(edge->b); free(edge);
-        return NULL;
-    }
+    edge->glblc = glblc;
+    edge->glbl = glbl;
+    edge->a_varc = a->edge_sharedc;
+    edge->a_vars = a->edge_shared;
 
     edge->f = f;
-    edge->glblc = glblc;
-    if(find(a->edge_tree, id)!=NULL || find(b->edge_tree, id)!=NULL){
-        free(edge->glbl); free(edge->a); free(edge->b); free(edge);
-        return NULL;
-    }
-    struct AVLNode* newNode = malloc(sizeof(struct AVLNode));
-    if(!newNode){
-        free(edge->glbl); free(edge->a); free(edge->b); free(edge);
-        return NULL;
-    }
-    newNode->id = id;
-    newNode->height = 0;
-    newNode->left = newNode->right = NULL;
-    newNode->data = glbl; //TODO: Copy edge data into a buffer
+    //MAKE UNIQUE
+    edge->id = 0;
 
-    if(insert_node(edge->a->edge_tree->root, newNode)==NULL){
-        free(newNode); free(edge->glbl); free(edge->a); free(edge->b); free(edge);
+    if(insert(a->edge_tree, edge, edge->id) < 0){
+        free(edge);
+        edge = NULL;
         return NULL;
     }
-     if(insert_node(edge->b->edge_tree->root, newNode)==NULL){
-        free(newNode); free(edge->glbl); free(edge->a); free(edge->b); free(edge);
-        return NULL;
-    }
-
-
-    edge->id = id;
+    
     return edge;
 }
 
@@ -69,8 +43,22 @@ struct edge **create_bi_edge(struct graph *graph, struct vertex *a, struct verte
     struct edge** bi_edge = malloc(sizeof(struct edge) * 2);
     if(bi_edge==NULL){ return NULL;}
     
+    bi_edge[0] = create_edge(graph, a, b, f, argc, glblc, glbl);
+    if (bi_edge[0] == NULL) {
+        free(bi_edge);
+        bi_edge = NULL;
+        return NULL;
+    }
+    bi_edge[1] = create_edge(graph, b, a, f, argc, glblc, glbl);
+    if (bi_edge[1] == NULL) {
+        free(bi_edge[0]);
+        bi_edge[0] = NULL;
+        free(bi_edge);
+        bi_edge = NULL;
+        return NULL;
+    }
 
-    return NULL;
+    return bi_edge;
 }
 
 int remove_edge(struct graph *graph, struct vertex *a, struct vertex *b) {
