@@ -22,6 +22,44 @@ void print(struct graph *graph) {
 
 }
 
+struct request *create_request(enum REQUEST request, int argc, void **args, void (*f)(void *)) {
+    struct request *req = malloc(sizeof(struct request));
+    if (!req) return NULL;
+    req->args = malloc(sizeof(void *) * argc);
+    if (!req->args) {
+        free(req);
+        return NULL;
+    }
+    memcpy(req->args, args, sizeof(void *) * argc);
+
+    req->argc = argc;
+    req->f = f;
+    req->request = request;
+    return req;
+}
+
+int submit_request(struct graph *graph, struct request *request) {
+    if (!graph || !request) return -1;
+    int retval = 0;
+    pthread_mutex_lock(&graph->active);
+    switch(request->request) {
+        case MODIFY:
+            retval = push(graph->modify, (void *) request);
+            break;
+        case DESTROY_EDGE:
+            retval = push(graph->remove_edges, (void *) request);
+            break;
+        case DESTROY_VERTEX:
+            retval = push(graph->remove_vertices, (void *) request);
+            break;
+        default:
+            retval = -1;
+            break;
+    }
+    pthread_mutex_unlock(&graph->active);
+    return retval;
+}
+
 void fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum STATES color) {
     return 0;
 }

@@ -74,13 +74,38 @@ enum STATES
     BLACK = 2
 };
 
+/**
+Enum for submiting a request to be handles
+MODIFY: Modify values in existing edges or vertices
+        as well as add vertices or edges
+DESTROY_VERTEX: Remove vertex from graph
+DESTROY_EDGE: Remove edge from graph
+**/
+enum REQUESTS
+{
+        MODIFY = 0,
+        DESTROY_VERTEX = 1,
+        DESTROY_EDGE = 2   
+};
+
+/** Request **/
+struct request
+{
+        enum REQUESTS request;
+        void (*f)(void *);
+        int argc;
+        void **args;
+};
 
 /** Graph **/
 struct graph
 {
     enum CONTEXT context;
-    struct stack start_set; //CHANGE STRUCTURE?
+    struct stack *start_set; //CHANGE STRUCTURE?
     struct AVLTree *vertices;
+    struct stack *modify;
+    struct stack *remove_edges;
+    struct stack *remove_vertices;
     unsigned int max_state_changes;
     unsigned int snapshot_timestamp;
     unsigned int lvl_verbose;
@@ -240,8 +265,8 @@ int modify_vertex(struct vertex *vertex,
                   int argc,
                   int glblc,
                   void *glbl);
-#define modify_vertex(f, argc) modify_vertex(f, argc, 0, NULL)
-#define modify_vertex_globals(glblc, glbl) modify_vertex(NULL, 0, glblc, glbl)
+#define modify_vertex(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
+#define modify_vertex_globals(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
 
 /**
 @PARAM vertex: a vertex
@@ -273,6 +298,7 @@ int modify_edge(struct vertex *a,
                 int argc,
                 int glblc,
                 void *glbl);
+
 #define modify_edge(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
 #define modify_edge_global(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
 
@@ -347,6 +373,30 @@ int start_set(struct graph *graph,
               struct vertex **vertices,
               int num_vertices);
 
+/**
+@PARAM graph: the graph
+@PARAM request: the request to be processed
+@RETRUN -1 for fail;
+        0 for succes;
+Submits a request to be processed after all active nodes 
+complete
+**/
+int submit_request(struct graph *graph, 
+                   struct request *request);
+
+struct request *create_request(enum REQUEST request,  
+                               void **args, 
+                               void (*f)(void *),
+                               int argc);
+
+#define create_request_destroy_edge(args) create_request(DESTROY_EDGE, args, remove_edge, 2);
+#define create_request_destroy_bi_edge(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2);
+#define create_request_destroy_vertex(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2);
+
+#define create_request_modify_edge(args) create_request(MODIFY, args, modify_edge, 6);
+#define create_request_modify_bi_edge(args) create_request(MODIFY, args, modify_bi_edge, 6);
+#define create_request_modify_vertex(args) create_request(MODIFY, args, modify_vertex, 5);
+#define create_request_modify_shared_edge_vars(args) create_request(MODIFY, args, modify_shared_edge_vars, 3);
 /**
 @PARAM graph: the graph
 Attempts to run the graph else aborts.
