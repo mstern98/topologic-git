@@ -143,9 +143,9 @@ struct graph
     sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
     sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
     pthread_cond_t print_cond;
-    sig_atomic_t red_node_count;   //Number of RED nodes not reaped
+    sig_atomic_t red_vertex_count;   //Number of RED nodes not reaped
     pthread_cond_t red_cond;
-    sig_atomic_t black_node_count; //Number of BLACK nodes not reaped
+    sig_atomic_t black_vertex_count; //Number of BLACK nodes not reaped
     pthread_cond_t black_cond;
 };
 
@@ -162,7 +162,8 @@ struct graph *graph_init(unsigned int max_state_changes,
                          unsigned int snapshot_timestamp,
                          enum VERBOSITY lvl_verbose,
                          enum CONTEXT context);
-#define graph_init() graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH);
+#define MAX_STATE_CHANGES 100
+#define GRAPH_INIT graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH)
 
 /**
 @PARAM graph: the graph

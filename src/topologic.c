@@ -8,25 +8,25 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     graph->lvl_verbose = lvl_verbose;
     graph->context = context;
 
-    if(pthread_mutex_init(&graph->lock) < 0) {
+    if(pthread_mutex_init(&graph->lock, NULL) < 0) {
         free(graph);
         return NULL;
     }
 
-    if(pthread_cond_init(&graph->print_cond) < 0) {
+    if(pthread_cond_init(&graph->print_cond, NULL) < 0) {
         pthread_mutex_destroy(&graph->lock);
         free(graph);
         return NULL;
     }
 
-    if(pthread_cond_init(&graph->red_cond) < 0) {        
+    if(pthread_cond_init(&graph->red_cond, NULL) < 0) {        
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         free(graph);
         return NULL;
     }
 
-    if(pthread_cond_init(&graph->black_cond) < 0) {        
+    if(pthread_cond_init(&graph->black_cond, NULL) < 0) {        
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         pthread_cond_destroy(&graph->red_cond);
@@ -39,7 +39,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         pthread_cond_destroy(&graph->red_cond);
-        pthread_cond_destory(&graph->black_cond);
+        pthread_cond_destroy(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -50,7 +50,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         pthread_cond_destroy(&graph->red_cond);
-        pthread_cond_destory(&graph->black_cond);
+        pthread_cond_destroy(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -61,7 +61,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         pthread_cond_destroy(&graph->red_cond);
-        pthread_cond_destory(&graph->black_cond);
+        pthread_cond_destroy(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -73,7 +73,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         pthread_cond_destroy(&graph->red_cond);
-        pthread_cond_destory(&graph->black_cond);
+        pthread_cond_destroy(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -86,15 +86,15 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         pthread_mutex_destroy(&graph->lock);
         pthread_cond_destroy(&graph->print_cond);
         pthread_cond_destroy(&graph->red_cond);
-        pthread_cond_destory(&graph->black_cond);
+        pthread_cond_destroy(&graph->black_cond);
         free(graph);
         return NULL;
     }
 
     graph->previous_color = RED;
-    graph->STATE = RED;
-    graph->red_node_count = 0;
-    graph->black_node_count = 0;
+    graph->state = RED;
+    graph->red_vertex_count = 0;
+    graph->black_vertex_count = 0;
     graph->print_flag = 0;
     
     return graph;
@@ -123,7 +123,7 @@ void run(struct graph *graph) {
                     /** TODO: REAP RED **/
                     /** TODO: Process Requests **/
                     graph->state = PRINT;
-                    graph->prev_color = RED;
+                    graph->previous_color = RED;
                     pthread_cond_signal(&graph->print_cond);
                     graph->print_flag = 1;
                 }
@@ -133,14 +133,14 @@ void run(struct graph *graph) {
                     /** TODO: REAP BLACK **/
                     /** TODO: Process Requests **/
                     graph->state = PRINT;
-                    graph->prev_color = BLACK;
+                    graph->previous_color = BLACK;
                     pthread_cond_signal(&graph->print_cond);
                     graph->print_flag = 1;
                 }
             break;
             case PRINT:
                 if (graph->print_flag == 0) {
-                    if (graph->prev_color == RED) {
+                    if (graph->previous_color == RED) {
                         pthread_cond_signal(&graph->black_cond);
                     } else {
                         pthread_cond_signal(&graph->red_cond);
@@ -158,7 +158,7 @@ void print_state(struct AVLNode* node){
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
     int id=0, height=0;
     void* data = NULL;
-    struct AVLNode* left = NULL, right=NULL;
+    struct AVLNode* left = NULL, right = NULL;
     if(!node){ return;}
 
 }
@@ -167,7 +167,7 @@ void print(struct graph *graph) {
 
 }
 
-struct request *create_request(enum REQUESTS request, int argc, void **args, void (*f)(void *)) {
+struct request *create_request(enum REQUESTS request, void **args, void (*f)(void *), int argc) {
     struct request *req = malloc(sizeof(struct request));
     if (!req) return NULL;
     req->args = malloc(sizeof(void *) * argc);
@@ -186,7 +186,7 @@ struct request *create_request(enum REQUESTS request, int argc, void **args, voi
 int submit_request(struct graph *graph, struct request *request) {
     if (!graph || !request) return -1;
     int retval = 0;
-    pthread_mutex_lock(&graph->active);
+    pthread_mutex_lock(&graph->lock);
     switch(request->request) {
         case MODIFY:
             retval = push(graph->modify, (void *) request);
@@ -201,7 +201,7 @@ int submit_request(struct graph *graph, struct request *request) {
             retval = -1;
             break;
     }
-    pthread_mutex_unlock(&graph->active);
+    pthread_mutex_unlock(&graph->lock);
     return retval;
 }
 
@@ -236,7 +236,7 @@ void fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enu
     pthread_mutex_unlock(&graph->lock);
 
     pthread_mutex_unlock(&vertex->lock);
-    return 0;
+    return;
 }
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, void **args) {
@@ -277,7 +277,7 @@ int destroy_graph(struct graph *graph) {
     pthread_mutex_destroy(&graph->lock);
     pthread_cond_destroy(&graph->print_cond);
     pthread_cond_destroy(&graph->red_cond);
-    pthread_cond_destory(&graph->black_cond);
+    pthread_cond_destroy(&graph->black_cond);
     free(graph);
     return 0;
 }
