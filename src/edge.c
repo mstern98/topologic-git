@@ -4,14 +4,8 @@ struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(v
     if(!a || !b){ return NULL; }
     if(!f){ return NULL; }
 
-    struct stack *preorder = preorder(a->edge_tree);
-    if (!preorder) {
-        struct stack_node *node = pop(preorder);
-        while (node != NULL) {
-            if (((struct vertex *) node->data)->id == b->id)
-                return NULL;
-        }
-    }
+    void *exists = find(a->edge_tree, b->id);
+    if (exists != NULL) { return NULL; }
 
     struct edge* edge = malloc(sizeof(struct edge));
     if(!edge){ return NULL };
@@ -29,7 +23,7 @@ struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(v
 
     edge->f = f;
     //MAKE UNIQUE
-    edge->id = 0;
+    edge->id = b->id;
 
     if(insert(a->edge_tree, edge, edge->id) < 0){
         free(edge);
@@ -45,27 +39,17 @@ struct edge **create_bi_edge(struct vertex *a, struct vertex *b, void (*f)(void 
     struct edge** bi_edge = malloc(sizeof(struct edge) * 2);
     if(bi_edge==NULL){ return NULL;}
     
-    bi_edge[0] = create_edge(graph, a, b, f, argc, glblc, glbl);
+    bi_edge[0] = create_edge(a, b, f, argc, glblc, glbl);
     if (bi_edge[0] == NULL) {
         free(bi_edge);
         bi_edge = NULL;
         return NULL;
     }
-    bi_edge[1] = malloc(sizeof(struct edge));
+    bi_edge[1] = create_edge(a, b, f, argc, glblc, glbl);
     if (!bi_edge[1]) {
+        remove_edge(a, b);
         free(bi_edge[0]);
         bi_edge[0] = NULL;
-        free(bi_edge);
-        bi_edge = NULL;
-        return NULL;
-    }
-    memcpy(bi_edge[1], bi_edge[0], sizeof(struct edge));
-    if(insert(b->edge_tree, bi_edge[1], bi_edge[1]->id) < 0){
-        remove_ID(a->edge_tree, bi_edge[0]->id);
-        free(bi_edge[0]);
-        bi_edge[0] = NULL;
-        free(bi_edge[1]);
-        bi_edge[1] = NULL;
         free(bi_edge);
         bi_edge = NULL;
         return NULL;
@@ -74,8 +58,8 @@ struct edge **create_bi_edge(struct vertex *a, struct vertex *b, void (*f)(void 
     return bi_edge;
 }
 
-int remove_edge(struct vertex *a, struct vertex *b, int id) {
-    void *data = remove_ID(a->edge_tree, id);
+int remove_edge(struct vertex *a, struct vertex *b) {
+    void *data = remove_ID(a->edge_tree, b->id);
     if (!data) return -1;
     struct edge *edge = (struct edge *) data;
     edge->a_varc = 0;
@@ -102,18 +86,18 @@ int remove_edge(struct vertex *a, struct vertex *b, int id) {
     return 0;
 }
 
-int remove_bi_edge(struct vertex *a, struct vertex *b, int id) {
+int remove_bi_edge(struct vertex *a, struct vertex *b) {
     int ret = 0, a = 0, b = 0;
-    if ((a = remove_edge(a, b, id)) < 0) ret = -2;
-    if ((b = remove_edge(b, a, id)) < 0 && a < 0) ret = -1;
+    if ((a = remove_edge(a, b)) < 0) ret = -2;
+    if ((b = remove_edge(b, a)) < 0 && a < 0) ret = -1;
     if (b < 0 && a == 0) ret = -3;
 
     return ret;
 }
 
-int modify_edge(struct vertex *a, struct vertex *b, int id, void (*f)(void *), int argc, int glblc, void *glbl) {
+int modify_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void *glbl) {
     if (!a || !b) return -1;
-    struct edge *edge = (struct edge *) find(a->edge_tree, id);
+    struct edge *edge = (struct edge *) find(a->edge_tree, b->id);
     if (!edge) return -1;
     if (f) {
         edge->f = f;
@@ -139,10 +123,10 @@ int modify_edge(struct vertex *a, struct vertex *b, int id, void (*f)(void *), i
     return 0;
 }
 
-int modify_bi_edge(struct vertex *a, struct vertex *b, int id, void (*f)(void *), int argc, int glblc, void *glbl) {
+int modify_bi_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void *glbl) {
     int ret = 0, a = 0, b = 0;
-    if ((a = modify_edge(a, b, id, f, argc, glblc, glbl)) < 0) ret = -2;
-    if ((b = modify_edge(b, a, id, f, argc, glblc, glbl)) < 0 && a < 0) ret = -1;
+    if ((a = modify_edge(a, b, f, argc, glblc, glbl)) < 0) ret = -2;
+    if ((b = modify_edge(b, a, f, argc, glblc, glbl)) < 0 && a < 0) ret = -1;
     if (b < 0 && a == 0) ret = -3;
 
     return ret;
