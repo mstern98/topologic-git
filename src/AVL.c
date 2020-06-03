@@ -1,4 +1,4 @@
-#include "../include/AVL.h"
+#include "../include/topologic.h"
 
 struct AVLTree *init_avl() {
     struct AVLTree *tree = malloc(sizeof(struct AVLTree));
@@ -161,7 +161,7 @@ struct AVLNode *remove_node(struct AVLNode *root, int id, void **data) {
     return root;
 }
 
-void *remove(struct AVLTree *tree, int id) {
+void *remove_ID(struct AVLTree *tree, int id) {
     if (!tree || !tree->root) return NULL;
     void *data = NULL;
     tree->root = remove_node(tree->root, id, &data);

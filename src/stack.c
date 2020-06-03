@@ -1,4 +1,4 @@
-#include "../include/stack.h"
+#include "../include/topologic.h"
 
 struct stack *init_stack() {
     struct stack *stack = malloc(sizeof(struct stack));
@@ -7,6 +7,7 @@ struct stack *init_stack() {
     }
     stack->root = NULL;
     stack->length = 0;
+    return stack;
 }
 
 void *pop(struct stack *stack) {
@@ -39,19 +40,20 @@ void *get(struct stack *stack, int index) {
     return node->data;
 }
 
-void push(struct stack *stack, void *data) {
+int push(struct stack *stack, void *data) {
     if (!stack) {
-        return NULL;
+        return -1;
     }
 
     struct stack_node *node = malloc(sizeof(struct stack_node));
-    if (!stack_node) {
-        return NULL;
+    if (!node) {
+        return -1;
     }
 
     node->data = data;
     node->next = stack->root;
     stack->root = node->next;
+    return 0;
 }
 
 void destroy_stack(struct stack *stack) {
