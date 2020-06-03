@@ -77,7 +77,7 @@ struct AVLNode *insert_node(struct AVLNode *node, struct AVLNode *insert) {
     return node;
 }
 
-int insert(struct AVLTree *tree, void *data, int id) {
+int insert(struct AVLTree *tree, void **data, int id) {
     if (!tree) return -1;
     struct AVLNode *node = malloc(sizeof(struct AVLNode));
     if (!node) return -1;
@@ -171,7 +171,7 @@ void *remove_ID(struct AVLTree *tree, int id) {
 
 void preorder_nodes(struct AVLNode *node, struct stack *stack) {
     if (!node) return;
-    push(stack, node->data);
+    push(stack, &(node->data));
     preorder_nodes(node->left, stack);
     preorder_nodes(node->right, stack);
 }
@@ -184,7 +184,7 @@ void preorder(struct AVLTree *tree, struct stack *stack) {
 
 void stackify_nodes(struct AVLNode *node, struct stack *stack) {
     if (!node) return;
-    push(stack, node->data);
+    push(stack, &(node->data));
     get_nodes_preorder(node->left, stack);
     get_nodes_preorder(node->right, stack);
 

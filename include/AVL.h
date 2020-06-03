@@ -18,7 +18,7 @@ struct AVLTree{
 };
 
 struct AVLTree *init_avl();
-int insert(struct AVLTree *tree, void *data, int id);
+int insert(struct AVLTree *tree, void **data, int id);
 void *remove_ID(struct AVLTree *tree, int id);
 void *find(struct AVLTree *tree, int id);
 void preorder(struct AVLTree *tree, struct stack *stack); //pre order

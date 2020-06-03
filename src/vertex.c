@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct vertex *create_vertex(struct graph *graph, void (*f)(void *), int id, int argc, int glblc, void *glbl) {
+struct vertex *create_vertex(struct graph *graph, void (*f)(void *), int id, int argc, int glblc, void **glbl) {
     if (!graph || !f) return NULL;
     pthread_mutex_lock(&graph->lock);
 
@@ -10,7 +10,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(void *), int id, int
         return NULL;
     }
 
-    if (insert(graph->vertices, (void *) vertex, id) < 0) {
+    if (insert(graph->vertices, (void **)(&vertex), id) < 0) {
         free(vertex);
         pthread_mutex_unlock(&graph->lock);
         return NULL;
@@ -32,7 +32,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(void *), int id, int
     vertex->glblc = glblc;
     if (glblc > 0) {
         vertex->glbl = malloc(sizeof(void *) *glblc);
-        memcpy(vertex->glbl, glbl, sizeof(void *) * glblc);
+        memcpy(vertex->glbl, *glbl, sizeof(void *) * glblc);
     }
 
     pthread_mutex_unlock(&graph->lock);
@@ -114,7 +114,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     return 0;
 }
 
-int modify_vertex(struct vertex *vertex, void (*f)(void *), int argc, int glblc, void *glbl) {
+int modify_vertex(struct vertex *vertex, void (*f)(void *), int argc, int glblc, void **glbl) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
@@ -137,7 +137,7 @@ int modify_vertex(struct vertex *vertex, void (*f)(void *), int argc, int glblc,
         vertex->glblc = glblc;
         if (glblc > 0) {
             vertex->glbl = malloc(sizeof(void *) *glblc);
-            memcpy(vertex->glbl, glbl, sizeof(void *) * glblc);
+            memcpy(vertex->glbl, *glbl, sizeof(void *) * glblc);
         }
     }
 
@@ -145,7 +145,7 @@ int modify_vertex(struct vertex *vertex, void (*f)(void *), int argc, int glblc,
     return 0;
 }
 
-int modify_shared_edge_vars(struct vertex *vertex, int edgec, void *edge_vars) {
+int modify_shared_edge_vars(struct vertex *vertex, int edgec, void **edge_vars) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
@@ -157,7 +157,7 @@ int modify_shared_edge_vars(struct vertex *vertex, int edgec, void *edge_vars) {
 
     vertex->edge_sharedc = edgec;
     vertex->edge_shared = data;
-    memcpy(vertex->edge_shared, edge_vars, sizeof(void *) * edgec);
+    memcpy(vertex->edge_shared, *edge_vars, sizeof(void *) * edgec);
 
     pthread_mutex_unlock(&vertex->lock);
     return 0;
