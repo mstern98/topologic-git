@@ -84,6 +84,7 @@ struct graph
     unsigned int max_state_changes;
     unsigned int snapshot_timestamp;
     unsigned int lvl_verbose;
+    pthread_lock_t lock;
     sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
     sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
     sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
@@ -224,7 +225,6 @@ int remove_vertex(struct graph *graph,
                   struct vertex *vertex);
 
 /**
-@PARAM graph: the graph
 @PARAM vertex: a vertex
 @PARAM f: a function
 @PARAM argc: number of arguments f takes
@@ -235,17 +235,15 @@ NOTE: NULL f, or glbl will mean no change.
         -1 for fail
 Modifies the vertices function
 **/
-int modify_vertex(struct graph *graph,
-                  struct vertex *vertex,
+int modify_vertex(struct vertex *vertex,
                   void (*f)(void *),
                   int argc,
                   int glblc,
                   void *glbl);
-#define modify_vertex(graph, f, argc) modify_vertex(graph, f, argc, 0, NULL)
-#define modify_vertex_globals(graph, glblc, glbl) modify_vertex(graph, NULL, 0, glblc, glbl)
+#define modify_vertex(f, argc) modify_vertex(f, argc, 0, NULL)
+#define modify_vertex_globals(glblc, glbl) modify_vertex(NULL, 0, glblc, glbl)
 
 /**
-@PARAM graph: the graph
 @PARAM vertex: a vertex
 @PARAM edgec: # of variables
 @PARAM edge_vars: shared variables
@@ -253,8 +251,7 @@ int modify_vertex(struct graph *graph,
         -1 for fail
 Modifies the vertices shared variables with it's edges
 **/
-int modify_shared_edge_vars(struct graph *graph, 
-                            struct vertex *vertex, 
+int modify_shared_edge_vars(struct vertex *vertex, 
                             int edgec, 
                             void *edge_vars);
 
