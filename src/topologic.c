@@ -13,9 +13,33 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         return NULL;
     }
 
+    if(pthread_cond_init(&graph->print_cond) < 0) {
+        pthread_mutex_destroy(&graph->lock);
+        free(graph);
+        return NULL;
+    }
+
+    if(pthread_cond_init(&graph->red_cond) < 0) {        
+        pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        free(graph);
+        return NULL;
+    }
+
+    if(pthread_cond_init(&graph->black_cond) < 0) {        
+        pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        pthread_cond_destroy(&graph->red_cond);
+        free(graph);
+        return NULL;
+    }
+
     graph->vertices = init_avl();
     if(!graph->vertices) {
         pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        pthread_cond_destroy(&graph->red_cond);
+        pthread_cond_destory(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -24,6 +48,9 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     if (!graph->modify) {
         destroy_avl(graph->vertices);
         pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        pthread_cond_destroy(&graph->red_cond);
+        pthread_cond_destory(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -32,6 +59,9 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         destroy_avl(graph->vertices);
         destroy_stack(graph->modify);
         pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        pthread_cond_destroy(&graph->red_cond);
+        pthread_cond_destory(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -41,6 +71,9 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         destroy_stack(graph->modify);
         destroy_stack(graph->remove_edges);
         pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        pthread_cond_destroy(&graph->red_cond);
+        pthread_cond_destory(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -51,6 +84,9 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         destroy_stack(graph->remove_edges);
         destroy_stack(graph->remove_vertices);
         pthread_mutex_destroy(&graph->lock);
+        pthread_cond_destroy(&graph->print_cond);
+        pthread_cond_destroy(&graph->red_cond);
+        pthread_cond_destory(&graph->black_cond);
         free(graph);
         return NULL;
     }
@@ -239,6 +275,9 @@ int destroy_graph(struct graph *graph) {
     destroy_graph_stack(graph->remove_vertices);
 
     pthread_mutex_destroy(&graph->lock);
+    pthread_cond_destroy(&graph->print_cond);
+    pthread_cond_destroy(&graph->red_cond);
+    pthread_cond_destory(&graph->black_cond);
     free(graph);
     return 0;
 }
