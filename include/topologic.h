@@ -75,6 +75,34 @@ enum STATES
 };
 
 /**
+Enum for snapshots. 
+NONE: Record nothing
+START_STOP: Record first and last state
+**/
+enum SNAPSHOT
+{
+    NO_SNAP = -1,
+    START_STOP = 0
+};
+
+/**
+Enum for how verbose the records are
+NONE: Record nothing
+NODES: Record nodes
+EDGES: Record edges
+FUNCTIONS: Record the functions of nodes and/or edges
+GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges
+**/
+enum VERBOSITY
+{
+    NO_VERB = 0,
+    NODES = 1,
+    EDGES = 2,
+    FUNCTIONS = 4,
+    GLOBALS = 8
+};
+
+/**
 Enum for submiting a request to be handles
 MODIFY: Modify values in existing edges or vertices
         as well as add vertices or edges
@@ -108,42 +136,13 @@ struct graph
     struct stack *remove_vertices;
     unsigned int max_state_changes;
     unsigned int snapshot_timestamp;
-    unsigned int lvl_verbose;
+    enum VERBOSITY lvl_verbose;
     pthread_rwlock_t lock;
     sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
     sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
     sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
     sig_atomic_t red_node_count;   //Number of RED nodes not reaped
     sig_atomic_t black_node_count; //Number of BLACK nodes not reaped
-};
-
-
-/**
-Enum for snapshots. 
-NONE: Record nothing
-START_STOP: Record first and last state
-**/
-enum SNAPSHOT
-{
-    NO_SNAP = -1,
-    START_STOP = 0
-};
-
-/**
-Enum for how verbose the records are
-NONE: Record nothing
-NODES: Record nodes
-EDGES: Record edges
-FUNCTIONS: Record the functions of nodes and/or edges
-GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges
-**/
-enum VERBOSITY
-{
-    NO_VERB = 0,
-    NODES = 1,
-    EDGES = 2,
-    FUNCTIONS = 4,
-    GLOBALS = 8
 };
 
 /**
@@ -157,7 +156,7 @@ Creates a graph structures
 **/
 struct graph *graph_init(unsigned int max_state_changes,
                          unsigned int snapshot_timestamp,
-                         unsigned int lvl_verbose,
+                         enum VERBOSITY lvl_verbose,
                          enum CONTEXT context);
 #define graph_init() graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH);
 
@@ -418,11 +417,19 @@ Prints the graph with desired output
 void print(struct graph *graph);
 
 /**
-@PARAM graph, the graph
+@PARAM graph: the graph
 @RETURN -1 for fail;
         0 for success
 Destroys and frees the graph
 **/
-int clean_graph(struct graph *graph);
+int destroy_graph(struct graph *graph);
+
+/**
+@PARAM request: a request
+@RETURN -1 for fail;
+        0 for success
+Destroys and frees a request
+**/
+int destroy_request(struct request *request);
 
 #endif
