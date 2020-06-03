@@ -12,3 +12,7 @@ int modify_vertex(struct graph *graph, struct vertex *vertex, void (*f)(void *),
     return 0;
 }
 
+int modify_shared_edge_vars(struct graph *graph, struct vertex *vertex, int edgec, void *edge_vars) {
+    return 0;
+}
+
