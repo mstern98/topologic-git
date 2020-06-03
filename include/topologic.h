@@ -99,7 +99,7 @@ START_STOP: Record first and last state
 **/
 enum SNAPSHOT
 {
-    NONE = -1,
+    NO_SNAP = -1,
     START_STOP = 0
 };
 
@@ -113,7 +113,7 @@ GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges
 **/
 enum VERBOSITY
 {
-    NONE = 0,
+    NO_VERB = 0,
     NODES = 1,
     EDGES = 2,
     FUNCTIONS = 4,
