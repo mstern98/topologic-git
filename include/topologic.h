@@ -90,9 +90,37 @@ enum STATES
 };
 
 /**
+Enum for snapshots. 
+NONE: Record nothing
+START_STOP: Record first and last state
+**/
+enum SNAPSHOT
+{
+    NONE = -1,
+    START_STOP = 0
+};
+
+/**
+Enum for how verbose the records are
+NONE: Record nothing
+NODES: Record nodes
+EDGES: Record edges
+FUNCTIONS: Record the functions of nodes and/or edges
+GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges
+**/
+enum VERBOSITY
+{
+    NONE = 0,
+    NODES = 1,
+    EDGES = 2,
+    FUNCTIONS = 4,
+    GLOBALS = 8
+};
+
+/**
 @PARAM max_state_changes: # state changes before entering 
-        sink vertex or infinite loop
-@PARAM snapshot_timestamp: printing out data at given timestamp for user
+                          sink vertex due to infinite loop of states; -1 to ignore 
+@PARAM snapshot_timestamp: printing out data at given timestamp for user; -1 for none; 0 for first and last state
 @PARAM lvl_verbose: how verbose timestamp print is
 @PARAM context: linear or context-switch based
 @RETURN an empty graph
@@ -102,6 +130,7 @@ struct graph *graph_init(unsigned int max_state_changes,
                          unsigned int snapshot_timestamp,
                          unsigned int lvl_verbose,
                          enum CONTEXT context);
+#define graph_init() graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH);
 
 /**
 @PARAM graph: the graph
@@ -123,6 +152,7 @@ struct vertex *create_vertex(struct graph *graph,
                              int argc,
                              int glblc,
                              void *glbl);
+#define create_vertex(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
 
 /**
 @PARAM graph: the graph
@@ -146,6 +176,7 @@ struct edge *create_edge(struct graph *graph,
                          int argc,
                          int glblc,
                          void *glbl);
+#define create_edge(graph, id, a, b, f, argc) create_edge(graph, id, a, b, f, argc, 0, NULL)
 
 /**
 @RETURN two edges
@@ -160,6 +191,7 @@ struct edge **create_bi_edge(struct graph *graph,
                              int argc,
                              int glblc,
                              void *glbl);
+#define create_bi_edge(graph, id, a, b, f, argc) create_bi_edge(graph, id, a, b, f, argc, 0, NULL)
 
 /**
 @PARAM graph: the graph
@@ -215,6 +247,22 @@ int modify_vertex(struct graph *graph,
                   int argc,
                   int glblc,
                   void *glbl);
+#define modify_vertex(graph, f, argc) modify_vertex(graph, f, argc, 0, NULL)
+#define modify_vertex_globals(graph, glblc, glbl) modify_vertex(graph, NULL, 0, glblc, glbl)
+
+/**
+@PARAM graph: the graph
+@PARAM vertex: a vertex
+@PARAM edgec: # of variables
+@PARAM edge_vars: shared variables
+@RETURN 0 for success;
+        -1 for fail
+Modifies the vertices shared variables with it's edges
+**/
+int modify_shared_edge_vars(struct graph *graph, 
+                         struct vertex *vertex, 
+                         int edgec, 
+                         void *edge_vars);
 
 /**
 @PARAM graph: the graph
@@ -236,6 +284,8 @@ int modify_edge(struct graph *graph,
                 int argc,
                 int glblc,
                 void *glbl);
+#define modify_edge(graph, a, b, f, argc) modify_edge(graph, a, b, f, argc, 0, NULL)
+#define modify_edge_global(graph, a, b, glblc, glbl) modify_edge(graph, a, b, NULL, 0, glblc, glbl)
 
 /**
 @PARAM graph: the graph
@@ -260,6 +310,9 @@ int modify_bi_edge(struct graph *graph,
                    int argc,
                    int glblc,
                    void *glbl);
+#define modify_bi_edge(graph, a, b, f, argc) modify_bi_edge(graph, a, b, f, argc, 0, NULL)
+#define modify_bi_edge_global(graph, a, b, glblc, glbl) modify_bi_edge(graph, a, b, NULL, 0, glblc, glbl)
+
 
 /**
 @PARAM graph: the graph
@@ -292,8 +345,8 @@ connected to the vertex
     successful edge will be fired; -1 on failure
 **/
 int switch_vertex(struct graph *graph,
-            struct vertex *vertex,
-            void *args);
+                  struct vertex *vertex,
+                  void *args);
 
 /**
 @PARAM graph: the graph,

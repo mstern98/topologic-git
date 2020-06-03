@@ -15,6 +15,7 @@ struct vertex{
     int argc;
     int glblc; 
     void *glbl;
+    int edge_sharedc;
     void *edge_shared; 
     sig_atomic_t active;
     struct AVLTree* edge_tree;
