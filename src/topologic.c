@@ -1,4 +1,4 @@
-#include "./include/topologic.h"
+#include "../include/topologic.h"
 
 struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_timestamp, enum VERBOSITY lvl_verbose, enum CONTEXT context) {
     struct graph *graph = malloc(sizeof(struct graph));
@@ -82,6 +82,16 @@ void run(struct graph *graph) {
 
 }
 
+
+void print_state(struct AVLNode* node){
+    /*Called by print and does a pre-order traversal of all the data in each vertex*/
+    int id=0, height=0;
+    void* data = NULL;
+    struct AVLNode* left = NULL, right=NULL;
+    if(!node){ return;}
+
+}
+
 void print(struct graph *graph) {
 
 }
@@ -143,11 +153,16 @@ void destroy_graph_stack(struct stack *stack) {
 
 void destroy_graph_avl(struct graph *graph, struct AVLTree *tree) {
     if (!tree) return;
-    struct stack *stack = preorder(tree);
+
+    struct stack* tree_stack = malloc(sizeof(struct stack));
+    if(!tree_stack) return;
+    /*struct stack *stack =*/ preorder(tree, tree_stack);
+    //free(tree_stack);
     struct vertex *vertex = NULL;
-    while ((vertex = (struct vertex *) pop(stack)) != NULL) {
+    while ((vertex = (struct vertex *) pop(tree_stack)) != NULL) {
         remove_vertex(graph, vertex);
     }
+    free(tree_stack);
     destroy_avl(tree);
 }
 
@@ -170,14 +185,14 @@ int destroy_request(struct request *request) {
         request->args = NULL;
     } else if (request->argc > 1) {
         int i = 0;
-        for (i; i < request->argc; i++) {
+        for(i=0; i < request->argc; i++) {
             free(request->args[i]);
             request->args[i] = NULL;
         }
         free(request->args);
     }
     request->argc = 0;
-    request->requesut = 0;
+    request->request = 0;
     return 0;
 }
 

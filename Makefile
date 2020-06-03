@@ -1,13 +1,13 @@
 CC=gcc
-CFLAGS=-Wall	-Werror	-g	-O2 -Wextra
+CFLAGS=-Wall	-Werror	-g	-O2 
 LDFLAGS=#-lm -lpthread -L. -lTopological
 
 OBJ=$(SRC:.c=.o)
 AR=ar
 
 BIN=libTopological.a
-SRC=src/*.c
-INCLUDES= include/*.h
+SRC=src/topologic.c src/vertex.c src/edge.c src/stack.c src/topologic.c src/AVL.c
+INCLUDES= include/AVL.h include/topologic.h include/vertex.h include/stack.h include/edge.h
 
 
 

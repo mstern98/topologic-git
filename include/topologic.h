@@ -15,6 +15,7 @@
 #include <err.h>
 #include <termios.h>
 #include <errno.h>
+#include <pthread.h>
 #include <sys/user.h>
 #include <sys/syscall.h>
 #include <sys/mman.h>
@@ -137,7 +138,7 @@ struct graph
     unsigned int max_state_changes;
     unsigned int snapshot_timestamp;
     enum VERBOSITY lvl_verbose;
-    pthread_rwlock_t lock;
+    pthread_mutex_t lock;
     sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
     sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
     sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
