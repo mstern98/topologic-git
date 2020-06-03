@@ -156,14 +156,57 @@ void run(struct graph *graph) {
 
 void print_state(struct AVLNode* node){
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
-    int id=0, height=0;
-    void* data = NULL;
-    struct AVLNode* left = NULL, right = NULL;
+    int counter = 0;
+    void* data;
+
+    int vertexId=0, argc=0, glblc=0;
+    void* glbl=NULL;
+    int edge_sharedc;
+    void *edge_shared=NULL;
+    void (*f)(void *);
+    struct AVLNode* left = NULL;
+    struct AVLNode* right = NULL;
     if(!node){ return;}
 
+    left = node->left;
+    right=node->right;
+    data = node->data;
+
+    void* temp;
+
+    memcpy(&vertexId, (data+counter), sizeof(int));
+    counter+=sizeof(int);
+    temp = data+counter;
+    temp = &(temp);
+    memcpy(&f, (&temp), sizeof(void*)); counter+=sizeof(void*);
+    memcpy(&argc, data+counter, sizeof(int)); counter+=sizeof(int);
+    memcpy(&glblc, data+counter, sizeof(int)); counter+=sizeof(int);
+    temp = data+counter;
+    memcpy(&glbl, &temp, sizeof(void*)*glblc); counter+=(sizeof(void*)*glblc);
+    memcpy(&edge_sharedc, (data+counter), sizeof(int)); counter+=sizeof(int);
+    temp = data+counter;
+    memcpy(&edge_shared, &temp, sizeof(void*)*edge_sharedc); counter+=(sizeof(void*)*edge_sharedc);
+    
+    printf("\tNode #%d: {", vertexId);
+    printf("\t\tf: %p\n", f);
+    printf("\t\targc: %d\n", argc);
+    printf("\t\tglblc: %d\n", glblc);
+    printf("\t\tglbl: %p\n", glbl);
+    printf("\t\tedge_sharedc: %d\n", edge_sharedc);
+    printf("\t\tedge_shared: %p\n", edge_shared);
+    printf("\t},\n");
+    print_state(left);
+    print_state(right);
+    
 }
 
 void print(struct graph *graph) {
+    if(!graph) return;
+
+    /**TODO: Print enums**/
+    printf("graph: {\n");
+    print_state(graph->vertices->root);
+    printf("}\n");
 
 }
 

@@ -14,9 +14,9 @@ struct vertex{
     void (*f)(void *);
     int argc;
     int glblc; 
-    void *glbl;
+    void **glbl;
     int edge_sharedc;
-    void *edge_shared; 
+    void **edge_shared; 
     pthread_mutex_t lock;
     struct AVLTree* edge_tree;
 };
