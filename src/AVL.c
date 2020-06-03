@@ -110,9 +110,9 @@ struct AVLNode *remove_node(struct AVLNode *root, int id, void **data) {
     if (!root)
         return root;
     else if (id < root->id) 
-        root->left = delete_node(root->left, id);
+        root->left = remove_node(root->left, id, data);
     else if (id > root->id)
-        root->right = delete_node(root->right, id);
+        root->right = remove_node(root->right, id, data);
     else {
         *data = root->data;
         struct AVLNode *temp = NULL;
@@ -149,7 +149,7 @@ struct AVLNode *remove_node(struct AVLNode *root, int id, void **data) {
             root->left = left_rotate(root->left);
             return right_rotate(root);
         }
-    } else if (balance < -1) {
+    } else if (balance_factor < -1) {
         if (balance(root->right) <= 0) 
             return left_rotate(root);
         else {
@@ -185,8 +185,8 @@ void preorder(struct AVLTree *tree, struct stack *stack) {
 void stackify_nodes(struct AVLNode *node, struct stack *stack) {
     if (!node) return;
     push(stack, &(node->data));
-    get_nodes_preorder(node->left, stack);
-    get_nodes_preorder(node->right, stack);
+    stackify_nodes(node->left, stack);
+    stackify_nodes(node->right, stack);
 
     node->data = NULL;
     node->height = 0;

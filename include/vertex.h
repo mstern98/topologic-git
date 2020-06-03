@@ -11,12 +11,12 @@ struct vertex{
     int id; //Hash for number passed in, 
             //will compare with other vertices in graph
             //Must be unique. If non-unique ID, error
-    void (*f)(void *);
+    void (*f)(int, void **);
     int argc;
     int glblc; 
-    void *glbl;
+    void **glbl;
     int edge_sharedc;
-    void *edge_shared; 
+    void **edge_shared; 
     pthread_mutex_t lock;
     struct AVLTree* edge_tree;
 };

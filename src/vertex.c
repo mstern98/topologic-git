@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct vertex *create_vertex(struct graph *graph, void (*f)(void *), int id, int argc, int glblc, void **glbl) {
+struct vertex *create_vertex(struct graph *graph, void (*f)(int, void **), int id, int argc, int glblc, void **glbl) {
     if (!graph || !f) return NULL;
     pthread_mutex_lock(&graph->lock);
 
@@ -78,7 +78,8 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     }
     
 
-    struct stack *stack = stackify(vertex->edge_tree);
+    struct stack *stack = init_stack();
+    stackify(vertex->edge_tree, stack);
     struct edge *edge = NULL;
     while ((edge = (struct edge *) pop(stack)) != NULL) {
         edge->a = NULL;
@@ -114,7 +115,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     return 0;
 }
 
-int modify_vertex(struct vertex *vertex, void (*f)(void *), int argc, int glblc, void **glbl) {
+int modify_vertex(struct vertex *vertex, void (*f)(int, void **), int argc, int glblc, void **glbl) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
@@ -124,6 +125,7 @@ int modify_vertex(struct vertex *vertex, void (*f)(void *), int argc, int glblc,
     }
     if (glbl != NULL) {
         if (vertex->glblc > 1) {
+            int i = 0;
             for (i = 0; i < vertex->glblc; i++) {
                 free(vertex->glbl[i]);
                 vertex->glbl[i] = NULL;

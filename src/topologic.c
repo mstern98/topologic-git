@@ -156,10 +156,10 @@ void run(struct graph *graph) {
 
 void print_state(struct AVLNode* node){
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
-    int id=0, height=0;
-    void* data = NULL;
-    struct AVLNode* left = NULL, right = NULL;
-    if(!node){ return;}
+    // int id=0, height=0;
+    // void* data = NULL;
+    // struct AVLNode* left = NULL, right = NULL;
+    // if(!node){ return;}
 
 }
 
@@ -167,7 +167,7 @@ void print(struct graph *graph) {
 
 }
 
-struct request *create_request(enum REQUESTS request, void **args, void (*f)(void *), int argc) {
+struct request *create_request(enum REQUESTS request, void **args, void (*f)(void **), int argc) {
     struct request *req = malloc(sizeof(struct request));
     if (!req) return NULL;
     req->args = malloc(sizeof(void *) * argc);
@@ -205,41 +205,71 @@ int submit_request(struct graph *graph, struct request *request) {
     return retval;
 }
 
-void fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
-    if (!graph || !vertex) return;
+int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
+    if (!graph || !vertex) return -1;
+    enum STATES flip_color = BLACK;
     pthread_mutex_lock(&vertex->lock);
     if (color == RED) {
         pthread_cond_wait(&graph->red_cond, &vertex->lock);
-        
+
         pthread_mutex_lock(&graph->lock);
         graph->red_vertex_count++;
         pthread_mutex_unlock(&graph->lock);
     } else if (color == BLACK) {
         pthread_cond_wait(&graph->black_cond, &vertex->lock);
+        flip_color = RED;
     } else {
         pthread_mutex_unlock(&vertex->lock);
-        return;
+        return -1;
     }
     if (argc != vertex->argc) {
         pthread_mutex_unlock(&vertex->lock);
-        return;
+        return -1;
     }
 
-    vertex->f(args);
+    (vertex->f)(argc, args);
+    struct stack *edges = init_stack();
+    preorder(vertex->edge_tree, edges);
+    struct edge *edge = NULL;
+    while ((edge = (struct edge *) pop(edges)) != NULL) {
+        if (!edge->b) {
+            void **data = malloc(sizeof(void *) * 2);
+            data[0] = vertex;
+            data[1] = &(edge->id);
+            struct request *req = create_request(DESTROY_EDGE, data, (void *) remove_edge_id, 2);
+            submit_request(graph, req);
+        }
+        else if ((int) (edge->f)(argc, args) >= 0) {
+            if (switch_vertex(graph, edge->b, argc, args, flip_color) < 0) {
+                pthread_mutex_lock(&graph->lock);
+                if (color == RED)
+                    graph->red_vertex_count--;
+                else 
+                    graph->black_vertex_count--;
+                pthread_mutex_unlock(&graph->lock);
 
-    /**
-     * TODO: Compute edges and switch
-    **/
+                pthread_mutex_unlock(&vertex->lock);
+                return -1;
+            }
+            if (graph->context == SINGLE || graph->context == NONE)
+                break;
+        }
+    }
+    destroy_stack(edges);
 
     pthread_mutex_lock(&graph->lock);
-    graph->red_vertex_count++;
-    pthread_mutex_unlock(&graph->lock);
-
+    if (color == RED)
+        graph->red_vertex_count--;
+    else 
+        graph->black_vertex_count--;
     pthread_mutex_unlock(&vertex->lock);
-    return;
+    return 0;
 }
 
-int switch_vertex(struct graph *graph, struct vertex *vertex, void **args) {
+int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
+    //HANDLE STUFF LIKE THREADS HERE
+
+    fire(graph, vertex, argc, args, color);
     return 0;
 }
 

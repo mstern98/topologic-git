@@ -121,7 +121,7 @@ enum REQUESTS
 struct request
 {
         enum REQUESTS request;
-        void (*f)(void *);
+        void (*f)(void **);
         int argc;
         void **args;
 };
@@ -180,12 +180,12 @@ NOTE: NULL glbl will mean no global variables.
 **/
 
 struct vertex *create_vertex(struct graph *graph,
-                             void (*f)(void *),
+                             void (*f)(int, void **),
                              int id,
                              int argc,
                              int glblc,
                              void **glbl);
-#define create_vertex(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
+//#define create_vertex(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
 
 /**
 @PARAM a: A vertex
@@ -201,11 +201,11 @@ NOTE: NULL glbl will mean no global variables. f cannot be NULL.
 **/
 struct edge *create_edge(struct vertex *a,
                          struct vertex *b,
-                         void (*f)(void *),
+                         int (*f)(int, void **),
                          int argc,
                          int glblc,
                          void **glbl);
-#define create_edge(id, a, b, f, argc) create_edge(id, a, b, f, argc, 0, NULL)
+//#define create_edge(id, a, b, f, argc) create_edge(id, a, b, f, argc, 0, NULL)
 
 /**
 @RETURN two edges
@@ -215,11 +215,11 @@ with some criteria determined by the function f.
 **/
 struct edge **create_bi_edge(struct vertex *a,
                              struct vertex *b,
-                             void (*f)(void *),
+                             int (*f)(int, void **),
                              int argc,
                              int glblc,
                              void **glbl);
-#define create_bi_edge(a, b, f, argc) create_bi_edge(a, b, f, argc, 0, NULL)
+//#define create_bi_edge(a, b, f, argc) create_bi_edge(a, b, f, argc, 0, NULL)
 
 /**
 @PARAM a: a vertex
@@ -231,6 +231,15 @@ Removes the edge connecting a to b
 int remove_edge(struct vertex *a,
                 struct vertex *b);
 
+/**
+@PARAM a: a vertex
+@PARAM id: id of edge to remove
+@RETURN 0 for success;
+        -1 for fail
+Removes the edge in a with that id
+**/
+int remove_edge_id(struct vertex *a, 
+                   int id);
 /**
 @PARAM a: a vertex
 @PARAM b: another vertex
@@ -265,12 +274,12 @@ NOTE: NULL f, or glbl will mean no change.
 Modifies the vertices function
 **/
 int modify_vertex(struct vertex *vertex,
-                  void (*f)(void *),
+                  void (*f)(int, void **),
                   int argc,
                   int glblc,
                   void **glbl);
-#define modify_vertex(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
-#define modify_vertex_globals(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
+//#define modify_vertex(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
+//#define modify_vertex_globals(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
 
 /**
 @PARAM vertex: a vertex
@@ -298,13 +307,13 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_edge(struct vertex *a,
                 struct vertex *b,
-                void (*f)(void *),
+                int (*f)(int, void **),
                 int argc,
                 int glblc,
                 void **glbl);
 
-#define modify_edge(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
-#define modify_edge_global(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
+//#define modify_edge(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
+//#define modify_edge_global(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
 
 /**
 @PARAM a: a vertex
@@ -323,12 +332,12 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_bi_edge(struct vertex *a,
                    struct vertex *b,
-                   void (*f)(void *),
+                   int (*f)(int, void **),
                    int argc,
                    int glblc,
                    void **glbl);
-#define modify_bi_edge(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
-#define modify_bi_edge_global(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
+//#define modify_bi_edge(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
+//#define modify_bi_edge_global(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
 
 
 /**
@@ -345,11 +354,11 @@ argc and args to the vertex to
 compute its function and then 
 call switch and clean itself up
 **/
-void fire(struct graph *graph,
-          struct vertex *vertex,
-          int argc,
-          void **args,
-          enum STATES color);
+int fire(struct graph *graph,
+         struct vertex *vertex,
+         int argc,
+         void **args,
+         enum STATES color);
 
 /**
 @PARAM graph: the graph
@@ -363,7 +372,9 @@ connected to the vertex
 **/
 int switch_vertex(struct graph *graph,
                   struct vertex *vertex,
-                  void **args);
+                  int argc,
+                  void **args,
+                  enum STATES color);
 
 /**
 @PARAM graph: the graph,
@@ -398,17 +409,18 @@ Creates a request structure to be called later
 **/
 struct request *create_request(enum REQUESTS request,  
                                void **args, 
-                               void (*f)(void *),
+                               void (*f)(void **),
                                int argc);
 
-#define create_request_destroy_edge(args) create_request(DESTROY_EDGE, args, remove_edge, 2);
-#define create_request_destroy_bi_edge(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2);
-#define create_request_destroy_vertex(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2);
+// #define create_request_destroy_edge(args) create_request(DESTROY_EDGE, args, remove_edge, 2);
+// #define create_request_destroy_bi_edge(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2);
+// #define create_request_destroy_vertex(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2);
 
-#define create_request_modify_edge(args) create_request(MODIFY, args, modify_edge, 6);
-#define create_request_modify_bi_edge(args) create_request(MODIFY, args, modify_bi_edge, 6);
-#define create_request_modify_vertex(args) create_request(MODIFY, args, modify_vertex, 5);
-#define create_request_modify_shared_edge_vars(args) create_request(MODIFY, args, modify_shared_edge_vars, 3);
+// #define create_request_modify_edge(args) create_request(MODIFY, args, modify_edge, 6);
+// #define create_request_modify_bi_edge(args) create_request(MODIFY, args, modify_bi_edge, 6);
+// #define create_request_modify_vertex(args) create_request(MODIFY, args, modify_vertex, 5);
+// #define create_request_modify_shared_edge_vars(args) create_request(MODIFY, args, modify_shared_edge_vars, 3);
+
 /**
 @PARAM graph: the graph
 Attempts to run the graph else aborts.

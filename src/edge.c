@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void **glbl) {
+struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(int, void **), int argc, int glblc, void **glbl) {
     if(!a || !b){ return NULL; }
     if(!f){ return NULL; }
 
@@ -14,8 +14,8 @@ struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(v
     struct edge* edge = malloc(sizeof(struct edge));
     if(!edge){ 
         pthread_mutex_lock(&a->lock); 
-        return NULL 
-    };
+        return NULL;
+    }
     edge->a = a;
     edge->b = b;
 
@@ -42,7 +42,7 @@ struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(v
     return edge;
 }
 
-struct edge **create_bi_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void **glbl) {
+struct edge **create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(int, void **), int argc, int glblc, void **glbl) {
     if(!a || !b || !f) return NULL;
     struct edge** bi_edge = malloc(sizeof(struct edge) * 2);
     if(bi_edge==NULL){ return NULL;}
@@ -85,7 +85,38 @@ int remove_edge(struct vertex *a, struct vertex *b) {
             free(edge->glbl[i]);
             edge->glbl[i] = NULL;
         }
-    } else if (edge->glbl == 1) {
+    } else if (edge->glblc == 1) {
+        free(edge->glbl);
+        edge->glbl = NULL;
+    }
+    edge->glblc = 0;
+    
+    free(edge);
+    edge = NULL;
+    pthread_mutex_unlock(&a->lock); 
+    return 0;
+}
+
+int remove_edge_id(struct vertex *a, int id) {
+    if (!a) return -1;
+    pthread_mutex_lock(&a->lock); 
+    void *data = remove_ID(a->edge_tree, id);
+    if (!data) return -1;
+    struct edge *edge = (struct edge *) data;
+    edge->a_varc = 0;
+    edge->a_vars = NULL;
+    edge->a = NULL;
+    edge->b = NULL;
+    edge->f = NULL;
+    edge->id = 0;
+
+    if (edge->glblc > 1) {
+        int i;
+        for (i = 0; i < edge->glblc; i++) {
+            free(edge->glbl[i]);
+            edge->glbl[i] = NULL;
+        }
+    } else if (edge->glblc == 1) {
         free(edge->glbl);
         edge->glbl = NULL;
     }
@@ -98,15 +129,15 @@ int remove_edge(struct vertex *a, struct vertex *b) {
 }
 
 int remove_bi_edge(struct vertex *a, struct vertex *b) {
-    int ret = 0, a = 0, b = 0;
-    if ((a = remove_edge(a, b)) < 0) ret = -2;
-    if ((b = remove_edge(b, a)) < 0 && a < 0) ret = -1;
-    if (b < 0 && a == 0) ret = -3;
+    int ret = 0, a_ret = 0, b_ret = 0;
+    if ((a_ret = remove_edge(a, b)) < 0) ret = -2;
+    if ((b_ret = remove_edge(b, a)) < 0 && a < 0) ret = -1;
+    if (b_ret < 0 && a_ret == 0) ret = -3;
 
     return ret;
 }
 
-int modify_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void **glbl) {
+int modify_edge(struct vertex *a, struct vertex *b, int (*f)(int, void **), int argc, int glblc, void **glbl) {
     if (!a || !b) return -1;
     pthread_mutex_lock(&a->lock); 
     struct edge *edge = (struct edge *) find(a->edge_tree, b->id);
@@ -122,7 +153,7 @@ int modify_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc,
                 free(edge->glbl[i]);
                 edge->glbl[i] = NULL;
             }
-        } else if (edge->glbl == 1) {
+        } else if (edge->glblc == 1) {
             free(edge->glbl);
             edge->glbl = NULL;
         }
@@ -136,11 +167,11 @@ int modify_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc,
     return 0;
 }
 
-int modify_bi_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void **glbl) {
-    int ret = 0, a = 0, b = 0;
-    if ((a = modify_edge(a, b, f, argc, glblc, glbl)) < 0) ret = -2;
-    if ((b = modify_edge(b, a, f, argc, glblc, glbl)) < 0 && a < 0) ret = -1;
-    if (b < 0 && a == 0) ret = -3;
+int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(int, void **), int argc, int glblc, void **glbl) {
+    int ret = 0, a_ret = 0, b_ret = 0;
+    if ((a_ret = modify_edge(a, b, f, argc, glblc, glbl)) < 0) ret = -2;
+    if ((b_ret = modify_edge(b, a, f, argc, glblc, glbl)) < 0 && a < 0) ret = -1;
+    if (b_ret < 0 && a_ret == 0) ret = -3;
 
     return ret;
 }
