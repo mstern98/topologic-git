@@ -156,12 +156,6 @@ void run(struct graph *graph) {
 
 void print_state(struct AVLNode* node){
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
-<<<<<<< HEAD
-    // int id=0, height=0;
-    // void* data = NULL;
-    // struct AVLNode* left = NULL, right = NULL;
-    // if(!node){ return;}
-=======
     int counter = 0;
     void* data;
 
@@ -173,7 +167,6 @@ void print_state(struct AVLNode* node){
     struct AVLNode* left = NULL;
     struct AVLNode* right = NULL;
     if(!node){ return;}
->>>>>>> bb47e4b4ee01ab7b3d3af59e23efcd85f966b3e7
 
     left = node->left;
     right=node->right;
