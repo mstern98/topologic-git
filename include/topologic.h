@@ -163,7 +163,7 @@ struct graph *graph_init(unsigned int max_state_changes,
                          enum VERBOSITY lvl_verbose,
                          enum CONTEXT context);
 #define MAX_STATE_CHANGES 100
-#define GRAPH_INIT graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH)
+#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH)
 
 /**
 @PARAM graph: the graph
@@ -185,7 +185,7 @@ struct vertex *create_vertex(struct graph *graph,
                              int argc,
                              int glblc,
                              void **glbl);
-//#define create_vertex(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
+#define CREATE_VERTEX(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
 
 /**
 @PARAM a: A vertex
@@ -205,7 +205,7 @@ struct edge *create_edge(struct vertex *a,
                          int argc,
                          int glblc,
                          void **glbl);
-//#define create_edge(id, a, b, f, argc) create_edge(id, a, b, f, argc, 0, NULL)
+#define CREATE_EDGE(a, b, f, argc) create_edge(a, b, f, argc, 0, NULL)
 
 /**
 @RETURN two edges
@@ -219,7 +219,7 @@ struct edge **create_bi_edge(struct vertex *a,
                              int argc,
                              int glblc,
                              void **glbl);
-//#define create_bi_edge(a, b, f, argc) create_bi_edge(a, b, f, argc, 0, NULL)
+#define CREATE_BI_EDGE(a, b, f, argc) create_bi_edge(a, b, f, argc, 0, NULL)
 
 /**
 @PARAM a: a vertex
@@ -278,8 +278,8 @@ int modify_vertex(struct vertex *vertex,
                   int argc,
                   int glblc,
                   void **glbl);
-//#define modify_vertex(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
-//#define modify_vertex_globals(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
+#define MODIFY_VERTEX(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
+#define MODIFY_VERTEX_GLOBALS(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
 
 /**
 @PARAM vertex: a vertex
@@ -312,8 +312,8 @@ int modify_edge(struct vertex *a,
                 int glblc,
                 void **glbl);
 
-//#define modify_edge(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
-//#define modify_edge_global(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
+#define MODIFY_EDGE(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
+#define MODIFY_EDGE_GLOBALS(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
 
 /**
 @PARAM a: a vertex
@@ -336,8 +336,8 @@ int modify_bi_edge(struct vertex *a,
                    int argc,
                    int glblc,
                    void **glbl);
-//#define modify_bi_edge(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
-//#define modify_bi_edge_global(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
+#define MODIFY_BI_EDGE(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
+#define MODIFY_BI_EDGE_GLOBALS(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
 
 
 /**
@@ -412,14 +412,14 @@ struct request *create_request(enum REQUESTS request,
                                void (*f)(void **),
                                int argc);
 
-// #define create_request_destroy_edge(args) create_request(DESTROY_EDGE, args, remove_edge, 2);
-// #define create_request_destroy_bi_edge(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2);
-// #define create_request_destroy_vertex(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2);
+#define CREATE_REQUEST_DESTROY_EDGE(args) create_request(DESTROY_EDGE, args, remove_edge, 2);
+#define CREATE_REQUEST_DESTROY_BI_EDGE(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2);
+#define CREATE_REQUEST_DESTROY_VERTEX(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2);
 
-// #define create_request_modify_edge(args) create_request(MODIFY, args, modify_edge, 6);
-// #define create_request_modify_bi_edge(args) create_request(MODIFY, args, modify_bi_edge, 6);
-// #define create_request_modify_vertex(args) create_request(MODIFY, args, modify_vertex, 5);
-// #define create_request_modify_shared_edge_vars(args) create_request(MODIFY, args, modify_shared_edge_vars, 3);
+#define CREATE_REQUEST_MODIFY_EDGE(args) create_request(MODIFY, args, modify_edge, 6);
+#define CREATE_REQUEST_MODIFY_BI_EDGE(args) create_request(MODIFY, args, modify_bi_edge, 6);
+#define CREATE_REQUEST_MODIFY_VERTEX(args) create_request(MODIFY, args, modify_vertex, 5);
+#define CREATE_REQUEST_MODIFY_SHARED_EDGE_VARS(args) create_request(MODIFY, args, modify_shared_edge_vars, 3);
 
 /**
 @PARAM graph: the graph
