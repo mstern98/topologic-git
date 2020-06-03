@@ -1,7 +1,8 @@
 #ifndef __TOPOLOGIC_STACK__
 #define __TOPOLOGIC_STACK__
-
+//#include "./topologic.h"
 #include <stdio.h>
+
 
 struct stack_node {
     void *data;

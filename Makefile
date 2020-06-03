@@ -6,8 +6,8 @@ OBJ=$(SRC:.c=.o)
 AR=ar
 
 BIN=libTopological.a
-SRC=graph.c	func.c
-INCLUDES=header.h
+SRC=src/*.c
+INCLUDES= include/*.h
 
 
 

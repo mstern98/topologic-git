@@ -28,21 +28,6 @@
 #include "./edge.h"
 #include "./vertex.h"
 
-/** Graph **/
-struct graph
-{
-    enum CONTEXT context;
-    struct stack start_set; //CHANGE STRUCTURE?
-    struct AVLTree *vertices;
-    unsigned int max_state_changes;
-    unsigned int snapshot_timestamp;
-    unsigned int lvl_verbose;
-    sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
-    sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
-    sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
-    sig_atomic_t red_node_count;   //Number of RED nodes not reaped
-    sig_atomic_t black_node_count; //Number of BLACK nodes not reaped
-};
 
 /** 
 Enum for how the graph handles context switches,
@@ -88,6 +73,24 @@ enum STATES
     RED = 1,
     BLACK = 2
 };
+
+
+/** Graph **/
+struct graph
+{
+    enum CONTEXT context;
+    struct stack start_set; //CHANGE STRUCTURE?
+    struct AVLTree *vertices;
+    unsigned int max_state_changes;
+    unsigned int snapshot_timestamp;
+    unsigned int lvl_verbose;
+    sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
+    sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
+    sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
+    sig_atomic_t red_node_count;   //Number of RED nodes not reaped
+    sig_atomic_t black_node_count; //Number of BLACK nodes not reaped
+};
+
 
 /**
 Enum for snapshots. 
