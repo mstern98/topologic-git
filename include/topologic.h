@@ -384,6 +384,14 @@ complete
 int submit_request(struct graph *graph, 
                    struct request *request);
 
+/**
+@PARAM request: the desired request
+@PARAM args: the arguments needed for f
+@PARAM f: the function of the request
+@PARAM argc: the number of args f takes
+@RETURN the request or NULL if it fails
+Creates a request structure to be called later
+**/
 struct request *create_request(enum REQUEST request,  
                                void **args, 
                                void (*f)(void *),
