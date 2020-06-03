@@ -391,7 +391,7 @@ int submit_request(struct graph *graph,
 @RETURN the request or NULL if it fails
 Creates a request structure to be called later
 **/
-struct request *create_request(enum REQUEST request,  
+struct request *create_request(enum REQUESTS request,  
                                void **args, 
                                void (*f)(void *),
                                int argc);
