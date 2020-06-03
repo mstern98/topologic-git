@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall	-Werror	-g	#-O2
+CFLAGS=-Wall	-Werror	-g	-O2 -Wextra
 LDFLAGS=#-lm -lpthread -L. -lTopological
 
 OBJ=$(SRC:.c=.o)

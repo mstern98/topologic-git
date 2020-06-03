@@ -84,7 +84,7 @@ struct graph
     unsigned int max_state_changes;
     unsigned int snapshot_timestamp;
     unsigned int lvl_verbose;
-    pthread_lock_t lock;
+    pthread_rwlock_t lock;
     sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
     sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
     sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
