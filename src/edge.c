@@ -13,7 +13,7 @@ struct edge *create_edge(struct graph *graph, int id, struct vertex *a, struct v
                 return NULL;
         }
     }
-    
+
     struct edge* edge = malloc(sizeof(struct edge));
     if(!edge){ return NULL };
     edge->a = a;
@@ -49,10 +49,21 @@ struct edge **create_bi_edge(struct graph *graph, struct vertex *a, struct verte
         bi_edge = NULL;
         return NULL;
     }
-    bi_edge[1] = create_edge(graph, b, a, f, argc, glblc, glbl);
-    if (bi_edge[1] == NULL) {
+    bi_edge[1] = malloc(sizeof(struct edge));
+    if (!bi_edge[1]) {
         free(bi_edge[0]);
         bi_edge[0] = NULL;
+        free(bi_edge);
+        bi_edge = NULL;
+        return NULL;
+    }
+    memcpy(bi_edge[1], bi_edge[0], sizeof(struct edge));
+    if(insert(b->edge_tree, bi_edge[1], bi_edge[1]->id) < 0){
+        remove_ID(a->edge_tree, bi_edge[0]->id);
+        free(bi_edge[0]);
+        bi_edge[0] = NULL;
+        free(bi_edge[1]);
+        bi_edge[1] = NULL;
         free(bi_edge);
         bi_edge = NULL;
         return NULL;
@@ -61,11 +72,11 @@ struct edge **create_bi_edge(struct graph *graph, struct vertex *a, struct verte
     return bi_edge;
 }
 
-int remove_edge(struct graph *graph, struct vertex *a, struct vertex *b) {
+int remove_edge(struct graph *graph, struct vertex *a, struct vertex *b, int id) {
     return 0;
 }
 
-int remove_bi_edge(struct graph *graph, struct vertex *a, struct vertex *b) {
+int remove_bi_edge(struct graph *graph, struct vertex *a, struct vertex *b, int id) {
     return 0;
 }
 

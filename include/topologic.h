@@ -200,18 +200,21 @@ struct edge **create_bi_edge(struct graph *graph,
 @PARAM graph: the graph
 @PARAM a: a vertex
 @PARAM b: another vertex
+@PARAM id: id of edge in a
 @RETURN 0 for success;
         -1 for fail
 Removes the edge connecting a to b
 **/
 int remove_edge(struct graph *graph,
                 struct vertex *a,
-                struct vertex *b);
+                struct vertex *b,
+                int id);
 
 /**
 @PARAM graph: the graph
 @PARAM a: a vertex
 @PARAM b: another vertex
+@PARAM id: id of edge in a and b
 @RETURN  0 for success; 
         -1 for fail;
         -2 if only edge from a to b is removed; 
@@ -220,7 +223,8 @@ Removes the edge connecting a to b
 **/
 int remove_bi_edge(struct graph *graph,
                    struct vertex *a,
-                   struct vertex *b);
+                   struct vertex *b,
+                   int id);
 
 /**
 @PARAM graph: the graph
