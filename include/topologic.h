@@ -179,7 +179,7 @@ struct vertex *create_vertex(struct graph *graph,
                              int id,
                              int argc,
                              int glblc,
-                             void *glbl);
+                             void **glbl);
 #define create_vertex(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
 
 /**
@@ -199,7 +199,7 @@ struct edge *create_edge(struct vertex *a,
                          void (*f)(void *),
                          int argc,
                          int glblc,
-                         void *glbl);
+                         void **glbl);
 #define create_edge(id, a, b, f, argc) create_edge(id, a, b, f, argc, 0, NULL)
 
 /**
@@ -213,7 +213,7 @@ struct edge **create_bi_edge(struct vertex *a,
                              void (*f)(void *),
                              int argc,
                              int glblc,
-                             void *glbl);
+                             void **glbl);
 #define create_bi_edge(a, b, f, argc) create_bi_edge(a, b, f, argc, 0, NULL)
 
 /**
@@ -263,7 +263,7 @@ int modify_vertex(struct vertex *vertex,
                   void (*f)(void *),
                   int argc,
                   int glblc,
-                  void *glbl);
+                  void **glbl);
 #define modify_vertex(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
 #define modify_vertex_globals(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
 
@@ -277,7 +277,7 @@ Modifies the vertices shared variables with it's edges
 **/
 int modify_shared_edge_vars(struct vertex *vertex, 
                             int edgec, 
-                            void *edge_vars);
+                            void **edge_vars);
 
 /**
 @PARAM a: a vertex
@@ -296,7 +296,7 @@ int modify_edge(struct vertex *a,
                 void (*f)(void *),
                 int argc,
                 int glblc,
-                void *glbl);
+                void **glbl);
 
 #define modify_edge(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
 #define modify_edge_global(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
@@ -321,7 +321,7 @@ int modify_bi_edge(struct vertex *a,
                    void (*f)(void *),
                    int argc,
                    int glblc,
-                   void *glbl);
+                   void **glbl);
 #define modify_bi_edge(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
 #define modify_bi_edge_global(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
 
@@ -343,7 +343,7 @@ call switch and clean itself up
 void fire(struct graph *graph,
           struct vertex *vertex,
           int argc,
-          void *args,
+          void **args,
           enum STATES color);
 
 /**
@@ -358,7 +358,7 @@ connected to the vertex
 **/
 int switch_vertex(struct graph *graph,
                   struct vertex *vertex,
-                  void *args);
+                  void **args);
 
 /**
 @PARAM graph: the graph,

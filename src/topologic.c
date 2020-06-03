@@ -86,7 +86,7 @@ void print(struct graph *graph) {
 
 }
 
-struct request *create_request(enum REQUEST request, int argc, void **args, void (*f)(void *)) {
+struct request *create_request(enum REQUESTS request, int argc, void **args, void (*f)(void *)) {
     struct request *req = malloc(sizeof(struct request));
     if (!req) return NULL;
     req->args = malloc(sizeof(void *) * argc);
@@ -124,11 +124,11 @@ int submit_request(struct graph *graph, struct request *request) {
     return retval;
 }
 
-void fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum STATES color) {
+void fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
     return 0;
 }
 
-int switch_vertex(struct graph *graph, struct vertex *vertex, void *args) {
+int switch_vertex(struct graph *graph, struct vertex *vertex, void **args) {
     return 0;
 }
 
