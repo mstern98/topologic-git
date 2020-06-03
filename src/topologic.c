@@ -202,6 +202,7 @@ void print_state(struct AVLNode* node){
 
 void print(struct graph *graph) {
     if(!graph) return;
+    if(graph->lvl_verbose == NONE) return;
 
     /**TODO: Print enums**/
     printf("graph: {\n");
