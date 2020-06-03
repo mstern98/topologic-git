@@ -4,11 +4,18 @@ struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(v
     if(!a || !b){ return NULL; }
     if(!f){ return NULL; }
 
+    pthread_mutex_lock(&a->lock); 
     void *exists = find(a->edge_tree, b->id);
-    if (exists != NULL) { return NULL; }
+    if (exists != NULL) {
+        pthread_mutex_lock(&a->lock); 
+        return NULL; 
+    }
 
     struct edge* edge = malloc(sizeof(struct edge));
-    if(!edge){ return NULL };
+    if(!edge){ 
+        pthread_mutex_lock(&a->lock); 
+        return NULL 
+    };
     edge->a = a;
     edge->b = b;
 
@@ -28,9 +35,10 @@ struct edge *create_edge(int id, struct vertex *a, struct vertex *b, void (*f)(v
     if(insert(a->edge_tree, edge, edge->id) < 0){
         free(edge);
         edge = NULL;
+        pthread_mutex_unlock(&a->lock); 
         return NULL;
     }
-    
+    pthread_mutex_unlock(&a->lock); 
     return edge;
 }
 
@@ -59,6 +67,8 @@ struct edge **create_bi_edge(struct vertex *a, struct vertex *b, void (*f)(void 
 }
 
 int remove_edge(struct vertex *a, struct vertex *b) {
+    if (!a || !b) return -1;
+    pthread_mutex_lock(&a->lock); 
     void *data = remove_ID(a->edge_tree, b->id);
     if (!data) return -1;
     struct edge *edge = (struct edge *) data;
@@ -83,6 +93,7 @@ int remove_edge(struct vertex *a, struct vertex *b) {
     
     free(edge);
     edge = NULL;
+    pthread_mutex_unlock(&a->lock); 
     return 0;
 }
 
@@ -97,6 +108,7 @@ int remove_bi_edge(struct vertex *a, struct vertex *b) {
 
 int modify_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc, int glblc, void *glbl) {
     if (!a || !b) return -1;
+    pthread_mutex_lock(&a->lock); 
     struct edge *edge = (struct edge *) find(a->edge_tree, b->id);
     if (!edge) return -1;
     if (f) {
@@ -120,6 +132,7 @@ int modify_edge(struct vertex *a, struct vertex *b, void (*f)(void *), int argc,
             memcpy(edge->glbl, glbl, sizeof(void *) * glblc);
         }
     }
+    pthread_mutex_unlock(&a->lock); 
     return 0;
 }
 
