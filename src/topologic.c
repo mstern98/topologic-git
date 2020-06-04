@@ -292,7 +292,25 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
         return -1;
     }
 
+    int edge_argc = 0, vertex_argc = 0;
+    void **edge_argv = NULL, **vertex_argv = NULL;
     struct vertex_result *v_res = (vertex->f)(argc, args);
+    if (v_res) {
+        edge_argc = v_res->edge_argc;
+        edge_argv = v_res->edge_argv;
+        vertex_argc = v_res->vertex_argc;
+        vertex_argv = v_res->vertex_argv;
+    }
+
+    if (args) {
+        int i = 0;
+        for (i = 0; i < argc; i++) {
+            free(args[i]);
+            args[i] = NULL;
+        }
+        free(args);
+    }
+
     struct stack *edges = init_stack();
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
@@ -304,8 +322,8 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
             struct request *req = create_request(DESTROY_EDGE, data, (void *) remove_edge_id, 2);
             submit_request(graph, req);
         }
-        else if ((int) (edge->f)(v_res->edge_argc, v_res->edge_argv) >= 0) {
-            if (switch_vertex(graph, edge->b, v_res->vertex_argc, v_res->vertex_argv, flip_color) < 0) {
+        else if ((int) (edge->f)(edge_argc, edge_argv) >= 0) {
+            if (switch_vertex(graph, edge->b, vertex_argc, vertex_argv, flip_color) < 0) {
                 pthread_mutex_lock(&graph->lock);
                 if (color == RED)
                     graph->red_vertex_count--;
@@ -322,14 +340,18 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
     }
     destroy_stack(edges);
 
-    int i = 0;
-    for (i = 0; i < v_res->edge_argc; i++) {
-        free(v_res->edge_argv[i]);
-        v_res->edge_argv[i] = 0;
-    free(v_res->edge_argv);
-    v_res->edge_argv = NULL:
+    if (v_res->edge_argv) {
+        int i = 0;
+        for (i = 0; i < v_res->edge_argc; i++) {
+            free(v_res->edge_argv[i]);
+            v_res->edge_argv[i] = 0;
+        }
+        free(v_res->edge_argv);
+        v_res->edge_argv = NULL;
+    }
     free(v_res);
     v_res = NULL;
+    
 
     pthread_mutex_lock(&graph->lock);
     if (color == RED)
