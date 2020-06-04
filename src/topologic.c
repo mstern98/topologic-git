@@ -271,7 +271,9 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
         return -1;
     }
 
-    (vertex->f)(argc, args);
+    int ret_argc = 0;
+    void **ret_args = NULL;
+    (vertex->f)(argc, args, &ret_argc, &ret_args);
     struct stack *edges = init_stack();
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
@@ -284,7 +286,7 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
             submit_request(graph, req);
         }
         else if ((int) (edge->f)(argc, args) >= 0) {
-            if (switch_vertex(graph, edge->b, argc, args, flip_color) < 0) {
+            if (switch_vertex(graph, edge->b, ret_argc, ret_args, flip_color) < 0) {
                 pthread_mutex_lock(&graph->lock);
                 if (color == RED)
                     graph->red_vertex_count--;

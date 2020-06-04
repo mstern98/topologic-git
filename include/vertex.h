@@ -11,7 +11,7 @@ struct vertex{
     int id; //Hash for number passed in, 
             //will compare with other vertices in graph
             //Must be unique. If non-unique ID, error
-    void (*f)(int, void **);
+    void (*f)(int, void **, int *, void ***);
     int argc;
     int glblc; 
     void **glbl;

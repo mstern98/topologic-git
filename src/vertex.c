@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct vertex *create_vertex(struct graph *graph, void (*f)(int, void **), int id, int argc, int glblc, void **glbl) {
+struct vertex *create_vertex(struct graph *graph, void (*f)(int, void **, int *, void ***), int id, int argc, int glblc, void **glbl) {
     if (!graph || !f) return NULL;
     pthread_mutex_lock(&graph->lock);
 
@@ -115,7 +115,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     return 0;
 }
 
-int modify_vertex(struct vertex *vertex, void (*f)(int, void **), int argc, int glblc, void **glbl) {
+int modify_vertex(struct vertex *vertex, void (*f)(int, void **, int *, void ***), int argc, int glblc, void **glbl) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
