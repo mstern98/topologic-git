@@ -322,11 +322,22 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
     }
     destroy_stack(edges);
 
+    int i = 0;
+    for (i = 0; i < v_res->edge_argc; i++) {
+        free(v_res->edge_argv[i]);
+        v_res->edge_argv[i] = 0;
+    free(v_res->edge_argv);
+    v_res->edge_argv = NULL:
+    free(v_res);
+    v_res = NULL;
+
     pthread_mutex_lock(&graph->lock);
     if (color == RED)
         graph->red_vertex_count--;
     else 
         graph->black_vertex_count--;
+    pthread_mutex_unlock(&graph->lock);
+
     pthread_mutex_unlock(&vertex->lock);
     return 0;
 }
