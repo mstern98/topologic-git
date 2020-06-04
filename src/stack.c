@@ -40,7 +40,7 @@ void *get(struct stack *stack, int index) {
     return node->data;
 }
 
-int push(struct stack *stack, void **data) {
+int push(struct stack *stack, void *data) {
     if (!stack) {
         return -1;
     }
@@ -50,7 +50,7 @@ int push(struct stack *stack, void **data) {
         return -1;
     }
 
-    node->data = *data;
+    node->data = data;
     node->next = stack->root;
     stack->root = node->next;
     return 0;

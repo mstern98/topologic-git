@@ -108,9 +108,10 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
     int i = 0;
     for(;i<num_vertices; i++){
         struct vertex* v = vertices[i];
-        if(!v) return -1;
-        if (push(graph->start, v) < 0) return -1;
-        fire(graph, v, v->argc, vertex_args[i], RED);
+        if (!v || push(graph->start, (void *) v) < 0) {
+            /** TODO: Handle errors **/
+            return -1;
+        }
     }
     return 0;
 }
@@ -415,6 +416,7 @@ void destroy_graph_avl(struct graph *graph, struct AVLTree *tree) {
 int destroy_graph(struct graph *graph) {
     if (!graph) return -1;
     destroy_graph_avl(graph, graph->vertices);
+    destroy_graph_stack(graph->start);
     destroy_graph_stack(graph->modify);
     destroy_graph_stack(graph->remove_edges);
     destroy_graph_stack(graph->remove_vertices);

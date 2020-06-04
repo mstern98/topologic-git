@@ -378,15 +378,13 @@ int switch_vertex(struct graph *graph,
 @PARAM graph: the graph,
 @PARAM vertices: the set of vertices to start at
 @PARAM num_vertices: number of vertices
-@PARAM vertex_args: array of vertex arguments for f
 @RETURN -1 for fail if any vertex fails;
         0 for success 
 Creates multiple contexts that are ran in parallel
 **/
 int start_set(struct graph *graph,
               struct vertex **vertices,
-              int num_vertices,
-              void **vertex_args[]);
+              int num_vertices);
 
 /**
 @PARAM graph: the graph
@@ -423,9 +421,11 @@ struct request *create_request(enum REQUESTS request,
 
 /**
 @PARAM graph: the graph
+@PARAM vertex_args: array of vertex arguments for f
 Attempts to run the graph else aborts.
 **/
-void run(struct graph *graph);
+void run(struct graph *graph,
+         void **vertex_args[]);
 
 /**
 @PARAM graph: the graph
