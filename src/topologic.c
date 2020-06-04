@@ -100,7 +100,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     return graph;
 }
 
-int start_set(struct graph *graph, struct vertex **vertices, int num_vertices, void **vertex_args[]) {
+int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
     if(!graph) return -1;
     if(!vertices) return -1;
     if(num_vertices<0) return -1;
@@ -109,6 +109,7 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices, v
     for(;i<num_vertices; i++){
         struct vertex* v = vertices[i];
         if(!v) return -1;
+        if (push(graph->start, v) < 0) return -1;
         fire(graph, v, v->argc, vertex_args[i], RED);
     }
     return 0;
@@ -130,7 +131,23 @@ void process_requests(struct graph *graph) {
     pthread_mutex_unlock(&graph->lock);
 }
 
-void run(struct graph *graph) {
+void run(struct graph *graph,  void **init_vertex_args[]) {
+
+    if (!graph->start) return;
+    int success = 0, v_index = 0;
+    struct vertex *v = NULL;
+    while ((v = (struct vertex *) pop(graph->start))) {
+        if (!success) success = 1;
+        /** TODO: Handle pthread options **/
+        fire(graph, v, v->argc, init_vertex_args[v_index], RED);
+        ++v_index;
+    }
+
+    if (!success) {
+        /** TODO: HANDLE ERRORS **/
+        return;
+    }
+
     pthread_cond_signal(&graph->red_cond);
     while(1) {
         switch(graph->state) {

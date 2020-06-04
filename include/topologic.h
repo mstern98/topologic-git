@@ -29,7 +29,6 @@
 #include "./edge.h"
 #include "./vertex.h"
 
-
 /** 
 Enum for how the graph handles context switches,
 or not at all
@@ -43,9 +42,9 @@ SWITCH: All valid edges are taken.
 **/
 enum CONTEXT
 {
-    NONE = 0,
-    SINGLE = 1,
-    SWITCH = 2
+        NONE = 0,
+        SINGLE = 1,
+        SWITCH = 2
 };
 
 /** 
@@ -56,9 +55,9 @@ CONTINUE: Ignore edge error and move on
 **/
 enum MEM_OPTION
 {
-    ABORT = 0,
-    WAIT = 1,
-    CONTINUE = 2
+        ABORT = 0,
+        WAIT = 1,
+        CONTINUE = 2
 };
 
 /**
@@ -70,9 +69,9 @@ BLACK: Wait until # Readers -> 0, then print
 **/
 enum STATES
 {
-    PRINT = 0,
-    RED = 1,
-    BLACK = 2
+        PRINT = 0,
+        RED = 1,
+        BLACK = 2
 };
 
 /**
@@ -82,8 +81,8 @@ START_STOP: Record first and last state
 **/
 enum SNAPSHOT
 {
-    NO_SNAP = -1,
-    START_STOP = 0
+        NO_SNAP = -1,
+        START_STOP = 0
 };
 
 /**
@@ -96,11 +95,11 @@ GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges
 **/
 enum VERBOSITY
 {
-    NO_VERB = 0,
-    NODES = 1,
-    EDGES = 2,
-    FUNCTIONS = 4,
-    GLOBALS = 8
+        NO_VERB = 0,
+        NODES = 1,
+        EDGES = 2,
+        FUNCTIONS = 4,
+        GLOBALS = 8
 };
 
 /**
@@ -114,7 +113,7 @@ enum REQUESTS
 {
         MODIFY = 0,
         DESTROY_VERTEX = 1,
-        DESTROY_EDGE = 2   
+        DESTROY_EDGE = 2
 };
 
 /** Request **/
@@ -129,24 +128,24 @@ struct request
 /** Graph **/
 struct graph
 {
-    enum CONTEXT context;
-		struct stack* start;
-    struct AVLTree *vertices;
-    struct stack *modify;
-    struct stack *remove_edges;
-    struct stack *remove_vertices;
-    unsigned int max_state_changes;
-    unsigned int snapshot_timestamp;
-    enum VERBOSITY lvl_verbose;
-    pthread_mutex_t lock;
-    sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
-    sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
-    sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
-    pthread_cond_t print_cond;
-    sig_atomic_t red_vertex_count;   //Number of RED nodes not reaped
-    pthread_cond_t red_cond;
-    sig_atomic_t black_vertex_count; //Number of BLACK nodes not reaped
-    pthread_cond_t black_cond;
+        enum CONTEXT context;
+        struct AVLTree *vertices;
+        struct stack *start;
+        struct stack *modify;
+        struct stack *remove_edges;
+        struct stack *remove_vertices;
+        unsigned int max_state_changes;
+        unsigned int snapshot_timestamp;
+        enum VERBOSITY lvl_verbose;
+        pthread_mutex_t lock;
+        sig_atomic_t state;          //CURRENT STATE {PRINT, RED, BLACK}
+        sig_atomic_t previous_color; //LAST NODE COLOR TO FIRE
+        sig_atomic_t print_flag;     //0 DID NOT PRINT; 1 FINISHED PRINT
+        pthread_cond_t print_cond;
+        sig_atomic_t red_vertex_count; //Number of RED nodes not reaped
+        pthread_cond_t red_cond;
+        sig_atomic_t black_vertex_count; //Number of BLACK nodes not reaped
+        pthread_cond_t black_cond;
 };
 
 /**
@@ -163,7 +162,7 @@ struct graph *graph_init(unsigned int max_state_changes,
                          enum VERBOSITY lvl_verbose,
                          enum CONTEXT context);
 #define MAX_STATE_CHANGES 100
-#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, NODES|EDGES|FUNCTIONS|GLOBALS, SWITCH)
+#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, NODES | EDGES | FUNCTIONS | GLOBALS, SWITCH)
 
 /**
 @PARAM graph: the graph
@@ -238,7 +237,7 @@ int remove_edge(struct vertex *a,
         -1 for fail
 Removes the edge in a with that id
 **/
-int remove_edge_id(struct vertex *a, 
+int remove_edge_id(struct vertex *a,
                    int id);
 /**
 @PARAM a: a vertex
@@ -259,7 +258,7 @@ int remove_bi_edge(struct vertex *a,
         -1 for fail
 Removes the vertex and all connected edges
 **/
-int remove_vertex(struct graph *graph, 
+int remove_vertex(struct graph *graph,
                   struct vertex *vertex);
 
 /**
@@ -289,8 +288,8 @@ int modify_vertex(struct vertex *vertex,
         -1 for fail
 Modifies the vertices shared variables with it's edges
 **/
-int modify_shared_edge_vars(struct vertex *vertex, 
-                            int edgec, 
+int modify_shared_edge_vars(struct vertex *vertex,
+                            int edgec,
                             void **edge_vars);
 
 /**
@@ -338,7 +337,6 @@ int modify_bi_edge(struct vertex *a,
                    void **glbl);
 #define MODIFY_BI_EDGE(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
 #define MODIFY_BI_EDGE_GLOBALS(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
-
 
 /**
 @PARAM graph: the graph
@@ -398,7 +396,7 @@ int start_set(struct graph *graph,
 Submits a request to be processed after all active nodes 
 complete
 **/
-int submit_request(struct graph *graph, 
+int submit_request(struct graph *graph,
                    struct request *request);
 
 /**
@@ -409,8 +407,8 @@ int submit_request(struct graph *graph,
 @RETURN the request or NULL if it fails
 Creates a request structure to be called later
 **/
-struct request *create_request(enum REQUESTS request,  
-                               void **args, 
+struct request *create_request(enum REQUESTS request,
+                               void **args,
                                void (*f)(void **),
                                int argc);
 
@@ -421,7 +419,7 @@ struct request *create_request(enum REQUESTS request,
 #define CREATE_REQUEST_MODIFY_EDGE(args) create_request(MODIFY, args, modify_edge, 6)
 #define CREATE_REQUEST_MODIFY_BI_EDGE(args) create_request(MODIFY, args, modify_bi_edge, 6)
 #define CREATE_REQUEST_MODIFY_VERTEX(args) create_request(MODIFY, args, modify_vertex, 5)
-#define CREATE_REQUEST_MODIFY_SHARED_EDGE_VARS(args) create_request(MODIFY, args, modify_shared_edge_vars, 3)d
+#define CREATE_REQUEST_MODIFY_SHARED_EDGE_VARS(args) create_request(MODIFY, args, modify_shared_edge_vars, 3) d
 
 /**
 @PARAM graph: the graph
