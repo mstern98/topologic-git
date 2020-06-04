@@ -100,7 +100,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     return graph;
 }
 
-int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
+int start_set(struct graph *graph, struct vertex **vertices, int num_vertices, void **vertex_args[]) {
     if(!graph) return -1;
     if(!vertices) return -1;
     if(num_vertices<0) return -1;
@@ -109,7 +109,7 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
     for(;i<num_vertices; i++){
         struct vertex* v = vertices[i];
         if(!v) return -1;
-        fire(graph, v, v->argc, v->edge_shared, RED);
+        fire(graph, v, v->argc, vertex_args[i], RED);
     }
     return 0;
 }

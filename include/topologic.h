@@ -130,7 +130,6 @@ struct request
 struct graph
 {
     enum CONTEXT context;
-    struct stack *start_set; //CHANGE STRUCTURE?
     struct AVLTree *vertices;
     struct stack *modify;
     struct stack *remove_edges;
@@ -380,13 +379,15 @@ int switch_vertex(struct graph *graph,
 @PARAM graph: the graph,
 @PARAM vertices: the set of vertices to start at
 @PARAM num_vertices: number of vertices
+@PARAM vertex_args: array of vertex arguments for f
 @RETURN -1 for fail if any vertex fails;
         0 for success 
 Creates multiple contexts that are ran in parallel
 **/
 int start_set(struct graph *graph,
               struct vertex **vertices,
-              int num_vertices);
+              int num_vertices,
+              void **vertex_args[]);
 
 /**
 @PARAM graph: the graph
