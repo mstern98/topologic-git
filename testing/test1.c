@@ -1,12 +1,6 @@
-#include"../include/topologic.h"
-
+#include "../include/topological.h"
 
 int main(int argc, char** argv){
-	/*TODO
-	 * Create testing
-	 * use assertions
-	 * Profit
-	 */
 
 	return 0;
 }
