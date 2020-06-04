@@ -5,7 +5,7 @@ LDFLAGS= -lm -lpthread -L. -ltopologic
 OBJ=$(SRC:.c=.o)
 AR=ar
 
-BIN=libTopological.a
+BIN=topologic
 SRC=src/topologic.c src/vertex.c src/edge.c src/stack.c src/topologic.c src/AVL.c
 INCLUDES= include/AVL.h include/topologic.h include/vertex.h include/stack.h include/edge.h
 
