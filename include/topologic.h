@@ -413,14 +413,14 @@ struct request *create_request(enum REQUESTS request,
                                void (*f)(void **),
                                int argc);
 
-#define CREATE_REQUEST_DESTROY_EDGE(args) create_request(DESTROY_EDGE, args, remove_edge, 2);
-#define CREATE_REQUEST_DESTROY_BI_EDGE(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2);
-#define CREATE_REQUEST_DESTROY_VERTEX(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2);
+#define CREATE_REQUEST_DESTROY_EDGE(args) create_request(DESTROY_EDGE, args, remove_edge, 2)
+#define CREATE_REQUEST_DESTROY_BI_EDGE(args) create_request(DESTROY_EDGE, args, remove_bi_edge, 2)
+#define CREATE_REQUEST_DESTROY_VERTEX(args) create_request(DESTROY_VERTEX, args, remove_vertex, 2)
 
-#define CREATE_REQUEST_MODIFY_EDGE(args) create_request(MODIFY, args, modify_edge, 6);
-#define CREATE_REQUEST_MODIFY_BI_EDGE(args) create_request(MODIFY, args, modify_bi_edge, 6);
-#define CREATE_REQUEST_MODIFY_VERTEX(args) create_request(MODIFY, args, modify_vertex, 5);
-#define CREATE_REQUEST_MODIFY_SHARED_EDGE_VARS(args) create_request(MODIFY, args, modify_shared_edge_vars, 3);
+#define CREATE_REQUEST_MODIFY_EDGE(args) create_request(MODIFY, args, modify_edge, 6)
+#define CREATE_REQUEST_MODIFY_BI_EDGE(args) create_request(MODIFY, args, modify_bi_edge, 6)
+#define CREATE_REQUEST_MODIFY_VERTEX(args) create_request(MODIFY, args, modify_vertex, 5)
+#define CREATE_REQUEST_MODIFY_SHARED_EDGE_VARS(args) create_request(MODIFY, args, modify_shared_edge_vars, 3)d
 
 /**
 @PARAM graph: the graph
