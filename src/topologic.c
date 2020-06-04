@@ -77,8 +77,8 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
         free(graph);
         return NULL;
     }
-    graph->start_set = init_stack();
-    if (!graph->start_set) {
+    graph->start = init_stack();
+    if (!graph->start) {
         destroy_avl(graph->vertices);
         destroy_stack(graph->modify);
         destroy_stack(graph->remove_edges);

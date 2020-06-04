@@ -130,6 +130,7 @@ struct request
 struct graph
 {
     enum CONTEXT context;
+		struct stack* start;
     struct AVLTree *vertices;
     struct stack *modify;
     struct stack *remove_edges;
