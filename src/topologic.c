@@ -114,6 +114,22 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
     return 0;
 }
 
+void process_requests(struct graph *graph) {
+    if (!graph) return;
+    
+    pthread_mutex_lock(&graph->lock);
+
+    struct request *req = NULL;
+    while ((req = (struct request *) pop(graph->modify)) != NULL)
+        (req->f)(req->args);
+    while ((req = (struct request *) pop(graph->remove_edges)) != NULL)
+        (req->f)(req->args);
+    while ((req = (struct request *) pop(graph->remove_vertices)) != NULL)
+        (req->f)(req->args);
+
+    pthread_mutex_unlock(&graph->lock);
+}
+
 void run(struct graph *graph) {
     pthread_cond_signal(&graph->red_cond);
     while(1) {
@@ -121,7 +137,7 @@ void run(struct graph *graph) {
             case RED:
                 if (graph->red_vertex_count == 0) {
                     /** TODO: REAP RED **/
-                    /** TODO: Process Requests **/
+                    process_requests(graph);
                     graph->state = PRINT;
                     graph->previous_color = RED;
                     pthread_cond_signal(&graph->print_cond);
@@ -131,7 +147,7 @@ void run(struct graph *graph) {
             case BLACK:
                 if (graph->black_vertex_count == 0) {
                     /** TODO: REAP BLACK **/
-                    /** TODO: Process Requests **/
+                    process_requests(graph);
                     graph->state = PRINT;
                     graph->previous_color = BLACK;
                     pthread_cond_signal(&graph->print_cond);
@@ -202,13 +218,18 @@ void print_state(struct AVLNode* node){
 
 void print(struct graph *graph) {
     if(!graph) return;
-    if(graph->lvl_verbose == NO_VERB) return;
+
+    pthread_mutex_lock(&graph->lock);
+    if(graph->lvl_verbose == NO_VERB) {
+        pthread_mutex_unlock(&graph->lock);
+        return;
+    }
 
     /**TODO: Print enums**/
     printf("graph: {\n");
     print_state(graph->vertices->root);
     printf("}\n");
-
+    pthread_mutex_unlock(&graph->lock);
 }
 
 struct request *create_request(enum REQUESTS request, void **args, void (*f)(void **), int argc) {
@@ -271,9 +292,7 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
         return -1;
     }
 
-    int ret_argc = 0;
-    void **ret_args = NULL;
-    (vertex->f)(argc, args, &ret_argc, &ret_args);
+    struct vertex_result *v_res = (vertex->f)(argc, args);
     struct stack *edges = init_stack();
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
@@ -285,8 +304,8 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
             struct request *req = create_request(DESTROY_EDGE, data, (void *) remove_edge_id, 2);
             submit_request(graph, req);
         }
-        else if ((int) (edge->f)(argc, args) >= 0) {
-            if (switch_vertex(graph, edge->b, ret_argc, ret_args, flip_color) < 0) {
+        else if ((int) (edge->f)(v_res->edge_argc, v_res->edge_argv) >= 0) {
+            if (switch_vertex(graph, edge->b, v_res->vertex_argc, v_res->vertex_argv, flip_color) < 0) {
                 pthread_mutex_lock(&graph->lock);
                 if (color == RED)
                     graph->red_vertex_count--;
