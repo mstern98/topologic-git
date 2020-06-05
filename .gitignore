@@ -3,3 +3,6 @@
 .vscode/*
 c_cpp_properties.json
 *.a
+testing/avl_test
+testing/stack_test
+
