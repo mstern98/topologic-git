@@ -18,6 +18,7 @@ void *pop(struct stack *stack) {
     struct stack_node *node = stack->root;
     void *data = node->data;
     stack->root = node->next;
+    stack->length--;
     node->next = NULL;
     node->data = NULL;
     free(node);
@@ -52,7 +53,8 @@ int push(struct stack *stack, void *data) {
 
     node->data = data;
     node->next = stack->root;
-    stack->root = node->next;
+    stack->root = node;
+    stack->length++;
     return 0;
 }
 
