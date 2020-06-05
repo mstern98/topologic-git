@@ -160,8 +160,6 @@ void process_requests(struct graph *graph)
 
 void run(struct graph *graph, void **init_vertex_args[])
 {
-    pthread_t thread_ID;
-
     if (!graph->start)
     {
         destroy_graph(graph);
@@ -190,7 +188,7 @@ void run(struct graph *graph, void **init_vertex_args[])
             memcpy((argv + counter), init_vertex_args[v_index], sizeof(void *));
             counter += sizeof(void *) + 1;
             memcpy((argv + counter), &(color), sizeof(enum STATES));
-            pthread_create(&thread_ID, NULL, fire_pthread, argv);
+            pthread_create(&graph->thread, NULL, fire_pthread, argv);
             ++v_index;
         }
         //fire(graph, v, v->argc, init_vertex_args[v_index], RED);
@@ -519,7 +517,7 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **a
     memcpy((argv + counter), args, sizeof(void *));
     counter += sizeof(void *) + 1;
     memcpy((argv + counter), &(color), sizeof(enum STATES));
-    /** TODO: THREAD ID? pthread_create(&thread_ID, NULL, fire_pthread, argv); **/
+    pthread_create(&graph->thread, NULL, fire_pthread, argv);
     free(argv);
     return 0;
 }
@@ -574,6 +572,8 @@ int destroy_graph(struct graph *graph)
     pthread_cond_destroy(&graph->print_cond);
     pthread_cond_destroy(&graph->red_cond);
     pthread_cond_destroy(&graph->black_cond);
+
+    pthread_exit(NULL);
     free(graph);
     return 0;
 }
