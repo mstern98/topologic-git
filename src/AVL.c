@@ -62,14 +62,14 @@ struct AVLNode *create_node(void *data, int id) {
     return node;
 }
 
-struct AVLNode *insert_node(struct AVLNode *node, void *data, int id) {
+struct AVLNode *insert_node(struct AVLNode *node, struct AVLNode *insert) {
     int balance_factor = 0;
     if(!node) {
-        return create_node(data, id);
-    } else if (id < node->id)
-        node->left = insert_node(node->left, data, id);
+        return insert;
+    } else if (insert->id < node->id)
+        node->left = insert_node(node->left, insert);
     else 
-        node->right = insert_node(node->right, data, id);
+        node->right = insert_node(node->right, insert);
     node->height = 1 + max_height(node);
     balance_factor = balance(node);
 
@@ -94,8 +94,10 @@ struct AVLNode *insert_node(struct AVLNode *node, void *data, int id) {
 
 int insert(struct AVLTree *tree, void *data, int id) {
     if (!tree) return -1;
+    struct AVLNode *node = create_node(data, id);
+    if (!node) return -1;
 
-    tree->root = insert_node(tree->root, data, id);
+    tree->root = insert_node(tree->root, node);
     tree->size++;
 
     return 0;
@@ -113,6 +115,15 @@ void *find(struct AVLTree *tree, int id) {
     return find_node(tree->root, id);  
 }
 
+struct AVLNode *minNode(struct AVLNode *node) {
+    struct AVLNode *temp = node;
+    while (temp->left != NULL) {
+        temp = temp->left;
+    }
+
+    return temp;
+}
+
 struct AVLNode *remove_node(struct AVLNode *root, int id, void **data) {
     int balance_factor = 0;
     if (!root)
@@ -122,24 +133,22 @@ struct AVLNode *remove_node(struct AVLNode *root, int id, void **data) {
     else if (id > root->id)
         root->right = remove_node(root->right, id, data);
     else {
-        *data = root->data;
-        struct AVLNode *temp = NULL;
-        if (!root->left) {
-            temp = root->right;
-            root->data = NULL;
-            root->left = NULL;
-            root->right = NULL;
-            free(root);
-            root = NULL;
-            return temp;
-        } else if (!root->right) {
-            temp = root->left;
-            root->data = NULL;
-            root->left = NULL;
-            root->right = NULL;
-            free(root);
-            root = NULL;
-            return temp;
+        if (data) *data = root->data;
+        if (root->left == NULL || root->right == NULL) {
+            struct AVLNode *temp = root->right ? root->right : root->left;
+            if (!temp) {
+                temp = root;
+                root = NULL;
+            } else {
+                *root = *temp;
+            }
+            free(temp);
+            temp = NULL;
+        } else {
+            struct AVLNode *temp = minNode(root->right);
+            root->id = temp->id;
+            root->data = temp->data;
+            root->right = remove_node(root->right, temp->id, NULL);
         }
     }
 
