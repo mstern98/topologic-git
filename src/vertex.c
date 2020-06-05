@@ -80,6 +80,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
 
     struct stack *stack = init_stack();
     stackify(vertex->edge_tree, stack);
+    vertex->edge_tree = NULL;
     struct edge *edge = NULL;
     while ((edge = (struct edge *) pop(stack)) != NULL) {
         edge->a = NULL;

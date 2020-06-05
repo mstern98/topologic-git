@@ -13,16 +13,16 @@ struct AVLTree *init_avl() {
 int balance(struct AVLNode *node) {
     if (!node) return 0;
     if (!node->right && !node->left) return 0;
-    else if (!node->right) return -node->left->height;
-    else if (!node->left) return node->right->height;
-    return node->right->height - node->left->height;
+    else if (!node->right) return node->left->height;
+    else if (!node->left) return -node->right->height;
+    return node->left->height - node->right->height;
 }
 
 int max_height(struct AVLNode *node) {
     if (!node) return 0;
     if (!node->right && !node->left) return 0;
     if (!node->right) return node->left->height;
-    if (!node->left) return node->left->height;
+    if (!node->left) return node->right->height;
     if (node->right->height > node->left->height) return node->right->height;
     return node->left->height;
 }
@@ -30,8 +30,10 @@ int max_height(struct AVLNode *node) {
 struct AVLNode *right_rotate(struct AVLNode *node) {
     struct AVLNode *left = node->left;
     struct AVLNode *left_right = left->right;
-    left_right->right = node;
+
+    left->right = node;
     node->left = left_right;
+    
     node->height = 1 + max_height(node);
     left->height = 1 + max_height(left);
     return left;
@@ -40,21 +42,34 @@ struct AVLNode *right_rotate(struct AVLNode *node) {
 struct AVLNode *left_rotate(struct AVLNode *node) {
     struct AVLNode *right = node->right;
     struct AVLNode *right_left = right->left;
-    right_left->left = node;
+
+    right->left = node;
     node->right = right_left;
+    
     node->height = 1 + max_height(node);
     right->height = 1 + max_height(right);
     return right;
 }
 
-struct AVLNode *insert_node(struct AVLNode *node, struct AVLNode *insert) {
+struct AVLNode *create_node(void *data, int id) {
+    struct AVLNode *node = malloc(sizeof(struct AVLNode));
+    if (!node) return NULL;
+    node->left = NULL;
+    node->right = NULL;
+    node->height = 1;
+    node->id = id;
+    node->data = data; 
+    return node;
+}
+
+struct AVLNode *insert_node(struct AVLNode *node, void *data, int id) {
     int balance_factor = 0;
     if(!node) {
-        return insert;
-    } else if (insert->id < node->id)
-        node->left = insert_node(node->left, insert);
+        return create_node(data, id);
+    } else if (id < node->id)
+        node->left = insert_node(node->left, data, id);
     else 
-        node->right = insert_node(node->right, insert);
+        node->right = insert_node(node->right, data, id);
     node->height = 1 + max_height(node);
     balance_factor = balance(node);
 
@@ -77,17 +92,10 @@ struct AVLNode *insert_node(struct AVLNode *node, struct AVLNode *insert) {
     return node;
 }
 
-int insert(struct AVLTree *tree, void **data, int id) {
+int insert(struct AVLTree *tree, void *data, int id) {
     if (!tree) return -1;
-    struct AVLNode *node = malloc(sizeof(struct AVLNode));
-    if (!node) return -1;
-    node->left = NULL;
-    node->right = NULL;
-    node->height = 1;
-    node->id = id;
-    node->data = data; 
 
-    tree->root = insert_node(tree->root, node);
+    tree->root = insert_node(tree->root, data, id);
     tree->size++;
 
     return 0;
@@ -169,9 +177,22 @@ void *remove_ID(struct AVLTree *tree, int id) {
     return data;
 }
 
+void inorder_nodes(struct AVLNode *node, struct stack *stack) {
+    if (!node || node->id == -1) return;
+    inorder_nodes(node->left, stack);
+    push(stack, node->data);
+    inorder_nodes(node->right, stack);
+}
+
+void inorder(struct AVLTree *tree, struct stack *stack) {
+    if (!tree || !stack) return;
+    if (tree->size <= 0) return;
+    inorder_nodes(tree->root, stack);
+}
+
 void preorder_nodes(struct AVLNode *node, struct stack *stack) {
-    if (!node) return;
-    push(stack, &(node->data));
+    if (!node || node->id == -1) return;
+    push(stack, node->data);
     preorder_nodes(node->left, stack);
     preorder_nodes(node->right, stack);
 }
@@ -182,10 +203,23 @@ void preorder(struct AVLTree *tree, struct stack *stack) {
     preorder_nodes(tree->root, stack);
 }
 
+void postorder_nodes(struct AVLNode *node, struct stack *stack) {
+    if (!node || node->id == -1) return;
+    postorder_nodes(node->left, stack);
+    postorder_nodes(node->right, stack);
+    push(stack, node->data);
+}
+
+void postorder(struct AVLTree *tree, struct stack *stack) {
+    if (!tree || !stack) return;
+    if (tree->size <= 0) return;
+    postorder_nodes(tree->root, stack);
+}
+
 void stackify_nodes(struct AVLNode *node, struct stack *stack) {
     if (!node) return;
-    push(stack, &(node->data));
     stackify_nodes(node->left, stack);
+    push(stack, node->data);
     stackify_nodes(node->right, stack);
 
     node->data = NULL;
@@ -211,8 +245,8 @@ void destroy_avl_nodes(struct AVLNode *node) {
     if (!node) return;
     node->data = NULL;
     node->height = 0;
-    if (!node->left) destroy_avl_nodes(node->left);
-    if (!node->right) destroy_avl_nodes(node->right);
+    if (node->left) destroy_avl_nodes(node->left);
+    if (node->right) destroy_avl_nodes(node->right);
     node->left = NULL;
     node->right = NULL;
     free(node);
