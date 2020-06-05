@@ -496,9 +496,9 @@ void *fire_pthread(void *vargp)
     counter += (sizeof(void) * argc) + 1;
     color = *((unsigned int *) (vargp + counter)) + 1;
 
-    /*TODO: PARSE ARGS*/
-    fire(graph, v, argc, args, color);
-    return NULL; //TODO: Return something of worth?
+    int ret_val = fire(graph, v, argc, args, color);
+    pthread_exit((void *) (intptr_t) ret_val);
+    return (void *) (intptr_t) ret_val;
 }
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color)
