@@ -111,11 +111,11 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     return graph;
 }
 
-int start_set(struct graph *graph, struct vertex **vertices, int num_vertices)
+int start_set(struct graph *graph, int *id, int num_vertices)
 {
     if (!graph)
         return -1;
-    if (!vertices)
+    if (!id)
         return -1;
     if (num_vertices < 0)
         return -1;
@@ -123,17 +123,13 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices)
     int i = 0;
     for (; i < num_vertices; i++)
     {
-        struct vertex *v = vertices[i];
-        if (!v || push(graph->start, (void *)v) < 0)
+        struct vertex *v = find(graph->vertices, id[i]);
+        if (!v || push(graph->start, v) < 0)
         {
             /** Handle errors **/
             /**Given vertx failed, so at this point, free the vertices and leave**/
-            int j = 0;
-            for (j = 0; i < num_vertices; i++)
-            {
-                remove_vertex(graph, vertices[j]);
-            }
-            destroy_graph(graph);
+            while (pop(graph->start) != NULL) {}
+            //destroy_graph(graph);
             return -1;
         }
     }

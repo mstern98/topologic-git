@@ -385,14 +385,14 @@ int switch_vertex(struct graph *graph,
 
 /**
 @PARAM graph: the graph,
-@PARAM vertices: the set of vertices to start at
+@PARAM id: the ids of the vertices
 @PARAM num_vertices: number of vertices
 @RETURN -1 for fail if any vertex fails;
         0 for success 
 Creates multiple contexts that are ran in parallel
 **/
 int start_set(struct graph *graph,
-              struct vertex **vertices,
+              int *id,
               int num_vertices);
 
 /**
