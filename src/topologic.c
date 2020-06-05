@@ -139,6 +139,7 @@ void process_requests(struct graph *graph) {
 }
 
 void run(struct graph *graph,  void **init_vertex_args[]) {
+	pthread_t thread_ID;
 
     if (!graph->start){
 				destroy_graph(graph);
@@ -149,8 +150,23 @@ void run(struct graph *graph,  void **init_vertex_args[]) {
     while ((v = (struct vertex *) pop(graph->start))) {
         if (!success) success = 1;
         /** TODO: Handle pthread options **/
-        fire(graph, v, v->argc, init_vertex_args[v_index], RED);
-        ++v_index;
+				if(graph->context == NONE || graph->context == SWITCH){
+						//TODO Set up arguments in void* buffer
+						
+					int counter =0;
+					enum STATES color = RED;
+						void* argv = malloc(sizeof(struct graph) + sizeof(struct vertex) + sizeof(int)
+								+sizeof(void*) + sizeof(enum STATES));
+						memcpy((argv+counter), graph, sizeof(struct graph)); counter+=sizeof(struct graph);
+						memcpy((argv+counter), v, sizeof(struct vertex)); counter+=sizeof(struct vertex);
+						memcpy((argv+counter), &(v->argc), sizeof(int)); counter+=sizeof(int);
+						memcpy((argv+counter), init_vertex_args[v_index], sizeof(void*)* v->argc); counter+=(sizeof(void*)* v->argc);
+						memcpy((argv+counter), &(color), sizeof(enum STATES));
+						pthread_create(&thread_ID, NULL, fire_1,  argv);
+						++v_index;
+				}
+			  //fire(graph, v, v->argc, init_vertex_args[v_index], RED);
+        //++v_index;
     }
 
     if (!success) {
@@ -164,6 +180,7 @@ void run(struct graph *graph,  void **init_vertex_args[]) {
 							free(init_vertex_args[i][j]);
 						}
 				}
+				pthread_exit(NULL);
 
 				destroy_graph(graph);
         return;
@@ -202,6 +219,7 @@ void run(struct graph *graph,  void **init_vertex_args[]) {
                 }
             break;
             default:
+								pthread_exit(NULL);
                 return;
         }
     }
@@ -390,6 +408,17 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
 
     pthread_mutex_unlock(&vertex->lock);
     return 0;
+}
+void* fire_1(void* vargp){
+		struct graph* graph;
+		struct vertex* v;
+		int argc;
+		void**args;
+		enum STATES color;
+
+		/*TODO: PARSE ARGS*/
+		fire(graph, v, argc, args, color);
+		return NULL; //TODO: Return something of worth?
 }
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {

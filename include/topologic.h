@@ -148,6 +148,12 @@ struct graph
         pthread_cond_t black_cond;
 };
 
+/**Wrapper function for fire, fire_1
+ * @PARAM vargp: arguments
+ * 
+ **/
+void* fire_1(void* vargp);
+
 /**
 @PARAM max_state_changes: # state changes before entering 
                           sink vertex due to infinite loop of states; -1 to ignore 
