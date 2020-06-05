@@ -169,6 +169,7 @@ void run(struct graph *graph, void **init_vertex_args[])
     }
     int success = 0, v_index = 0;
     struct vertex *v = NULL;
+    void *argv = malloc(FIRE_ARGV_SIZE);
     while ((v = (struct vertex *)pop(graph->start)))
     {
         if (!success)
@@ -177,26 +178,25 @@ void run(struct graph *graph, void **init_vertex_args[])
         if (graph->context == NONE || graph->context == SWITCH)
         {
             //TODO Set up arguments in void* buffer
-
             int counter = 0;
             enum STATES color = RED;
-            void *argv = malloc(sizeof(struct graph) + sizeof(struct vertex) + sizeof(int) + sizeof(void *) + sizeof(enum STATES));
+            memset(argv, 0, FIRE_ARGV_SIZE);
             memcpy((argv + counter), graph, sizeof(struct graph));
-            counter += sizeof(struct graph);
+            counter += sizeof(struct graph) + 1;
             memcpy((argv + counter), v, sizeof(struct vertex));
-            counter += sizeof(struct vertex);
+            counter += sizeof(struct vertex) + 1;
             memcpy((argv + counter), &(v->argc), sizeof(int));
-            counter += sizeof(int);
+            counter += sizeof(int) + 1;
             memcpy((argv + counter), init_vertex_args[v_index], sizeof(void *) * v->argc);
-            counter += (sizeof(void *) * v->argc);
+            counter += (sizeof(void *) * v->argc) + 1;
             memcpy((argv + counter), &(color), sizeof(enum STATES));
             pthread_create(&thread_ID, NULL, fire_1, argv);
-            free(argv);
             ++v_index;
         }
         //fire(graph, v, v->argc, init_vertex_args[v_index], RED);
         //++v_index;
     }
+    free(argv);
 
     if (!success)
     {
@@ -488,15 +488,15 @@ void *fire_1(void *vargp)
     /*Counter var*/
     int counter = 0;
     graph = (struct graph *) (vargp + counter);
-    counter += sizeof(struct graph);
+    counter += sizeof(struct graph) + 1;
     v = (struct vertex *) (vargp + counter);
-    counter += sizeof(struct vertex);
+    counter += sizeof(struct vertex) + 1;
     argc = *((int *) (vargp + counter));
-    counter += sizeof(int);
+    counter += sizeof(int) + 1;
     v->argc = argc;
     args = (vargp + counter);
-    counter += (sizeof(void) * argc);
-    color = *((unsigned int *) (vargp + counter));
+    counter += (sizeof(void) * argc) + 1;
+    color = *((unsigned int *) (vargp + counter)) + 1;
 
     /*TODO: PARSE ARGS*/
     fire(graph, v, argc, args, color);

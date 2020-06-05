@@ -29,6 +29,8 @@
 #include "./edge.h"
 #include "./vertex.h"
 
+#define FIRE_ARGV_SIZE sizeof(struct graph) + sizeof(struct vertex) + sizeof(int) + sizeof(void *) + sizeof(enum STATES) + 5
+
 /** 
 Enum for how the graph handles context switches,
 or not at all
