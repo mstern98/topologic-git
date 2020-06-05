@@ -409,17 +409,17 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
     pthread_mutex_unlock(&vertex->lock);
     return 0;
 }
-void* fire_1(void* vargp){
-		struct graph* graph;
-		struct vertex* v;
-		int argc;
-		void**args;
-		enum STATES color;
+// void* fire_1(void* vargp){
+// 		struct graph* graph;
+// 		struct vertex* v;
+// 		int argc;
+// 		void**args;
+// 		enum STATES color;
 
-		/*TODO: PARSE ARGS*/
-		fire(graph, v, argc, args, color);
-		return NULL; //TODO: Return something of worth?
-}
+// 		/*TODO: PARSE ARGS*/
+// 		fire(graph, v, argc, args, color);
+// 		return NULL; //TODO: Return something of worth?
+// }
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
     //HANDLE STUFF LIKE THREADS HERE
