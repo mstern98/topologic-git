@@ -187,10 +187,10 @@ void run(struct graph *graph, void **init_vertex_args[])
             counter += sizeof(struct vertex) + 1;
             memcpy((argv + counter), &(v->argc), sizeof(int));
             counter += sizeof(int) + 1;
-            memcpy((argv + counter), init_vertex_args[v_index], sizeof(void *) * v->argc);
-            counter += (sizeof(void *) * v->argc) + 1;
+            memcpy((argv + counter), init_vertex_args[v_index], sizeof(void *));
+            counter += sizeof(void *) + 1;
             memcpy((argv + counter), &(color), sizeof(enum STATES));
-            pthread_create(&thread_ID, NULL, fire_1, argv);
+            pthread_create(&thread_ID, NULL, fire_pthread, argv);
             ++v_index;
         }
         //fire(graph, v, v->argc, init_vertex_args[v_index], RED);
@@ -477,7 +477,7 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
     return 0;
 }
 
-void *fire_1(void *vargp)
+void *fire_pthread(void *vargp)
 {
     struct graph *graph = NULL;
     struct vertex *v = NULL;
@@ -506,8 +506,21 @@ void *fire_1(void *vargp)
 int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color)
 {
     //HANDLE STUFF LIKE THREADS HERE
-
-    fire(graph, vertex, argc, args, color);
+    void *argv = malloc(FIRE_ARGV_SIZE);
+    if (!argv) return -1;
+    int counter = 0;
+    memset(argv, 0, FIRE_ARGV_SIZE);
+    memcpy((argv + counter), graph, sizeof(struct graph));
+    counter += sizeof(struct graph) + 1;
+    memcpy((argv + counter), vertex, sizeof(struct vertex));
+    counter += sizeof(struct vertex) + 1;
+    memcpy((argv + counter), &(argc), sizeof(int));
+    counter += sizeof(int) + 1;
+    memcpy((argv + counter), args, sizeof(void *));
+    counter += sizeof(void *) + 1;
+    memcpy((argv + counter), &(color), sizeof(enum STATES));
+    /** TODO: THREAD ID? pthread_create(&thread_ID, NULL, fire_pthread, argv); **/
+    free(argv);
     return 0;
 }
 

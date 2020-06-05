@@ -154,7 +154,7 @@ struct graph
  * @PARAM vargp: arguments
  * 
  **/
-void* fire_1(void* vargp);
+void* fire_pthread(void* vargp);
 
 /**
 @PARAM max_state_changes: # state changes before entering 
