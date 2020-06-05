@@ -2,5 +2,8 @@
 
 int main(int argc, char** argv){
 
+	GRAPH_INIT();
+
+
 	return 0;
 }

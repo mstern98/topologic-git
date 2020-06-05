@@ -109,7 +109,13 @@ int start_set(struct graph *graph, struct vertex **vertices, int num_vertices) {
     for(;i<num_vertices; i++){
         struct vertex* v = vertices[i];
         if (!v || push(graph->start, (void *) v) < 0) {
-            /** TODO: Handle errors **/
+            /** Handle errors **/
+						/**Given vertx failed, so at this point, free the vertices and leave**/
+						int j = 0;
+						for(j=0; i<num_vertices; i++){
+							remove_vertex(graph, vertices[j]);
+						}
+						destroy_graph(graph);
             return -1;
         }
     }
@@ -134,7 +140,10 @@ void process_requests(struct graph *graph) {
 
 void run(struct graph *graph,  void **init_vertex_args[]) {
 
-    if (!graph->start) return;
+    if (!graph->start){
+				destroy_graph(graph);
+				return;
+		}
     int success = 0, v_index = 0;
     struct vertex *v = NULL;
     while ((v = (struct vertex *) pop(graph->start))) {
@@ -146,6 +155,17 @@ void run(struct graph *graph,  void **init_vertex_args[]) {
 
     if (!success) {
         /** TODO: HANDLE ERRORS **/
+				/**This should be enough... right? **/
+				fprintf(stderr, "Failure in run: success = %d\n", success);
+				int i = 0;
+				for(i=0; i<v_index; i++){
+						int j = 0;
+						for(; init_vertex_args[i][j]!=NULL; j++){
+							free(init_vertex_args[i][j]);
+						}
+				}
+
+				destroy_graph(graph);
         return;
     }
 
@@ -190,38 +210,28 @@ void run(struct graph *graph,  void **init_vertex_args[]) {
 
 void print_state(struct AVLNode* node){
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
-    int counter = 0;
-    void* data;
-
     int vertexId=0, argc=0, glblc=0;
-    void* glbl=NULL;
+    void** glbl=NULL;
     int edge_sharedc;
-    void *edge_shared=NULL;
-    void (*f)(void *);
-    struct AVLNode* left = NULL;
+    void **edge_shared=NULL;
+    struct vertex_result* (*f)(int, void**);
+		struct AVLNode* left = NULL;
     struct AVLNode* right = NULL;
     if(!node){ return;}
 
     left = node->left;
     right=node->right;
-    data = node->data;
-
-    void* temp;
-
-    memcpy(&vertexId, (data+counter), sizeof(int));
-    counter+=sizeof(int);
-    temp = data+counter;
-    temp = &(temp);
-    memcpy(&f, (&temp), sizeof(void*)); counter+=sizeof(void*);
-    memcpy(&argc, data+counter, sizeof(int)); counter+=sizeof(int);
-    memcpy(&glblc, data+counter, sizeof(int)); counter+=sizeof(int);
-    temp = data+counter;
-    memcpy(&glbl, &temp, sizeof(void*)*glblc); counter+=(sizeof(void*)*glblc);
-    memcpy(&edge_sharedc, (data+counter), sizeof(int)); counter+=sizeof(int);
-    temp = data+counter;
-    memcpy(&edge_shared, &temp, sizeof(void*)*edge_sharedc); counter+=(sizeof(void*)*edge_sharedc);
+		struct vertex* v = (struct vertex*)node->data;
+		vertexId = v->id;
+		f = v->f;
+		argc=v->argc;
+		glblc = v->glblc;
+		edge_sharedc = v->edge_sharedc;
+		edge_shared=v->edge_shared;
+		glbl=v->glbl;
     
-    printf("\tNode #%d: {", vertexId);
+		//TODO: Setup on Verbose
+		printf("\tNode #%d: ", vertexId);
     printf("\t\tf: %p\n", f);
     printf("\t\targc: %d\n", argc);
     printf("\t\tglblc: %d\n", glblc);
