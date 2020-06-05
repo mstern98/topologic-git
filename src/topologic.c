@@ -409,17 +409,30 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
     pthread_mutex_unlock(&vertex->lock);
     return 0;
 }
-// void* fire_1(void* vargp){
-// 		struct graph* graph;
-// 		struct vertex* v;
-// 		int argc;
-// 		void**args;
-// 		enum STATES color;
-
-// 		/*TODO: PARSE ARGS*/
-// 		fire(graph, v, argc, args, color);
-// 		return NULL; //TODO: Return something of worth?
-// }
+ void* fire_1(void* vargp){
+ 		struct graph* graph = malloc(sizeof(struct graph));
+ 		struct vertex* v = malloc(sizeof(struct vertex));
+ 		int argc = 0;
+ 		void**args;
+ 		enum STATES color;
+		
+		/*Counter var*/
+		int counter = 0;
+		memcpy(graph, (vargp+counter), sizeof(struct graph)); counter+=sizeof(struct graph);
+		memcpy(v, (vargp+counter), sizeof(struct vertex)); counter+=sizeof(struct vertex);
+		memcpy(&argc, (vargp+counter), sizeof(int)); counter+=sizeof(int);
+		v->argc=argc;
+		args = malloc(sizeof(void*) * argc);
+		memcpy(args,(vargp+counter), sizeof(void*) * argc); counter+=(sizeof(void)*argc);
+		memcpy(&color, (vargp+counter), sizeof(enum STATES));
+			
+		/*TODO: PARSE ARGS*/
+ 		fire(graph, v, argc, args, color);
+		free(graph);
+		free(v);
+		free(args);
+ 		return NULL; //TODO: Return something of worth?
+ }
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color) {
     //HANDLE STUFF LIKE THREADS HERE
