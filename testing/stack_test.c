@@ -6,6 +6,7 @@
 void test_push(struct stack *stack);
 void test_pop(struct stack *stack);
 void test_pop_all(struct stack *stack);
+void test_get(struct stack *stack);
 
 int main() {
     fprintf(stderr, "TESTING STACK...\n");
@@ -59,4 +60,22 @@ void test_pop_all(struct stack *stack) {
     }
     free(data);
     fprintf(stderr, "STACK PUSHED AND POPPED A LOT PASSED\n");
+}
+
+void test_get(struct stack *stack) {
+    int a = 100;
+    int b = 1000;
+    char *c = "HI";
+
+    assert(push(stack, &a) == 0);
+    assert(push(stack, &b) == 0);
+    assert(push(stack, c) == 0);
+
+    assert(*((int *)get(stack, 0)) == a);
+    assert(*((int *)get(stack, 1)) == b);
+    assert(strcmp(((char *) get(stack, 2)), c) == 0);
+
+    assert(get(stack, -1) == NULL);
+    assert(get(stack, 10) == NULL);
+    fprintf(stderr, "STACK GET PASSED");
 }

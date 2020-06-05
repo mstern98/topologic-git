@@ -32,9 +32,9 @@ void *get(struct stack *stack, int index) {
         return NULL;
     }
 
-    int i = 1;
+    int i = 0;
     struct stack_node *node = stack->root;
-    for (i = 1; i <= index; i++) {
+    for (i = 0; i <= index; i++) {
         node = node->next;
     }
 
