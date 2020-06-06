@@ -37,6 +37,24 @@ int submit_request(struct graph *graph, struct request *request)
     return retval;
 }
 
+void process_requests(struct graph *graph)
+{
+    if (!graph)
+        return;
+
+    pthread_mutex_lock(&graph->lock);
+
+    struct request *req = NULL;
+    while ((req = (struct request *)pop(graph->modify)) != NULL)
+        (req->f)(req->args);
+    while ((req = (struct request *)pop(graph->remove_edges)) != NULL)
+        (req->f)(req->args);
+    while ((req = (struct request *)pop(graph->remove_vertices)) != NULL)
+        (req->f)(req->args);
+
+    pthread_mutex_unlock(&graph->lock);
+}
+
 int destroy_request(struct request *request)
 {
     if (!request)
