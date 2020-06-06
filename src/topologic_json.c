@@ -45,6 +45,7 @@ void print_state(struct graph *graph)
         if ((graph->lvl_verbose & VERTICES) == VERTICES) {
             printf("\tVertex: {\n");
             printf("\t\tid: %d\n", vertex_id);
+            printf("\t\tactive: %d\n", v->is_active);
             if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) {
                 printf("\t\tf: %p\n", f);
                 printf("\t\targc: %d\n", argc);

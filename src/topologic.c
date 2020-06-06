@@ -214,6 +214,8 @@ void run(struct graph *graph, void **init_vertex_args[])
         return;
     }
 
+    print(graph);
+
     pthread_cond_signal(&graph->red_cond);
     while (1)
     {
