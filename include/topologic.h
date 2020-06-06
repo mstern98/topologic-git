@@ -150,7 +150,7 @@ struct graph *graph_init(unsigned int max_state_changes,
                          enum VERBOSITY lvl_verbose,
                          enum CONTEXT context);
 #define MAX_STATE_CHANGES 100
-#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, NODES | EDGES | FUNCTIONS | GLOBALS, SWITCH)
+#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH)
 
 /**
 @PARAM graph: the graph
