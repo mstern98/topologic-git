@@ -30,7 +30,7 @@ void test_insert(struct AVLTree *tree, int *vals) {
         vals[i] = i;
         assert(insert(tree, &(vals[i]), i) == 0);
     }
-    fprintf(stderr, "AVL TREE INSERT PASSED");
+    fprintf(stderr, "AVL TREE INSERT PASSED\n");
 }
 
 void test_inorder(struct AVLTree *tree) {
