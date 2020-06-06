@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int, void **), int id, int argc, int glblc, void **glbl) {
+struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int, void *), int id, int argc, int glblc, void *glbl) {
     if (!graph || !f) return NULL;
     pthread_mutex_lock(&graph->lock);
 
@@ -10,7 +10,7 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int
         return NULL;
     }
 
-    if (insert(graph->vertices, (void **)(&vertex), id) < 0) {
+    if (insert(graph->vertices, vertex, id) < 0) {
         free(vertex);
         pthread_mutex_unlock(&graph->lock);
         return NULL;
@@ -22,6 +22,7 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int
         return NULL;
     }
 
+    vertex->is_active = 0;
     vertex->f = f;
     vertex->argc = argc;
     vertex->id = id;
@@ -30,10 +31,7 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int
     vertex->edge_shared = 0;
     vertex->edge_tree = init_avl();
     vertex->glblc = glblc;
-    if (glblc > 0) {
-        vertex->glbl = malloc(sizeof(void *) *glblc);
-        memcpy(vertex->glbl, *glbl, sizeof(void *) * glblc);
-    }
+    vertex->glbl = glbl;
 
     pthread_mutex_unlock(&graph->lock);
     return vertex;
@@ -53,30 +51,11 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     vertex->id = 0;
     vertex->argc = 0;
 
-    int i = 0;
-    if (vertex->edge_sharedc > 1) {
-        for (i = 0; i < vertex->edge_sharedc; i++) {
-            free(vertex->edge_shared[i]);
-            vertex->edge_shared[i] = NULL;
-        } 
-        free(vertex->edge_shared);
-        vertex->edge_shared = NULL;
-    } else if (vertex->edge_sharedc == 1) {
-        free(vertex->edge_shared);
-        vertex->edge_shared = NULL;
-    }
-    if (vertex->glblc > 1) {
-        for (i = 0; i < vertex->glblc; i++) {
-            free(vertex->glbl[i]);
-            vertex->glbl[i] = NULL;
-        }
-        free(vertex->glbl);
-        vertex->glbl = NULL;
-    } else if (vertex->glblc == 1) {
-        free(vertex->glbl);
-        vertex->glbl = NULL;
-    }
-    
+    free(vertex->edge_shared);
+    vertex->edge_shared = NULL;
+
+    free(vertex->glbl);
+    vertex->glbl = NULL;
 
     struct stack *stack = init_stack();
     stackify(vertex->edge_tree, stack);
@@ -88,17 +67,8 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
         edge->id = 0;
         edge->argc = 0;
         edge->f = NULL;
-        if (edge->glblc > 1) {
-            for (i = 0; i < edge->glblc; i++) {
-                free(edge->glbl[i]);
-                edge->glbl[i] = NULL;
-            }
-                free(edge->glbl);
-                edge->glbl = NULL;
-        } else if (edge->glblc == 1) {
-            free(edge->glbl);
-            edge->glbl = NULL;
-        }
+        free(edge->glbl);
+        edge->glbl = NULL;
         free(edge);
         edge = NULL;
     }
@@ -116,7 +86,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     return 0;
 }
 
-int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(int, void **), int argc, int glblc, void **glbl) {
+int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(int, void *), int argc, int glblc, void *glbl) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
@@ -124,23 +94,12 @@ int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(int, void **
         vertex->f = f;
         vertex->argc = argc;
     }
-    if (glbl != NULL) {
-        if (vertex->glblc > 1) {
-            int i = 0;
-            for (i = 0; i < vertex->glblc; i++) {
-                free(vertex->glbl[i]);
-                vertex->glbl[i] = NULL;
-            }
-            free(vertex->glbl);
-            vertex->glbl = NULL;
-        } else if (vertex->glblc == 1) {
-            free(vertex->glbl);
-            vertex->glbl = NULL;
-        }
+    if (glbl != NULL) { 
+        free(vertex->glbl);
+        vertex->glbl = NULL;
         vertex->glblc = glblc;
         if (glblc > 0) {
-            vertex->glbl = malloc(sizeof(void *) *glblc);
-            memcpy(vertex->glbl, *glbl, sizeof(void *) * glblc);
+            vertex->glbl = glbl;
         }
     }
 
@@ -148,7 +107,7 @@ int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(int, void **
     return 0;
 }
 
-int modify_shared_edge_vars(struct vertex *vertex, int edgec, void **edge_vars) {
+int modify_shared_edge_vars(struct vertex *vertex, int edgec, void *edge_vars) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
@@ -160,7 +119,7 @@ int modify_shared_edge_vars(struct vertex *vertex, int edgec, void **edge_vars) 
 
     vertex->edge_sharedc = edgec;
     vertex->edge_shared = data;
-    memcpy(vertex->edge_shared, *edge_vars, sizeof(void *) * edgec);
+    vertex->edge_shared = edge_vars;
 
     pthread_mutex_unlock(&vertex->lock);
     return 0;

@@ -9,6 +9,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     graph->snapshot_timestamp = snapshot_timestamp;
     graph->lvl_verbose = lvl_verbose;
     graph->context = context;
+    graph->state_count = 0;
 
     if (pthread_mutex_init(&graph->lock, NULL) < 0)
     {
@@ -158,7 +159,7 @@ void run(struct graph *graph, void **init_vertex_args[])
 {
     if (!graph->start)
     {
-        destroy_graph(graph);
+        //destroy_graph(graph);
         return;
     }
     int success = 0, v_index = 0;
@@ -191,6 +192,7 @@ void run(struct graph *graph, void **init_vertex_args[])
         //++v_index;
     }
     free(argv);
+    graph->state_count = 1;
 
     if (!success)
     {
@@ -242,6 +244,8 @@ void run(struct graph *graph, void **init_vertex_args[])
         case PRINT:
             if (graph->print_flag == 0)
             {
+                print(graph);
+                graph->state_count++;
                 if (graph->previous_color == RED)
                 {
                     pthread_cond_signal(&graph->black_cond);
@@ -259,114 +263,12 @@ void run(struct graph *graph, void **init_vertex_args[])
     }
 }
 
-void print_state(struct AVLNode *node)
-{
-    /*Called by print and does a pre-order traversal of all the data in each vertex*/
-    int vertexId = 0, argc = 0, glblc = 0;
-    void **glbl = NULL;
-    int edge_sharedc;
-    void **edge_shared = NULL;
-    struct vertex_result *(*f)(int, void **);
-    struct AVLNode *left = NULL;
-    struct AVLNode *right = NULL;
-    if (!node)
-    {
-        return;
-    }
-
-    left = node->left;
-    right = node->right;
-    struct vertex *v = (struct vertex *)node->data;
-    vertexId = v->id;
-    f = v->f;
-    argc = v->argc;
-    glblc = v->glblc;
-    edge_sharedc = v->edge_sharedc;
-    edge_shared = v->edge_shared;
-    glbl = v->glbl;
-
-    //TODO: Setup on Verbose
-    printf("\tNode #%d: ", vertexId);
-    printf("\t\tf: %p\n", f);
-    printf("\t\targc: %d\n", argc);
-    printf("\t\tglblc: %d\n", glblc);
-    printf("\t\tglbl: %p\n", glbl);
-    printf("\t\tedge_sharedc: %d\n", edge_sharedc);
-    printf("\t\tedge_shared: %p\n", edge_shared);
-    printf("\t},\n");
-    print_state(left);
-    print_state(right);
-}
-
-void print(struct graph *graph)
-{
-    if (!graph)
-        return;
-
-    pthread_mutex_lock(&graph->lock);
-    if (graph->lvl_verbose == NO_VERB)
-    {
-        pthread_mutex_unlock(&graph->lock);
-        return;
-    }
-
-    /**TODO: Print enums**/
-    printf("graph: {\n");
-    print_state(graph->vertices->root);
-    printf("}\n");
-    pthread_mutex_unlock(&graph->lock);
-}
-
-struct request *create_request(enum REQUESTS request, void **args, void (*f)(void **), int argc)
-{
-    struct request *req = malloc(sizeof(struct request));
-    if (!req)
-        return NULL;
-    req->args = malloc(sizeof(void *) * argc);
-    if (!req->args)
-    {
-        free(req);
-        return NULL;
-    }
-    memcpy(req->args, args, sizeof(void *) * argc);
-
-    req->argc = argc;
-    req->f = f;
-    req->request = request;
-    return req;
-}
-
-int submit_request(struct graph *graph, struct request *request)
-{
-    if (!graph || !request)
-        return -1;
-    int retval = 0;
-    pthread_mutex_lock(&graph->lock);
-    switch (request->request)
-    {
-    case MODIFY:
-        retval = push(graph->modify, (void *)request);
-        break;
-    case DESTROY_EDGE:
-        retval = push(graph->remove_edges, (void *)request);
-        break;
-    case DESTROY_VERTEX:
-        retval = push(graph->remove_vertices, (void *)request);
-        break;
-    default:
-        retval = -1;
-        break;
-    }
-    pthread_mutex_unlock(&graph->lock);
-    return retval;
-}
-
-int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color)
-{
+int fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum STATES color) {
     if (!graph || !vertex)
         return -1;
     enum STATES flip_color = BLACK;
     pthread_mutex_lock(&vertex->lock);
+    vertex->is_active = 1;
     if (color == RED)
     {
         pthread_cond_wait(&graph->red_cond, &vertex->lock);
@@ -392,37 +294,30 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
     }
 
     int edge_argc = 0, vertex_argc = 0;
-    void **edge_argv = NULL, **vertex_argv = NULL;
+    void *edge_argv = NULL, *vertex_argv = NULL;
     struct vertex_result *v_res = (vertex->f)(argc, args);
-    if (v_res)
-    {
+    if (v_res) {
         edge_argc = v_res->edge_argc;
         edge_argv = v_res->edge_argv;
         vertex_argc = v_res->vertex_argc;
         vertex_argv = v_res->vertex_argv;
     }
 
-    if (args)
-    {
-        int i = 0;
-        for (i = 0; i < argc; i++)
-        {
-            free(args[i]);
-            args[i] = NULL;
-        }
+    if (args) {
         free(args);
+        args = NULL;
     }
 
     struct stack *edges = init_stack();
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
-    while ((edge = (struct edge *)pop(edges)) != NULL)
-    {
+    while ((edge = (struct edge *)pop(edges)) != NULL) {
         if (!edge->b)
         {
-            void **data = malloc(sizeof(void *) * 2);
-            data[0] = vertex;
-            data[1] = &(edge->id);
+            void *data = malloc(sizeof(struct vertex) + sizeof(int) + 2);
+            memset(data, 0, sizeof(struct vertex) + sizeof(int) + 2);
+            memcpy(data, vertex, sizeof(struct vertex));
+            memcpy(data + sizeof(struct vertex) + 1, &(edge->id), sizeof(int));
             struct request *req = create_request(DESTROY_EDGE, data, (void *)remove_edge_id, 2);
             submit_request(graph, req);
         }
@@ -448,12 +343,6 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
 
     if (v_res->edge_argv)
     {
-        int i = 0;
-        for (i = 0; i < v_res->edge_argc; i++)
-        {
-            free(v_res->edge_argv[i]);
-            v_res->edge_argv[i] = 0;
-        }
         free(v_res->edge_argv);
         v_res->edge_argv = NULL;
     }
@@ -467,6 +356,7 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void **args, enum
         graph->black_vertex_count--;
     pthread_mutex_unlock(&graph->lock);
 
+    vertex->is_active = 0;
     pthread_mutex_unlock(&vertex->lock);
     return 0;
 }
@@ -476,7 +366,7 @@ void *fire_pthread(void *vargp)
     struct graph *graph = NULL;
     struct vertex *v = NULL;
     int argc = 0;
-    void **args = NULL;
+    void *args = NULL;
     enum STATES color = RED;
 
     /*Counter var*/
@@ -497,7 +387,7 @@ void *fire_pthread(void *vargp)
     return (void *) (intptr_t) ret_val;
 }
 
-int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void **args, enum STATES color)
+int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void *args, enum STATES color)
 {
     //HANDLE STUFF LIKE THREADS HERE
     void *argv = malloc(FIRE_ARGV_SIZE);
@@ -571,30 +461,5 @@ int destroy_graph(struct graph *graph)
 
     pthread_exit(NULL);
     free(graph);
-    return 0;
-}
-
-int destroy_request(struct request *request)
-{
-    if (!request)
-        return -1;
-    if (request->argc == 1)
-    {
-        free(request->args);
-        request->args = NULL;
-    }
-    else if (request->argc > 1)
-    {
-        int i = 0;
-        for (i = 0; i < request->argc; i++)
-        {
-            free(request->args[i]);
-            request->args[i] = NULL;
-        }
-        free(request->args);
-        request->args = NULL;
-    }
-    request->argc = 0;
-    request->request = 0;
     return 0;
 }

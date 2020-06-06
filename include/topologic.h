@@ -28,6 +28,7 @@
 #include "./AVL.h"
 #include "./edge.h"
 #include "./vertex.h"
+#include "./request.h"
 
 #define FIRE_ARGV_SIZE sizeof(struct graph) + sizeof(struct vertex) + sizeof(int) + sizeof(void *) + sizeof(enum STATES) + 5
 
@@ -98,33 +99,10 @@ GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges
 enum VERBOSITY
 {
         NO_VERB = 0,
-        NODES = 1,
+        VERTICES = 1,
         EDGES = 2,
         FUNCTIONS = 4,
         GLOBALS = 8
-};
-
-/**
-Enum for submiting a request to be handles
-MODIFY: Modify values in existing edges or vertices
-        as well as add vertices or edges
-DESTROY_VERTEX: Remove vertex from graph
-DESTROY_EDGE: Remove edge from graph
-**/
-enum REQUESTS
-{
-        MODIFY = 0,
-        DESTROY_VERTEX = 1,
-        DESTROY_EDGE = 2
-};
-
-/** Request **/
-struct request
-{
-        enum REQUESTS request;
-        void (*f)(void **);
-        int argc;
-        void **args;
 };
 
 /** Graph **/
@@ -139,6 +117,7 @@ struct graph
         unsigned int max_state_changes;
         unsigned int snapshot_timestamp;
         enum VERBOSITY lvl_verbose;
+        int state_count;
         pthread_t thread;
         pthread_mutex_t lock;
         sig_atomic_t state;          //CURRENT STATE {PRINT, RED, BLACK}
@@ -188,11 +167,11 @@ NOTE: NULL glbl will mean no global variables.
 **/
 
 struct vertex *create_vertex(struct graph *graph,
-                             struct vertex_result *(*f)(int, void **),
+                             struct vertex_result *(*f)(int, void *),
                              int id,
                              int argc,
                              int glblc,
-                             void **glbl);
+                             void *glbl);
 #define CREATE_VERTEX(graph, f, id, argc) create_vertex(graph, f, id, argc, 0, NULL)
 
 /**
@@ -209,10 +188,10 @@ NOTE: NULL glbl will mean no global variables. f cannot be NULL.
 **/
 struct edge *create_edge(struct vertex *a,
                          struct vertex *b,
-                         int (*f)(int, void **),
+                         int (*f)(int, void *),
                          int argc,
                          int glblc,
-                         void **glbl);
+                         void *glbl);
 #define CREATE_EDGE(a, b, f, argc) create_edge(a, b, f, argc, 0, NULL)
 
 /**
@@ -223,10 +202,10 @@ with some criteria determined by the function f.
 **/
 struct edge **create_bi_edge(struct vertex *a,
                              struct vertex *b,
-                             int (*f)(int, void **),
+                             int (*f)(int, void *),
                              int argc,
                              int glblc,
-                             void **glbl);
+                             void *glbl);
 #define CREATE_BI_EDGE(a, b, f, argc) create_bi_edge(a, b, f, argc, 0, NULL)
 
 /**
@@ -282,10 +261,10 @@ NOTE: NULL f, or glbl will mean no change.
 Modifies the vertices function
 **/
 int modify_vertex(struct vertex *vertex,
-                  struct vertex_result *(*f)(int, void **),
+                  struct vertex_result *(*f)(int, void *),
                   int argc,
                   int glblc,
-                  void **glbl);
+                  void *glbl);
 #define MODIFY_VERTEX(vertex, f, argc) modify_vertex(vertex, f, argc, 0, NULL)
 #define MODIFY_VERTEX_GLOBALS(vertex, glblc, glbl) modify_vertex(vertex, NULL, 0, glblc, glbl)
 
@@ -299,7 +278,7 @@ Modifies the vertices shared variables with it's edges
 **/
 int modify_shared_edge_vars(struct vertex *vertex,
                             int edgec,
-                            void **edge_vars);
+                            void *edge_vars);
 
 /**
 @PARAM a: a vertex
@@ -315,10 +294,10 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_edge(struct vertex *a,
                 struct vertex *b,
-                int (*f)(int, void **),
+                int (*f)(int, void *),
                 int argc,
                 int glblc,
-                void **glbl);
+                void *glbl);
 
 #define MODIFY_EDGE(a, b, f, argc) modify_edge(a, b, f, argc, 0, NULL)
 #define MODIFY_EDGE_GLOBALS(a, b, glblc, glbl) modify_edge(a, b, NULL, 0, glblc, glbl)
@@ -340,10 +319,10 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_bi_edge(struct vertex *a,
                    struct vertex *b,
-                   int (*f)(int, void **),
+                   int (*f)(int, void *),
                    int argc,
                    int glblc,
-                   void **glbl);
+                   void *glbl);
 #define MODIFY_BI_EDGE(a, b, f, argc) modify_bi_edge(a, b, f, argc, 0, NULL)
 #define MODIFY_BI_EDGE_GLOBALS(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, 0, glblc, glbl)
 
@@ -364,7 +343,7 @@ call switch and clean itself up
 int fire(struct graph *graph,
          struct vertex *vertex,
          int argc,
-         void **args,
+         void *args,
          enum STATES color);
 
 /**
@@ -380,7 +359,7 @@ connected to the vertex
 int switch_vertex(struct graph *graph,
                   struct vertex *vertex,
                   int argc,
-                  void **args,
+                  void *args,
                   enum STATES color);
 
 /**
@@ -415,8 +394,8 @@ int submit_request(struct graph *graph,
 Creates a request structure to be called later
 **/
 struct request *create_request(enum REQUESTS request,
-                               void **args,
-                               void (*f)(void **),
+                               void *args,
+                               void (*f)(void *),
                                int argc);
 
 #define CREATE_REQUEST_DESTROY_EDGE(args) create_request(DESTROY_EDGE, args, remove_edge, 2)

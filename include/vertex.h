@@ -9,9 +9,9 @@
 /**vertex_result**/
 struct vertex_result{
     int vertex_argc;
-    void **vertex_argv;
+    void *vertex_argv;
     int edge_argc;
-    void **edge_argv;
+    void *edge_argv;
 };
 
 /**vertex **/
@@ -19,12 +19,13 @@ struct vertex{
     int id; //Hash for number passed in, 
             //will compare with other vertices in graph
             //Must be unique. If non-unique ID, error
-    struct vertex_result *(*f)(int, void **);
+    int is_active;
+    struct vertex_result *(*f)(int, void *);
     int argc;
     int glblc; 
-    void **glbl;
+    void *glbl;
     int edge_sharedc;
-    void **edge_shared; 
+    void *edge_shared; 
     pthread_mutex_t lock;
     struct AVLTree* edge_tree;
 };
