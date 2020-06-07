@@ -52,7 +52,7 @@ int main(){
 
 	//End it all;
 	destroy_graph(graph);
-	free(graph);
+	//free(graph);
 	graph=NULL;
 	assert(graph==NULL);
 
@@ -76,14 +76,22 @@ void test_graph_insert_vertex(struct graph* graph){
 void test_graph_add_edge(struct graph* graph){
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int id = i;
-		int argc=TEST_ARGC, glibc=TEST_ARGC;
+		int argc=TEST_ARGC, glblc=TEST_ARGC;
 		int (*f)(int, void*) = &testFuncEdge;
 		void* glbl=malloc(32);
-		//assert(create_edge(
-		//
-		free(glbl);
-		glbl=NULL;
+
+		struct vertex* a = find(graph->vertices, (i));
+		assert(a!=NULL);
+		struct vertex* b;
+		if(i+1==TEST_SIZE){
+				b = find(graph->vertices, (0));
+		}else{
+				b = find(graph->vertices, (i+1));
+		}
+		assert(b!=NULL);
+
+		assert(create_edge(a, b, f, argc, glblc, glbl)!=NULL);
+		
 
 	}
 	
@@ -94,6 +102,7 @@ void test_graph_remove_vertex(struct graph* graph){
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){	
 		struct vertex* v = (struct vertex* )find(graph->vertices, i);
+		assert(v!=NULL);
 		assert(remove_vertex(graph, v)==0);
 	}
 	fprintf(stderr, "VERTEX REMOVAL FROM GRAPH PASSED\n");
