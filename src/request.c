@@ -23,6 +23,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     case MOD_EDGE:
     case MOD_BI_EDGE:
     case DESTROY_EDGE_BY_ID:
+        req->f = NULL;
         break;
     default:
         free(req);
