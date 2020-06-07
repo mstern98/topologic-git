@@ -29,7 +29,7 @@ struct request
 {
         enum REQUESTS request;
         void (*f)(void *);
-        void **args;
+        void *args;
 };
 
 #endif
