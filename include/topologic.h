@@ -31,7 +31,12 @@
 #include "./request.h"
 #include "./graph.h"
 
-#define FIRE_ARGV_SIZE sizeof(struct graph) + sizeof(struct vertex) + sizeof(int) + sizeof(void *) + sizeof(enum STATES) + 5
+struct fireable{
+        struct graph *graph;
+        struct vertex *vertex;
+        void *args;
+        enum STATES color;
+};
 
 /**
  Wrapper function for fire, fire_1

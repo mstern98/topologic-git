@@ -34,7 +34,6 @@ void run(struct graph *graph, void **init_vertex_args[])
     }
     int success = 0, v_index = 0;
     struct vertex *v = NULL;
-    void *argv = malloc(FIRE_ARGV_SIZE);
     while ((v = (struct vertex *)pop(graph->start)))
     {
         if (!success)
@@ -43,21 +42,22 @@ void run(struct graph *graph, void **init_vertex_args[])
         if (graph->context == NONE || graph->context == SWITCH)
         {
             //TODO Set up arguments in void* buffer
-            int counter = 0;
-            enum STATES color = RED;
-            memset(argv, 0, FIRE_ARGV_SIZE);
-            memcpy((argv + counter), graph, sizeof(struct graph));
-            counter += sizeof(struct graph) + 1;
-            memcpy((argv + counter), v, sizeof(struct vertex));
-            counter += sizeof(struct vertex) + 1;
-            memcpy((argv + counter), init_vertex_args[v_index], sizeof(void *));
-            counter += sizeof(void *) + 1;
-            memcpy((argv + counter), &(color), sizeof(enum STATES));
+            struct fireable *argv = malloc(sizeof(struct fireable));
+            if (!argv) {
+                success = 0;
+                break;
+            }
+            argv->graph = graph;
+            argv->args = init_vertex_args[v_index];
+            argv->color = RED;
+            argv->vertex = v;
+            
             pthread_create(&graph->thread, NULL, fire_pthread, argv);
             ++v_index;
+            free(argv);
+            argv = NULL;
         }
     }
-    free(argv);
     graph->state_count = 1;
 
     if (!success)
@@ -222,20 +222,13 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
 
 void *fire_pthread(void *vargp)
 {
-    struct graph *graph = NULL;
-    struct vertex *v = NULL;
-    void *args = NULL;
-    enum STATES color = RED;
+    if (!vargp) return (void *) (intptr_t) -1;
+    struct fireable *fireable = (struct fireable *) vargp;
 
-    /*Counter var*/
-    int counter = 0;
-    graph = (struct graph *) (vargp + counter);
-    counter += sizeof(struct graph) + 1;
-    v = (struct vertex *) (vargp + counter);
-    counter += sizeof(struct vertex) + 1;
-    args = (vargp + counter);
-    counter += (sizeof(void)) + 1;
-    color = *((unsigned int *) (vargp + counter)) + 1;
+    struct graph *graph = fireable->graph;
+    struct vertex *v = fireable->vertex;
+    void *args = fireable->args;
+    enum STATES color = fireable->color;
 
     int ret_val = fire(graph, v, args, color);
     pthread_exit((void *) (intptr_t) ret_val);
@@ -245,17 +238,12 @@ void *fire_pthread(void *vargp)
 int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum STATES color)
 {
     //HANDLE STUFF LIKE THREADS HERE
-    void *argv = malloc(FIRE_ARGV_SIZE);
+    struct fireable *argv = malloc(sizeof(struct fireable));
     if (!argv) return -1;
-    int counter = 0;
-    memset(argv, 0, FIRE_ARGV_SIZE);
-    memcpy((argv + counter), graph, sizeof(struct graph));
-    counter += sizeof(struct graph) + 1;
-    memcpy((argv + counter), vertex, sizeof(struct vertex));
-    counter += sizeof(struct vertex) + 1;
-    memcpy((argv + counter), args, sizeof(void));
-    counter += sizeof(void *) + 1;
-    memcpy((argv + counter), &(color), sizeof(enum STATES));
+    argv->graph = graph;
+    argv->vertex = vertex;
+    argv->args = args;
+    argv->color = color;
     pthread_create(&graph->thread, NULL, fire_pthread, argv);
     free(argv);
     return 0;
