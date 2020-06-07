@@ -50,16 +50,12 @@ void run(struct graph *graph, void **init_vertex_args[])
             counter += sizeof(struct graph) + 1;
             memcpy((argv + counter), v, sizeof(struct vertex));
             counter += sizeof(struct vertex) + 1;
-            memcpy((argv + counter), &(v->argc), sizeof(int));
-            counter += sizeof(int) + 1;
             memcpy((argv + counter), init_vertex_args[v_index], sizeof(void *));
             counter += sizeof(void *) + 1;
             memcpy((argv + counter), &(color), sizeof(enum STATES));
             pthread_create(&graph->thread, NULL, fire_pthread, argv);
             ++v_index;
         }
-        //fire(graph, v, v->argc, init_vertex_args[v_index], RED);
-        //++v_index;
     }
     free(argv);
     graph->state_count = 1;
@@ -135,7 +131,7 @@ void run(struct graph *graph, void **init_vertex_args[])
     }
 }
 
-int fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum STATES color) {
+int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES color) {
     if (!graph || !vertex)
         return -1;
     enum STATES flip_color = BLACK;
@@ -159,19 +155,11 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum 
         pthread_mutex_unlock(&vertex->lock);
         return -1;
     }
-    if (argc != vertex->argc)
-    {
-        pthread_mutex_unlock(&vertex->lock);
-        return -1;
-    }
 
-    int edge_argc = 0, vertex_argc = 0;
     void *edge_argv = NULL, *vertex_argv = NULL;
-    struct vertex_result *v_res = (vertex->f)(argc, args);
+    struct vertex_result *v_res = (vertex->f)(args);
     if (v_res) {
-        edge_argc = v_res->edge_argc;
         edge_argv = v_res->edge_argv;
-        vertex_argc = v_res->vertex_argc;
         vertex_argv = v_res->vertex_argv;
     }
 
@@ -186,16 +174,15 @@ int fire(struct graph *graph, struct vertex *vertex, int argc, void *args, enum 
     while ((edge = (struct edge *)pop(edges)) != NULL) {
         if (!edge->b)
         {
-            void *data = malloc(sizeof(struct vertex) + sizeof(int) + 2);
-            memset(data, 0, sizeof(struct vertex) + sizeof(int) + 2);
-            memcpy(data, vertex, sizeof(struct vertex));
-            memcpy(data + sizeof(struct vertex) + 1, &(edge->id), sizeof(int));
-            struct request *req = create_request(DESTROY_EDGE, data, (void *)remove_edge_id, 2);
+            struct destroy_edge_id_request *data = malloc(sizeof(struct destroy_edge_id_request));
+            data->a = vertex;
+            data->id = edge->id;
+            struct request *req = CREATE_REQUEST(DESTROY_EDGE, data);
             submit_request(graph, req);
         }
-        else if ((int)(edge->f)(edge_argc, edge_argv) >= 0)
+        else if ((int)(edge->f)(edge_argv) >= 0)
         {
-            if (switch_vertex(graph, edge->b, vertex_argc, vertex_argv, flip_color) < 0)
+            if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
             {
                 pthread_mutex_lock(&graph->lock);
                 if (color == RED)
@@ -237,7 +224,6 @@ void *fire_pthread(void *vargp)
 {
     struct graph *graph = NULL;
     struct vertex *v = NULL;
-    int argc = 0;
     void *args = NULL;
     enum STATES color = RED;
 
@@ -247,19 +233,16 @@ void *fire_pthread(void *vargp)
     counter += sizeof(struct graph) + 1;
     v = (struct vertex *) (vargp + counter);
     counter += sizeof(struct vertex) + 1;
-    argc = *((int *) (vargp + counter));
-    counter += sizeof(int) + 1;
-    v->argc = argc;
     args = (vargp + counter);
-    counter += (sizeof(void) * argc) + 1;
+    counter += (sizeof(void)) + 1;
     color = *((unsigned int *) (vargp + counter)) + 1;
 
-    int ret_val = fire(graph, v, argc, args, color);
+    int ret_val = fire(graph, v, args, color);
     pthread_exit((void *) (intptr_t) ret_val);
     return (void *) (intptr_t) ret_val;
 }
 
-int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void *args, enum STATES color)
+int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum STATES color)
 {
     //HANDLE STUFF LIKE THREADS HERE
     void *argv = malloc(FIRE_ARGV_SIZE);
@@ -270,9 +253,7 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, int argc, void *ar
     counter += sizeof(struct graph) + 1;
     memcpy((argv + counter), vertex, sizeof(struct vertex));
     counter += sizeof(struct vertex) + 1;
-    memcpy((argv + counter), &(argc), sizeof(int));
-    counter += sizeof(int) + 1;
-    memcpy((argv + counter), args, sizeof(void *));
+    memcpy((argv + counter), args, sizeof(void));
     counter += sizeof(void *) + 1;
     memcpy((argv + counter), &(color), sizeof(enum STATES));
     pthread_create(&graph->thread, NULL, fire_pthread, argv);

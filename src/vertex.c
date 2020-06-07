@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int, void *), int id, int argc, int glblc, void *glbl) {
+struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(void *), int id, int glblc, void *glbl) {
     if (!graph || !f) return NULL;
     pthread_mutex_lock(&graph->lock);
 
@@ -24,7 +24,6 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(int
 
     vertex->is_active = 0;
     vertex->f = f;
-    vertex->argc = argc;
     vertex->id = id;
     vertex->edge_sharedc = 1;
     vertex->edge_shared = malloc(sizeof(void *));
@@ -49,7 +48,6 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     }
 
     vertex->id = 0;
-    vertex->argc = 0;
 
     free(vertex->edge_shared);
     vertex->edge_shared = NULL;
@@ -65,7 +63,6 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
         edge->a = NULL;
         edge->b = NULL;
         edge->id = 0;
-        edge->argc = 0;
         edge->f = NULL;
         free(edge->glbl);
         edge->glbl = NULL;
@@ -86,13 +83,12 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     return 0;
 }
 
-int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(int, void *), int argc, int glblc, void *glbl) {
+int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(void *), int glblc, void *glbl) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
     if (f != NULL) {
         vertex->f = f;
-        vertex->argc = argc;
     }
     if (glbl != NULL) { 
         free(vertex->glbl);

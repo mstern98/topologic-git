@@ -23,11 +23,11 @@ void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent)
 void print_state(struct graph *graph)
 {
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
-    int vertex_id = 0, argc = 0, glblc = 0;
+    int vertex_id = 0, glblc = 0;
     void *glbl = NULL;
     int edge_sharedc;
     void *edge_shared = NULL;
-    struct vertex_result *(*f)(int, void *) = NULL;
+    struct vertex_result *(*f)(void *) = NULL;
     struct vertex *v = NULL;
     struct stack *stack = init_stack();
 
@@ -35,7 +35,6 @@ void print_state(struct graph *graph)
     while ((v = (struct vertex *) pop(stack)) != NULL) {
         vertex_id = v->id;
         f = v->f;
-        argc = v->argc;
         glblc = v->glblc;
         edge_sharedc = v->edge_sharedc;
         edge_shared = v->edge_shared;
@@ -48,7 +47,6 @@ void print_state(struct graph *graph)
             printf("\t\tactive: %d\n", v->is_active);
             if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) {
                 printf("\t\tf: %p\n", f);
-                printf("\t\targc: %d\n", argc);
             }
             if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
                 printf("\t\tglblc: %d\n", glblc);

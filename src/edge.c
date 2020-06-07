@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *), int argc, int glblc, void *glbl) {
+struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), int glblc, void *glbl) {
     if(!a || !b){ return NULL; }
     if(!f){ return NULL; }
 
@@ -39,18 +39,18 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(int, void 
     return edge;
 }
 
-struct edge **create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *), int argc, int glblc, void *glbl) {
+struct edge **create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), int glblc, void *glbl) {
     if(!a || !b || !f) return NULL;
     struct edge** bi_edge = malloc(sizeof(struct edge) * 2);
     if(bi_edge==NULL){ return NULL;}
     
-    bi_edge[0] = create_edge(a, b, f, argc, glblc, glbl);
+    bi_edge[0] = create_edge(a, b, f, glblc, glbl);
     if (bi_edge[0] == NULL) {
         free(bi_edge);
         bi_edge = NULL;
         return NULL;
     }
-    bi_edge[1] = create_edge(a, b, f, argc, glblc, glbl);
+    bi_edge[1] = create_edge(a, b, f, glblc, glbl);
     if (!bi_edge[1]) {
         remove_edge(a, b);
         free(bi_edge[0]);
@@ -117,14 +117,13 @@ int remove_bi_edge(struct vertex *a, struct vertex *b) {
     return ret;
 }
 
-int modify_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *), int argc, int glblc, void *glbl) {
+int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), int glblc, void *glbl) {
     if (!a || !b) return -1;
     pthread_mutex_lock(&a->lock); 
     struct edge *edge = (struct edge *) find(a->edge_tree, b->id);
     if (!edge) return -1;
     if (f) {
         edge->f = f;
-        edge->argc = argc;
     }
     if (glbl) {
         free(edge->glbl);
@@ -135,10 +134,10 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *), int a
     return 0;
 }
 
-int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *), int argc, int glblc, void *glbl) {
+int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), int glblc, void *glbl) {
     int ret = 0, a_ret = 0, b_ret = 0;
-    if ((a_ret = modify_edge(a, b, f, argc, glblc, glbl)) < 0) ret = -2;
-    if ((b_ret = modify_edge(b, a, f, argc, glblc, glbl)) < 0 && a < 0) ret = -1;
+    if ((a_ret = modify_edge(a, b, f, glblc, glbl)) < 0) ret = -2;
+    if ((b_ret = modify_edge(b, a, f, glblc, glbl)) < 0 && a < 0) ret = -1;
     if (b_ret < 0 && a_ret == 0) ret = -3;
 
     return ret;

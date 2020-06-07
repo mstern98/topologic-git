@@ -10,9 +10,18 @@ DESTROY_EDGE: Remove edge from graph
 **/
 enum REQUESTS
 {
-        MODIFY = 0,
-        DESTROY_VERTEX = 1,
-        DESTROY_EDGE = 2
+        CREAT_VERTEX = 0,
+        CREAT_EDGE = 1,
+        CREAT_BI_EDGE = 2,
+        MOD_VERTEX = 3,
+        MOD_EDGE_VARS = 4,
+        MOD_EDGE = 5,
+        MOD_BI_EDGE = 6,
+        DESTROY_VERTEX = 7,
+        DESTROY_EDGE = 8,
+        DESTROY_BI_EDGE = 9,
+        DESTROY_EDGE_BY_ID = 10,
+        GENERIC = 11
 };
 
 /** Request **/
@@ -20,7 +29,6 @@ struct request
 {
         enum REQUESTS request;
         void (*f)(void *);
-        int argc;
         void **args;
 };
 
