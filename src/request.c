@@ -10,6 +10,11 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     switch (request)
     {
     case GENERIC:
+        if(!f) {
+            free(req);
+            req = NULL;
+            return NULL;
+        }
         req->f = f;
         break;
     case DESTROY_EDGE:
