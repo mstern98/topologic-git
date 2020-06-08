@@ -46,7 +46,8 @@ enum STATES
 {
         PRINT = 0,
         RED = 1,
-        BLACK = 2
+        BLACK = 2,
+        TERMINATE = 3
 };
 
 /**

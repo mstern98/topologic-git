@@ -27,7 +27,7 @@ int start_set(struct graph *graph, int *id, int num_vertices)
 
 void run(struct graph *graph, void **init_vertex_args[])
 {
-    if (!graph->start)
+    if (!graph->start || graph->state == TERMINATE)
     {
         //destroy_graph(graph);
         return;
@@ -85,6 +85,7 @@ void run(struct graph *graph, void **init_vertex_args[])
     pthread_cond_signal(&graph->red_cond);
     while (1)
     {
+        if (graph->state == TERMINATE) return;
         switch (graph->state)
         {
         case RED:
@@ -136,6 +137,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
         return -1;
     enum STATES flip_color = BLACK;
     pthread_mutex_lock(&vertex->lock);
+
     vertex->is_active = 1;
     if (color == RED)
     {
@@ -149,9 +151,24 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     {
         pthread_cond_wait(&graph->black_cond, &vertex->lock);
         flip_color = RED;
+
+        pthread_mutex_lock(&graph->lock);
+        graph->black_vertex_count++;
+        pthread_mutex_unlock(&graph->lock);
     }
     else
     {
+        pthread_mutex_unlock(&vertex->lock);
+        return -1;
+    }
+
+    if (graph->state == TERMINATE) {
+        pthread_mutex_lock(&graph->lock);
+            if (color == RED)
+                graph->red_vertex_count--;
+            else
+                graph->black_vertex_count--;
+        pthread_mutex_unlock(&graph->lock);
         pthread_mutex_unlock(&vertex->lock);
         return -1;
     }

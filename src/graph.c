@@ -149,6 +149,18 @@ int destroy_graph(struct graph *graph)
 {
     if (!graph)
         return -1;
+    graph->state = TERMINATE;
+
+    if (graph->red_vertex_count > 0) {
+        pthread_cond_signal(&graph->red_cond);
+        while (graph->red_vertex_count > 0) {}
+    }
+
+    if (graph->black_vertex_count > 0) {
+        pthread_cond_signal(&graph->black_cond);
+        while (graph->black_vertex_count > 0) {}
+    }
+
     destroy_graph_avl(graph, graph->vertices);
     graph->vertices = NULL;
     destroy_graph_stack(graph->start);
