@@ -13,7 +13,7 @@ struct edge{
     int (*f)(void *);
     int glblc;
     void *glbl;
-    int a_varc;
+    int *a_varc;
     void *a_vars; //To be shared among vertex a and shared edge
     struct vertex* a;
     struct vertex* b;

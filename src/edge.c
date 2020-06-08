@@ -22,7 +22,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), i
     edge->glblc = glblc;
     edge->glbl = glbl;
 
-    edge->a_varc = a->edge_sharedc;
+    edge->a_varc = &(a->edge_sharedc);
     edge->a_vars = a->edge_shared;
 
     edge->f = f;
@@ -92,7 +92,7 @@ int remove_edge_id(struct vertex *a, int id) {
     void *data = remove_ID(a->edge_tree, id);
     if (!data) return -1;
     struct edge *edge = (struct edge *) data;
-    edge->a_varc = 0;
+    *(edge->a_varc) = 0;
     edge->a_vars = NULL;
     edge->a = NULL;
     edge->b = NULL;
