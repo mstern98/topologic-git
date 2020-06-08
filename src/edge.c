@@ -71,8 +71,6 @@ int remove_edge(struct vertex *a, struct vertex *b) {
     edge->f = NULL;
     edge->id = 0;
 
-    if(edge->glbl)
-        free(edge->glbl);
     edge->glbl = NULL;
     
     free(edge);
@@ -92,7 +90,6 @@ int remove_edge_id(struct vertex *a, int id) {
     edge->b = NULL;
     edge->f = NULL;
     edge->id = 0;
-    free(edge->glbl);
     edge->glbl = NULL;
     
     free(edge);
@@ -119,7 +116,6 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
         edge->f = f;
     }
     if (glbl) {
-        free(edge->glbl);
         edge->glbl = glbl;
     }
     pthread_mutex_unlock(&a->lock); 

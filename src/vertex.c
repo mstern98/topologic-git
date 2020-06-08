@@ -71,7 +71,6 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     free(vertex->shared);
     vertex->shared = NULL;
 
-    free(vertex->glbl);
     vertex->glbl = NULL;
 
     struct stack *stack = init_stack();
@@ -83,7 +82,6 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
         edge->b = NULL;
         edge->id = 0;
         edge->f = NULL;
-        free(edge->glbl);
         edge->glbl = NULL;
         free(edge);
         edge = NULL;
@@ -110,7 +108,6 @@ int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(void *), voi
         vertex->f = f;
     }
     if (glbl != NULL) { 
-        free(vertex->glbl);
         vertex->glbl = glbl;
     }
 
@@ -122,8 +119,6 @@ int modify_shared_edge_vars(struct vertex *vertex, void *edge_vars) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
-    if(vertex->shared->vertex_data) 
-        free(vertex->shared->vertex_data);
     vertex->shared->vertex_data = edge_vars;
 
     pthread_mutex_unlock(&vertex->lock);
