@@ -6,14 +6,14 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
 
     pthread_mutex_lock(&a->lock); 
     void *exists = find(a->edge_tree, b->id);
-    if (exists != NULL) {
-        pthread_mutex_lock(&a->lock); 
+    if (exists) {
+        pthread_mutex_unlock(&a->lock); 
         return NULL; 
     }
 
     struct edge* edge = malloc(sizeof(struct edge));
     if(!edge){ 
-        pthread_mutex_lock(&a->lock); 
+        pthread_mutex_unlock(&a->lock); 
         return NULL;
     }
     edge->a = a;
@@ -42,6 +42,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
 
     pthread_mutex_lock(&b->lock);
     if (insert(b->joining_vertices, a, a->id) < 0) {
+        remove_ID(a->edge_tree, edge->id);
         edge->a = NULL;
         edge->b = NULL;
         edge->a_vars = NULL;
@@ -60,11 +61,11 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
 }
 
 int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl, struct edge **edge_a_to_b, struct edge **edge_b_to_a) {
-    if(!a || !b || !f) return -1;
+    if(!a || !b || !f || a == b) return -1;
     struct edge *a_to_b, *b_to_a;
     
     a_to_b = create_edge(a, b, f, glbl);
-    if (a_to_b == NULL) {
+    if (!a_to_b) {
         return -1;
     }
 
@@ -116,6 +117,11 @@ int remove_edge_id(struct vertex *a, int id) {
     void *data = remove_ID(a->edge_tree, id);
     if (!data) return -1;
     struct edge *edge = (struct edge *) data;
+
+    pthread_mutex_lock(&(edge->b->lock));
+    remove_ID(edge->b->joining_vertices, a->id);
+    pthread_mutex_unlock(&edge->b->lock);
+
     edge->a_vars = NULL;
     edge->a = NULL;
     edge->b = NULL;
@@ -130,6 +136,7 @@ int remove_edge_id(struct vertex *a, int id) {
 }
 
 int remove_bi_edge(struct vertex *a, struct vertex *b) {
+    if (!a || !b || a == b) return -1;
     int ret = 0, a_ret = 0, b_ret = 0;
     if ((a_ret = remove_edge(a, b)) < 0) ret = -2;
     if ((b_ret = remove_edge(b, a)) < 0 && a < 0) ret = -1;
@@ -154,6 +161,7 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
 }
 
 int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl) {
+    if(!a || !b || a == b) return -1;
     int ret = 0, a_ret = 0, b_ret = 0;
     if ((a_ret = modify_edge(a, b, f, glbl)) < 0) ret = -2;
     if ((b_ret = modify_edge(b, a, f, glbl)) < 0 && a < 0) ret = -1;

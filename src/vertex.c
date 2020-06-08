@@ -81,8 +81,8 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     pthread_mutex_lock(&vertex->lock);
 
     if(!remove_ID(graph->vertices, vertex->id)) {
-        pthread_mutex_unlock(&graph->lock);
         pthread_mutex_unlock(&vertex->lock);
+        pthread_mutex_unlock(&graph->lock);
         return -1;
     }
 
@@ -91,6 +91,9 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     vertex->edge_tree = NULL;
     struct edge *edge = NULL;
     while ((edge = (struct edge *) pop(stack)) != NULL) {
+        pthread_mutex_lock(&(edge->b->lock));
+        remove_ID(edge->b->joining_vertices, vertex->id);
+        pthread_mutex_unlock(&(edge->b->lock));
         edge->a = NULL;
         edge->b = NULL;
         edge->id = 0;
@@ -104,12 +107,12 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
     vertex->joining_vertices = NULL;
     struct vertex *joining_vertex = NULL;
     while ((joining_vertex = (struct vertex *) pop(stack)) != NULL) {
-        remove_edge(joining_vertex, vertex);
+        remove_edge_id(joining_vertex, vertex->id);
     }
 
     destroy_stack(stack);
     stack = NULL;
-    
+
     vertex->id = 0;
     free(vertex->shared);
     vertex->shared = NULL;
