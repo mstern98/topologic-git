@@ -87,7 +87,6 @@ void test_graph_add_edge(struct graph* graph){
 		assert(b!=NULL);
 		struct edge* edge;
 		assert((edge=create_edge(a, b, f, glbl))!=NULL);	
-
 	}
 	
 	fprintf(stderr,"EDGE INSERTION INTO GRAPH PASSED\n");
