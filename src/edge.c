@@ -85,10 +85,7 @@ int remove_edge(struct vertex *a, struct vertex *b) {
     if (!a || !b) return -1;
 
     pthread_mutex_lock(&b->lock);
-    if (!remove_ID(b->joining_vertices, a->id)) {
-        pthread_mutex_unlock(&b->lock);
-        return -1;
-    }
+    remove_ID(b->joining_vertices, a->id);
     pthread_mutex_unlock(&b->lock);
 
     pthread_mutex_lock(&a->lock); 
