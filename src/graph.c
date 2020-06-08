@@ -165,8 +165,8 @@ int destroy_graph(struct graph *graph)
     pthread_cond_destroy(&graph->red_cond);
     pthread_cond_destroy(&graph->black_cond);
 
-    pthread_exit(NULL);
     free(graph);
     graph = NULL;
+    pthread_exit(NULL);
     return 0;
 }
