@@ -17,7 +17,7 @@ TEST_DIR=testing
 all: $(BIN) $(TESTS)
 
 $(BIN): $(OBJ) $(INCLUDES)
-	$(AR) rcs libtopologic.a $(OBJ) #$(LDFLAGS)
+	$(AR) rcs libtopologic.a $(OBJ) 
 
 $(TESTS): $(BIN) $(OBJ) $(TEST_OBJ)
 	$(CC) $(CFLAGS) -o $@ libtopologic.a $(TEST_DIR)/$(@F).o $(LDFLAGS)
