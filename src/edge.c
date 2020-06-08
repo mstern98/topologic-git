@@ -85,9 +85,7 @@ int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
 int remove_edge(struct vertex *a, struct vertex *b) {
     if (!a || !b) return -1;
 
-    pthread_mutex_lock(&b->lock);
     remove_ID(b->joining_vertices, a->id);
-    pthread_mutex_unlock(&b->lock);
 
     pthread_mutex_lock(&a->lock); 
     void *data = remove_ID(a->edge_tree, b->id);
@@ -118,9 +116,7 @@ int remove_edge_id(struct vertex *a, int id) {
     if (!data) return -1;
     struct edge *edge = (struct edge *) data;
 
-    pthread_mutex_lock(&(edge->b->lock));
     remove_ID(edge->b->joining_vertices, a->id);
-    pthread_mutex_unlock(&edge->b->lock);
 
     edge->a_vars = NULL;
     edge->a = NULL;
