@@ -117,11 +117,12 @@ void destroy_graph_stack(struct stack *stack)
     if (!stack)
         return;
     struct request *request = NULL;
-    while ((request = (struct request *)pop(stack)) != NULL)
+    while ((request = (struct request *) pop(stack)) != NULL)
     {
         destroy_request(request);
     }
     destroy_stack(stack);
+    stack = NULL;
 }
 
 void destroy_graph_avl(struct graph *graph, struct AVLTree *tree)
@@ -129,18 +130,19 @@ void destroy_graph_avl(struct graph *graph, struct AVLTree *tree)
     if (!tree)
         return;
 
-    struct stack *tree_stack = malloc(sizeof(struct stack));
+    struct stack *tree_stack = init_stack();
     if (!tree_stack)
         return;
     preorder(tree, tree_stack);
     struct vertex *vertex = NULL;
-    while ((vertex = (struct vertex *)pop(tree_stack)) != NULL)
+    while ((vertex = (struct vertex *) pop(tree_stack)) != NULL)
     {
         remove_vertex(graph, vertex);
     }
     destroy_stack(tree_stack);
     tree_stack = NULL;
     destroy_avl(tree);
+    tree = NULL;
 }
 
 int destroy_graph(struct graph *graph)
@@ -165,5 +167,6 @@ int destroy_graph(struct graph *graph)
 
     pthread_exit(NULL);
     free(graph);
+    graph = NULL;
     return 0;
 }

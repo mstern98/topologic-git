@@ -25,9 +25,8 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(voi
     vertex->is_active = 0;
     vertex->f = f;
     vertex->id = id;
-    vertex->edge_sharedc = 1;
-    vertex->edge_shared = malloc(sizeof(void *));
-    vertex->edge_shared = 0;
+    vertex->edge_shared = malloc(sizeof(void));
+    vertex->edge_sharedc = 0;
     vertex->edge_tree = init_avl();
     vertex->glblc = glblc;
     vertex->glbl = glbl;
@@ -57,6 +56,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
 
     struct stack *stack = init_stack();
     stackify(vertex->edge_tree, stack);
+    free(vertex->edge_tree);
     vertex->edge_tree = NULL;
     struct edge *edge = NULL;
     while ((edge = (struct edge *) pop(stack)) != NULL) {
@@ -107,7 +107,7 @@ int modify_shared_edge_vars(struct vertex *vertex, int edgec, void *edge_vars) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
-    void *data = realloc(vertex->edge_shared, sizeof(void *) * edgec);
+    void *data = realloc(vertex->edge_shared, sizeof(void) * edgec);
     if (!data) {
         pthread_mutex_unlock(&vertex->lock);
         return -1;
