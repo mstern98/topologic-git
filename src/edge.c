@@ -48,7 +48,8 @@ struct edge **create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *
         bi_edge = NULL;
         return NULL;
     }
-    bi_edge[1] = create_edge(b, a, f, glbl);
+
+    bi_edge[1] = create_edge(b, a, f, glbl_b);
     if (!bi_edge[1]) {
         remove_edge(a, b);
         free(bi_edge[0]);
@@ -73,7 +74,8 @@ int remove_edge(struct vertex *a, struct vertex *b) {
     edge->f = NULL;
     edge->id = 0;
 
-    free(edge->glbl);
+    if(edge->glbl)
+        free(edge->glbl);
     edge->glbl = NULL;
     
     free(edge);

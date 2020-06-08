@@ -113,10 +113,12 @@ void run(struct graph *graph, void **init_vertex_args)
                 graph->state_count++;
                 if (graph->previous_color == RED)
                 {
+                    if (graph->black_vertex_count == 0) return;
                     pthread_cond_signal(&graph->black_cond);
                 }
                 else
                 {
+                    if (graph->red_vertex_count == 0) return;
                     pthread_cond_signal(&graph->red_cond);
                 }
             }

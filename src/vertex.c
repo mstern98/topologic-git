@@ -122,6 +122,8 @@ int modify_shared_edge_vars(struct vertex *vertex, void *edge_vars) {
     if (!vertex) return -1;
     pthread_mutex_lock(&vertex->lock);
 
+    if(vertex->shared->vertex_data) 
+        free(vertex->shared->vertex_data);
     vertex->shared->vertex_data = edge_vars;
 
     pthread_mutex_unlock(&vertex->lock);
