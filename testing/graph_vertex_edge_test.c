@@ -137,9 +137,10 @@ void test_graph_add_bi_edge(struct graph* graph){
 			b = find(graph->vertices, (i+1));
 		}
 		assert(b!=NULL);
-		struct edge** edge;
-		assert((edge=create_bi_edge(a, b, f, glbl))!=NULL);	
-
+		struct edge* edge_a_to_b, *edge_b_to_a;
+		assert((create_bi_edge(a, b, f, glbl, &edge_a_to_b, &edge_b_to_a))==0);	
+		assert(edge_a_to_b != NULL);
+		assert(edge_b_to_a != NULL);
 	}
 
 	fprintf(stderr,"BI-DIRECTIONAL EDGE INSERTION INTO GRAPH PASSED\n");
@@ -226,7 +227,6 @@ void test_graph_remove_edge(struct graph* graph){
 		assert(v!=NULL);
 		assert(v2!=NULL);
 		assert(remove_edge(v, v2)==0);
-		 
 	}
 	fprintf(stderr, "EDGE REMOVAL FROM GRAPH PASSED\n");
 

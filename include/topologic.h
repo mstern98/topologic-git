@@ -94,16 +94,22 @@ struct edge *create_edge(struct vertex *a,
 #define CREATE_EDGE(a, b, f) create_edge(a, b, f, NULL)
 
 /**
-@RETURN two edges
+@RETURNS 0 for success;
+        -1 for fail
 See create_edge
 Will create an bidirectional edge between vertex a and b
 with some criteria determined by the function f.
+Will store the edges in edge_a and edge_b.
+If edge_a_to_b or edge_b_to_a is NULL it will not.
 **/
-struct edge **create_bi_edge(struct vertex *a,
+int create_bi_edge(struct vertex *a,
                              struct vertex *b,
                              int (*f)(void *),
-                             void *glbl);
-#define CREATE_BI_EDGE(a, b, f) create_bi_edge(a, b, f, NULL)
+                             void *glbl,
+                             struct edge **edge_a_to_b,
+                             struct edge **edge_b_to_a);
+#define CREATE_NULL_BI_EDGE(a, b, f) create_bi_edge(a, b, f, NULL, NULL, NULL)
+#define CREATE_BI_EDGE(a, b, f, a_to_b, b_to_a) create_bi_edge(a, b, f, NULL, a_to_b, b_to_a)
 
 /**
 @PARAM a: a vertex

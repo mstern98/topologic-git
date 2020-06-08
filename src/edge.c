@@ -37,29 +37,26 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
     return edge;
 }
 
-struct edge **create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl) {
-    if(!a || !b || !f) return NULL;
-    struct edge** bi_edge = malloc(sizeof(struct edge) * 2);
-    if(bi_edge==NULL){ return NULL;}
+int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl, struct edge **edge_a_to_b, struct edge **edge_b_to_a) {
+    if(!a || !b || !f) return -1;
+    struct edge *a_to_b, *b_to_a;
     
-    bi_edge[0] = create_edge(a, b, f, glbl);
-    if (bi_edge[0] == NULL) {
-        free(bi_edge);
-        bi_edge = NULL;
-        return NULL;
+    a_to_b = create_edge(a, b, f, glbl);
+    if (a_to_b == NULL) {
+        return -1;
     }
 
-    bi_edge[1] = create_edge(b, a, f, glbl_b);
-    if (!bi_edge[1]) {
+    b_to_a = create_edge(b, a, f, glbl);
+    if (!b_to_a) {
         remove_edge(a, b);
-        free(bi_edge[0]);
-        bi_edge[0] = NULL;
-        free(bi_edge);
-        bi_edge = NULL;
-        return NULL;
+        free(a_to_b);
+        a_to_b = NULL;
+        return -1;
     }
 
-    return bi_edge;
+    if (edge_a_to_b) *edge_a_to_b = a_to_b;
+    if (edge_b_to_a) *edge_b_to_a = b_to_a;
+    return 0;
 }
 
 int remove_edge(struct vertex *a, struct vertex *b) {

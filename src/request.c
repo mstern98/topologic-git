@@ -111,7 +111,7 @@ void procces_request(struct request *request)
     case CREAT_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        create_bi_edge(args->a, args->b, args->f, args->glbl);
+        create_bi_edge(args->a, args->b, args->f, args->glbl, NULL, NULL);
         break;
     }
     case MOD_VERTEX:
