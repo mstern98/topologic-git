@@ -44,6 +44,7 @@ int main(){
 
 
 	//Cleanup
+	test_graph_remove_edge(graph);
 	test_graph_remove_vertex(graph);
 
 	//End it all;
@@ -51,6 +52,8 @@ int main(){
 	//free(graph);
 	graph=NULL;
 	assert(graph==NULL);
+
+	fprintf(stderr,"VERTEX AND EDGE TESTING COMPLETED\n");
 
 	return 0;
 }
@@ -84,13 +87,27 @@ void test_graph_add_edge(struct graph* graph){
 				b = find(graph->vertices, (i+1));
 		}
 		assert(b!=NULL);
-
-		assert(create_edge(a, b, f, glblc, glbl)!=NULL);
-		
+		struct edge* edge;
+		assert((edge=create_edge(a, b, f, glblc, glbl))!=NULL);	
 
 	}
 	
 	fprintf(stderr,"EDGE INSERTION INTO GRAPH PASSED\n");
+}
+
+void test_graph_remove_edge(struct graph* graph){
+	assert(graph!=NULL);
+	int i = 0;
+	for(i=0; i<TEST_SIZE;i++){
+		struct vertex* v = (struct vertex*)find(graph->vertices, i);
+		struct vertex* v2 = (struct vertex*)find(graph->vertices, ((i+1)>=TEST_SIZE ? 0 : i+1)); 
+		assert(v!=NULL);
+		assert(v2!=NULL);
+		assert(remove_edge(v, v2)==0);
+		printf("Iteration: %d\n", i); 
+	}
+	fprintf(stderr, "EDGE REMOVAL FROM GRAPH PASSED\n");
+
 }
 
 void test_graph_remove_vertex(struct graph* graph){
