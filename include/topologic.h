@@ -64,7 +64,6 @@ struct graph *graph_init(unsigned int max_state_changes,
 @PARAM graph: the graph
 @PARAM f: a function
 @PARAM id: vertex id to be used: MUST BE UNIQUE
-@PARAM glblc: # of global variables
 @PARAM glbl: global variables
 @RETURN vertex: a vertex to be used in a graph
 On creation a process will be spawned for the vertex
@@ -75,15 +74,13 @@ NOTE: NULL glbl will mean no global variables.
 struct vertex *create_vertex(struct graph *graph,
                              struct vertex_result *(*f)(void *),
                              int id,
-                             int glblc,
                              void *glbl);
-#define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, 0, NULL)
+#define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL)
 
 /**
 @PARAM a: A vertex
 @PARAM b: Another vertex (can be 'a')
 @PARAM f: a function
-@PARAM glblc: # of global variables
 @PARAM glbl: global variables
 @RETURN the edge connecting a to b
 Will create an edge from vertex a to b
@@ -93,9 +90,8 @@ NOTE: NULL glbl will mean no global variables. f cannot be NULL.
 struct edge *create_edge(struct vertex *a,
                          struct vertex *b,
                          int (*f)(void *),
-                         int glblc,
                          void *glbl);
-#define CREATE_EDGE(a, b, f) create_edge(a, b, f, 0, NULL)
+#define CREATE_EDGE(a, b, f) create_edge(a, b, f, NULL)
 
 /**
 @RETURN two edges
@@ -106,9 +102,8 @@ with some criteria determined by the function f.
 struct edge **create_bi_edge(struct vertex *a,
                              struct vertex *b,
                              int (*f)(void *),
-                             int glblc,
                              void *glbl);
-#define CREATE_BI_EDGE(a, b, f) create_bi_edge(a, b, f, 0, NULL)
+#define CREATE_BI_EDGE(a, b, f) create_bi_edge(a, b, f, NULL)
 
 /**
 @PARAM a: a vertex
@@ -154,7 +149,6 @@ int remove_vertex(struct graph *graph,
 /**
 @PARAM vertex: a vertex
 @PARAM f: a function
-@PARAM glblc: # of global variables
 @PARAM glbl: global variables
 NOTE: NULL f, or glbl will mean no change.
 @RETURN 0 for success;
@@ -163,28 +157,24 @@ Modifies the vertices function
 **/
 int modify_vertex(struct vertex *vertex,
                   struct vertex_result *(*f)(void *),
-                  int glblc,
                   void *glbl);
-#define MODIFY_VERTEX(vertex, f) modify_vertex(vertex, f, 0, NULL)
-#define MODIFY_VERTEX_GLOBALS(vertex, glblc, glbl) modify_vertex(vertex, NULL, glblc, glbl)
+#define MODIFY_VERTEX(vertex, f) modify_vertex(vertex, f, NULL)
+#define MODIFY_VERTEX_GLOBALS(vertex, glbl) modify_vertex(vertex, NULL, glbl)
 
 /**
 @PARAM vertex: a vertex
-@PARAM edgec: # of variables
 @PARAM edge_vars: shared variables
 @RETURN 0 for success;
         -1 for fail
 Modifies the vertices shared variables with it's edges
 **/
 int modify_shared_edge_vars(struct vertex *vertex,
-                            int edgec,
                             void *edge_vars);
 
 /**
 @PARAM a: a vertex
 @PARAM b: another vertex
 @PARAM f: a function
-@PARAM glblc: # of global variables
 @PARAM glbl: global variables
 @RETURN 0 for success;
         -1 for fail
@@ -194,17 +184,15 @@ NOTE: NULL f, or glbl will mean no change.
 int modify_edge(struct vertex *a,
                 struct vertex *b,
                 int (*f)(void *),
-                int glblc,
                 void *glbl);
 
-#define MODIFY_EDGE(a, b, f) modify_edge(a, b, f, 0, NULL)
-#define MODIFY_EDGE_GLOBALS(a, b, glblc, glbl) modify_edge(a, b, NULL, glblc, glbl)
+#define MODIFY_EDGE(a, b, f) modify_edge(a, b, f, NULL)
+#define MODIFY_EDGE_GLOBALS(a, b, glbl) modify_edge(a, b, NULL, glbl)
 
 /**
 @PARAM a: a vertex
 @PARAM b: another vertex
 @PARAM f: a function
-@PARAM glblc: # of global variables
 @PARAM glbl: global variables
 @RETURN 0 for success;
         -1 for fail;
@@ -217,10 +205,9 @@ NOTE: NULL f, or glbl will mean no change.
 int modify_bi_edge(struct vertex *a,
                    struct vertex *b,
                    int (*f)(void *),
-                   int glblc,
                    void *glbl);
-#define MODIFY_BI_EDGE(a, b, f) modify_bi_edge(a, b, f, 0, NULL)
-#define MODIFY_BI_EDGE_GLOBALS(a, b, glblc, glbl) modify_bi_edge(a, b, NULL, glblc, glbl)
+#define MODIFY_BI_EDGE(a, b, f) modify_bi_edge(a, b, f, NULL)
+#define MODIFY_BI_EDGE_GLOBALS(a, b, glbl) modify_bi_edge(a, b, NULL, glbl)
 
 /**
 @PARAM graph: the graph

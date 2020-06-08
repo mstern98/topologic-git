@@ -241,7 +241,6 @@ void stackify_nodes(struct AVLNode *node, struct stack *stack) {
 
 void stackify(struct AVLTree *tree, struct stack *stack) {
     if (!tree || !stack) return;
-    if (tree->size <= 0) return;
     stackify_nodes(tree->root, stack);
 
     tree->root = NULL;

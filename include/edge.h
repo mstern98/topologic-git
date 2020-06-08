@@ -11,10 +11,8 @@ struct edge{
             //Also unique, a la vertex 
             //Perhaps @nanosecond level
     int (*f)(void *);
-    int glblc;
     void *glbl;
-    int *a_varc;
-    void *a_vars; //To be shared among vertex a and shared edge
+    const void *const *a_vars; //To be shared among vertex a and shared edge
     struct vertex* a;
     struct vertex* b;
 };
@@ -23,7 +21,6 @@ struct edge_request{
     struct vertex *a;
     struct vertex *b;
     int (*f)(void *);
-    int glblc;
     void *glbl;
 };
 

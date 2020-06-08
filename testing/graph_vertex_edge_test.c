@@ -63,10 +63,9 @@ void test_graph_insert_vertex(struct graph* graph){
 	for(i=0; i<TEST_SIZE; i++){
 		//Dummy values
 		int id = i;
-		int glblc=TEST_ARGC;
 		struct vertex_result*(*f)(void*) = &testFunction;
 		void* glbl = malloc(32); //32 bytes of just random stuff for now
-		assert(create_vertex(graph, f, id, glblc, glbl)!=NULL);
+		assert(create_vertex(graph, f, id, glbl)!=NULL);
 	}
 	fprintf(stderr, "VERTEX INSERTION INTO GRAPH PASSED\n");
 }
@@ -74,7 +73,6 @@ void test_graph_insert_vertex(struct graph* graph){
 void test_graph_add_edge(struct graph* graph){
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int glblc=TEST_ARGC;
 		int (*f)(void*) = &testFuncEdge;
 		void* glbl=malloc(32);
 
@@ -88,7 +86,7 @@ void test_graph_add_edge(struct graph* graph){
 		}
 		assert(b!=NULL);
 		struct edge* edge;
-		assert((edge=create_edge(a, b, f, glblc, glbl))!=NULL);	
+		assert((edge=create_edge(a, b, f, glbl))!=NULL);	
 
 	}
 	

@@ -99,43 +99,43 @@ void procces_request(struct request *request)
     case CREAT_VERTEX:
     {
         struct vertex_request *args = (struct vertex_request *)request->args;
-        create_vertex(args->graph, args->f, args->id, args->glblc, args->glbl);
+        create_vertex(args->graph, args->f, args->id, args->glbl);
         break;
     }
     case CREAT_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        create_edge(args->a, args->b, args->f, args->glblc, args->glbl);
+        create_edge(args->a, args->b, args->f, args->glbl);
         break;
     }
     case CREAT_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        create_bi_edge(args->a, args->b, args->f, args->glblc, args->glbl);
+        create_bi_edge(args->a, args->b, args->f, args->glbl);
         break;
     }
     case MOD_VERTEX:
     {
         struct mod_vertex_request *args = (struct mod_vertex_request *)request->args;
-        modify_vertex(args->vertex, args->f, args->glblc, args->glbl);
+        modify_vertex(args->vertex, args->f, args->glbl);
         break;
     }
     case MOD_EDGE_VARS:
     {
         struct mod_edge_vars_request *args = (struct mod_edge_vars_request *)request->args;
-        modify_shared_edge_vars(args->vertex, args->edgec, args->edge_vars);
+        modify_shared_edge_vars(args->vertex, args->edge_vars);
         break;
     }
     case MOD_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        modify_edge(args->a, args->b, args->f, args->glblc, args->glbl);
+        modify_edge(args->a, args->b, args->f, args->glbl);
         break;
     }
     case MOD_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        modify_bi_edge(args->a, args->b, args->f, args->glblc, args->glbl);
+        modify_bi_edge(args->a, args->b, args->f, args->glbl);
         break;
     }
     default:
