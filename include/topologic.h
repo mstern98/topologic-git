@@ -291,7 +291,7 @@ void process_requests(struct graph *graph);
 Attempts to run the graph else aborts.
 **/
 void run(struct graph *graph,
-         void **vertex_args[]);
+         void **vertex_args);
 
 /**
 @PARAM graph: the graph

@@ -25,7 +25,7 @@ int start_set(struct graph *graph, int *id, int num_vertices)
     return 0;
 }
 
-void run(struct graph *graph, void **init_vertex_args[])
+void run(struct graph *graph, void **init_vertex_args)
 {
     if (!graph->start || graph->state == TERMINATE)
     {
@@ -68,11 +68,7 @@ void run(struct graph *graph, void **init_vertex_args[])
         int i = 0;
         for (i = 0; i < v_index; i++)
         {
-            int j = 0;
-            for (; init_vertex_args[i][j] != NULL; j++)
-            {
-                free(init_vertex_args[i][j]);
-            }
+            free(init_vertex_args[i]);
         }
         pthread_exit(NULL);
 
