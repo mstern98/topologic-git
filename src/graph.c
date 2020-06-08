@@ -167,6 +167,6 @@ int destroy_graph(struct graph *graph)
 
     free(graph);
     graph = NULL;
-    pthread_exit(NULL);
+    /** TODO: Fix Graph Thread Ending pthread_exit(NULL); **/
     return 0;
 }
