@@ -28,11 +28,33 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
     edge->id = b->id;
 
     if(insert(a->edge_tree, edge, edge->id) < 0){
+        edge->a = NULL;
+        edge->b = NULL;
+        edge->a_vars = NULL;
+        edge->f = NULL;
+        edge->glbl = NULL;
+        edge->id = 0;
         free(edge);
         edge = NULL;
         pthread_mutex_unlock(&a->lock); 
         return NULL;
     }
+
+    pthread_mutex_lock(&b->lock);
+    if (insert(b->joining_vertices, a, a->id) < 0) {
+        edge->a = NULL;
+        edge->b = NULL;
+        edge->a_vars = NULL;
+        edge->f = NULL;
+        edge->glbl = NULL;
+        edge->id = 0;
+        free(edge);
+        edge = NULL;
+        pthread_mutex_unlock(&b->lock);
+        pthread_mutex_unlock(&a->lock); 
+    }
+    pthread_mutex_unlock(&b->lock);
+
     pthread_mutex_unlock(&a->lock); 
     return edge;
 }
@@ -61,9 +83,21 @@ int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
 
 int remove_edge(struct vertex *a, struct vertex *b) {
     if (!a || !b) return -1;
+
+    pthread_mutex_lock(&b->lock);
+    if (!remove_ID(b->joining_vertices, a->id)) {
+        pthread_mutex_unlock(&b->lock);
+        return -1;
+    }
+    pthread_mutex_unlock(&b->lock);
+
     pthread_mutex_lock(&a->lock); 
     void *data = remove_ID(a->edge_tree, b->id);
-    if (!data) return -1;
+    if (!data) {
+        pthread_mutex_unlock(&a->lock); 
+        return -1;
+    }
+    
     struct edge *edge = (struct edge *) data;
     edge->a_vars = NULL;
     edge->a = NULL;

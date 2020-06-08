@@ -187,15 +187,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
     while ((edge = (struct edge *)pop(edges)) != NULL) {
-        if (!edge->b)
-        {
-            struct destroy_edge_id_request *data = malloc(sizeof(struct destroy_edge_id_request));
-            data->a = vertex;
-            data->id = edge->id;
-            struct request *req = CREATE_REQUEST(DESTROY_EDGE, data);
-            submit_request(graph, req);
-        }
-        else if ((int)(edge->f)(edge_argv) >= 0)
+        if ((int)(edge->f)(edge_argv) >= 0)
         {
             if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
             {

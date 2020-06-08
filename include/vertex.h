@@ -28,6 +28,7 @@ struct vertex{
     union shared_edge *shared; 
     pthread_mutex_t lock;
     struct AVLTree* edge_tree;
+    struct AVLTree* joining_vertices;
 };
 
 struct vertex_request{

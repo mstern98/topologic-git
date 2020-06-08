@@ -28,9 +28,25 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(voi
         return NULL;
     }
 
+    vertex->joining_vertices = init_avl();
+    if (!vertex->joining_vertices) {
+        free(vertex->shared);
+        vertex->shared = NULL;
+        destroy_avl(vertex->edge_tree);
+        vertex->edge_tree = NULL;
+        free(vertex);
+        vertex = NULL;
+        pthread_mutex_unlock(&graph->lock);
+        return NULL;
+    }
+
     if (insert(graph->vertices, vertex, id) < 0) {
         free(vertex->shared);
         vertex->shared = NULL;
+        destroy_avl(vertex->edge_tree);
+        vertex->edge_tree = NULL;
+        destroy_avl(vertex->joining_vertices);
+        vertex->joining_vertices = NULL;
         free(vertex);
         vertex = NULL;
         pthread_mutex_unlock(&graph->lock);
@@ -40,6 +56,10 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(voi
     if (pthread_mutex_init(&vertex->lock, NULL) < 0) {
         free(vertex->shared);
         vertex->shared = NULL;
+        destroy_avl(vertex->edge_tree);
+        vertex->edge_tree = NULL;
+        destroy_avl(vertex->joining_vertices);
+        vertex->joining_vertices = NULL;
         free(vertex);
         vertex = NULL;
         pthread_mutex_unlock(&graph->lock);
@@ -66,13 +86,6 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
         return -1;
     }
 
-    vertex->id = 0;
-
-    free(vertex->shared);
-    vertex->shared = NULL;
-
-    vertex->glbl = NULL;
-
     struct stack *stack = init_stack();
     stackify(vertex->edge_tree, stack);
     vertex->edge_tree = NULL;
@@ -87,8 +100,20 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
         edge = NULL;
     }
 
+    stackify(vertex->joining_vertices, stack);
+    vertex->joining_vertices = NULL;
+    struct vertex *joining_vertex = NULL;
+    while ((joining_vertex = (struct vertex *) pop(stack)) != NULL) {
+        remove_edge(joining_vertex, vertex);
+    }
+
     destroy_stack(stack);
     stack = NULL;
+    
+    vertex->id = 0;
+    free(vertex->shared);
+    vertex->shared = NULL;
+    vertex->glbl = NULL;
     
     pthread_mutex_unlock(&vertex->lock);
     pthread_mutex_destroy(&vertex->lock);
