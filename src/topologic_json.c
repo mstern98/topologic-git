@@ -12,7 +12,7 @@ void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent)
         if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) 
             printf("%s\tf: %p\n", indent, edge->f);
         if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
-            printf("%s\tglblc: %d\n", indent, edge->glblc);            
+                        
             printf("%s\tglbl: %p\n", indent, edge->glbl);
         }
     }
@@ -23,10 +23,10 @@ void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent)
 void print_state(struct graph *graph)
 {
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
-    int vertex_id = 0, glblc = 0;
-    void *glbl = NULL;
-    int edge_sharedc;
-    void *edge_shared = NULL;
+    int vertex_id = 0;
+		void *glbl = NULL;
+    //int edge_sharedc;
+    union shared_edge *edge_shared = NULL;
     struct vertex_result *(*f)(void *) = NULL;
     struct vertex *v = NULL;
     struct stack *stack = init_stack();
@@ -35,9 +35,7 @@ void print_state(struct graph *graph)
     while ((v = (struct vertex *) pop(stack)) != NULL) {
         vertex_id = v->id;
         f = v->f;
-        glblc = v->glblc;
-        edge_sharedc = v->edge_sharedc;
-        edge_shared = v->edge_shared;
+        edge_shared = v->shared;
         glbl = v->glbl;
 
         //TODO: Setup on Verbose
@@ -49,10 +47,10 @@ void print_state(struct graph *graph)
                 printf("\t\tf: %p\n", f);
             }
             if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
-                printf("\t\tglblc: %d\n", glblc);
+                
                 printf("\t\tglbl: %p\n", glbl);
                 printf("\t\tglbl: [");
-                printf("\t\tedge_sharedc: %d\n", edge_sharedc);
+                //printf("\t\tedge_sharedc: %d\n", edge_sharedc);
                 printf("\t\tedge_shared: %p\n", edge_shared);
             }
             if ((graph->lvl_verbose & EDGES) == EDGES) {
