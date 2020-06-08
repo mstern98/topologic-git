@@ -29,7 +29,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), i
     //MAKE UNIQUE
     edge->id = b->id;
 
-    if(insert(a->edge_tree, (void *) edge, edge->id) < 0){
+    if(insert(a->edge_tree, edge, edge->id) < 0){
         free(edge);
         edge = NULL;
         pthread_mutex_unlock(&a->lock); 
