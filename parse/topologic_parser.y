@@ -23,16 +23,42 @@ extern FILE *yyin;
 %token L_SQUARE
 %token R_SQUARE
 %token COMMA
+%token MAX_STATE
+%token LVL_VERBOSE
+%token CONTEXT
+%token MEM_OPT
 %token <val> VALUE
 
 %start json
 %%
 json: L_BRACKET GRAPH   {*graph = GRAPH_INIT();}  
-      COLON L_BRACKET g R_BRACKET 
-      R_BRACKET 
+      COLON L_BRACKET content R_BRACKET
+      R_BRACKET
       ;
-g:  /* empty */
-    | vs COMMA es COMMA bes
+content: /* empty */{printf(" NIL \n");}
+        | params g
+        | g
+        | params
+        ;
+params: verb COMMA params
+        | state COMMA params
+        | mem_opt COMMA params
+        | context COMMA params
+        | verb
+        | mem_opt
+        | context
+        | state
+        |
+        ;
+state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
+     ;
+verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = $3;}
+    ;
+context: CONTEXT COLON VALUE {(*graph)->context = $3;}
+       ;
+mem_opt: MEM_OPT COLON VALUE {(*graph)->mem_option = $3;}
+       ;
+g:  vs COMMA es COMMA bes
     | vs COMMA bes COMMA es
     | vs COMMA es
     | vs COMMA bes

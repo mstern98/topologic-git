@@ -82,7 +82,7 @@ enum VERBOSITY
 struct graph
 {
         enum CONTEXT context;
-				enum MEM_OPTION mem_option;
+	enum MEM_OPTION mem_option;
         struct AVLTree *vertices;
         struct stack *start;
         struct stack *modify;

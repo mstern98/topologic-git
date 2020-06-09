@@ -1,5 +1,9 @@
 {
     "graph" : {
+        "context" : 0,
+        "mem_option" : 1,
+        "lvl_verbose": 2,
+        "max_state": 4,
         "vertices" : [
             1, 2, 3, 4
         ],

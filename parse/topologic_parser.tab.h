@@ -55,7 +55,11 @@ extern int yydebug;
     L_SQUARE = 265,
     R_SQUARE = 266,
     COMMA = 267,
-    VALUE = 268
+    MAX_STATE = 268,
+    LVL_VERBOSE = 269,
+    CONTEXT = 270,
+    MEM_OPT = 271,
+    VALUE = 272
   };
 #endif
 
@@ -69,7 +73,7 @@ union YYSTYPE
     struct graph *graph;
     int val;
 
-#line 73 "parse/topologic_parser.tab.h" /* yacc.c:1909  */
+#line 77 "parse/topologic_parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

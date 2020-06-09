@@ -16,5 +16,9 @@ blanks          [ \t\n]+
 "["             return(L_SQUARE);
 "]"             return(R_SQUARE);
 ","             return(COMMA);
+"max_state"     return(MAX_STATE);
+"lvl_verbose"   return(LVL_VERBOSE);
+"mem_option"    return(MEM_OPT);
+"context"       return(CONTEXT);
 [0-9]+          {yylval.val = atoi(yytext); return(VALUE);}
 %%
