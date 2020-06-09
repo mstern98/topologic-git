@@ -65,12 +65,13 @@
 #line 1 "parse/topologic_parser.y" /* yacc.c:339  */
 
 #include "../include/topologic.h"
-struct vertex_result *f(void * args) {return NULL;}
+struct vertex_result *f(void *args) {return NULL;}
+int edge_f(void *args) {return 0;}
 int yylex();
 void yyerror(struct graph** graph, const char *s);
 extern FILE *yyin;
 
-#line 74 "parse/topologic_parser.tab.c" /* yacc.c:339  */
+#line 75 "parse/topologic_parser.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -115,8 +116,7 @@ extern int yydebug;
     L_SQUARE = 265,
     R_SQUARE = 266,
     COMMA = 267,
-    QUOTE = 268,
-    VALUE = 269
+    VALUE = 268
   };
 #endif
 
@@ -125,7 +125,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 9 "parse/topologic_parser.y" /* yacc.c:355  */
+#line 10 "parse/topologic_parser.y" /* yacc.c:355  */
 
     struct graph *graph;
     int val;
@@ -389,21 +389,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   38
+#define YYLAST   45
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  15
+#define YYNTOKENS  14
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  19
+#define YYNRULES  24
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  41
+#define YYNSTATES  50
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   269
+#define YYMAXUTOK   268
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -438,15 +438,16 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12,    13,    14
+       5,     6,     7,     8,     9,    10,    11,    12,    13
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    30,    30,    32,    33,    34,    35,    36,    38,    40,
-      41,    42,    44,    46,    47,    48,    50,    52,    53,    54
+       0,    30,    30,    30,    34,    35,    36,    37,    38,    39,
+      41,    43,    44,    44,    46,    48,    50,    51,    51,    53,
+      55,    57,    58,    58,    60
 };
 #endif
 
@@ -457,8 +458,8 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "L_BRACKET", "R_BRACKET", "GRAPH",
   "COLON", "VERTICES_", "EDGE_", "BI_EDGE_", "L_SQUARE", "R_SQUARE",
-  "COMMA", "QUOTE", "VALUE", "$accept", "json", "g", "vs", "v", "es", "e",
-  "bes", "be", YY_NULLPTR
+  "COMMA", "VALUE", "$accept", "json", "$@1", "g", "vs", "v", "$@2", "es",
+  "e", "$@3", "bes", "be", "$@4", YY_NULLPTR
 };
 #endif
 
@@ -468,14 +469,14 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269
+     265,   266,   267,   268
 };
 # endif
 
-#define YYPACT_NINF -22
+#define YYPACT_NINF -33
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-22)))
+  (!!((Yystate) == (-33)))
 
 #define YYTABLE_NINF -1
 
@@ -486,11 +487,11 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -1,    -2,     4,     0,   -22,     2,     1,    -6,     3,   -22,
-      -8,    -5,     5,     6,     7,   -22,     8,    10,    11,    12,
-       9,    -5,   -22,    -4,    13,   -22,   -22,    16,    19,    18,
-      21,    14,   -22,    15,   -22,    20,    22,    -4,    13,   -22,
-     -22
+      -1,    -2,     4,   -33,   -33,     0,     2,     1,     3,     6,
+      -5,     5,     7,    -8,     8,   -33,    10,    11,    12,    13,
+      14,     9,    15,    16,    18,    20,   -33,   -33,    17,    19,
+     -33,   -33,     8,    23,    27,    28,    29,   -33,    22,   -33,
+      24,   -33,    26,    30,   -33,   -33,    17,    19,   -33,   -33
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -498,23 +499,25 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     3,     1,     0,     0,     7,     0,     2,
-       0,     9,     0,     0,     5,     6,    11,     0,     0,     0,
-       0,     9,     8,    13,    17,     4,    10,     0,     0,     0,
-       0,     0,    12,     0,    16,    15,    19,    13,    17,    14,
-      18
+       0,     0,     0,     2,     1,     0,     0,     4,     0,     0,
+       9,     0,     0,     0,    11,     3,     0,     0,     7,     8,
+      14,     0,     0,     0,     0,     0,    12,    10,    16,    21,
+       5,     6,    11,     0,     0,     0,     0,    13,     0,    15,
+       0,    20,    19,    24,    17,    22,    16,    21,    18,    23
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -22,   -22,   -22,   -22,    17,   -22,   -21,    -3,   -12
+     -33,   -33,   -33,   -33,   -33,   -20,   -33,   -12,   -32,   -33,
+      21,   -25,   -33
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     6,     7,    17,    14,    28,    15,    30
+      -1,     2,     5,     9,    10,    21,    32,    18,    34,    46,
+      19,    36,    47
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -522,43 +525,47 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      12,    13,     1,     3,     4,     9,    10,     5,     8,    16,
-      27,    18,    19,    11,    23,    24,    39,    25,    13,    20,
-      21,    22,    31,    32,    33,    34,    40,    29,    35,    36,
-       0,     0,    37,     0,    38,     0,     0,     0,    26
+      16,    17,     1,     3,     4,     7,     6,    13,     8,    11,
+      12,    15,    37,    31,    48,    14,    22,    23,    28,    29,
+      27,    20,    49,     0,    24,    25,    26,    17,    16,    38,
+      33,    39,    35,    41,    40,    42,     0,    43,    44,     0,
+       0,     0,    45,     0,     0,    30
 };
 
 static const yytype_int8 yycheck[] =
 {
-       8,     9,     3,     5,     0,     4,    12,     7,     6,    14,
-      14,     6,     6,    10,     3,     3,    37,    20,     9,    12,
-      12,    11,     6,     4,     6,     4,    38,    14,    14,    14,
-      -1,    -1,    12,    -1,    12,    -1,    -1,    -1,    21
+       8,     9,     3,     5,     0,     3,     6,    12,     7,     6,
+       4,     4,    32,    25,    46,    10,     6,     6,     3,     3,
+      11,    13,    47,    -1,    12,    12,    12,     9,     8,     6,
+      13,     4,    13,     4,     6,    13,    -1,    13,    12,    -1,
+      -1,    -1,    12,    -1,    -1,    24
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,    16,     5,     0,     7,    17,    18,     6,     4,
-      12,    10,     8,     9,    20,    22,    14,    19,     6,     6,
-      12,    12,    11,     3,     3,    22,    19,    14,    21,    14,
-      23,     6,     4,     6,     4,    14,    14,    12,    12,    21,
-      23
+       0,     3,    15,     5,     0,    16,     6,     3,     7,    17,
+      18,     6,     4,    12,    10,     4,     8,     9,    21,    24,
+      13,    19,     6,     6,    12,    12,    12,    11,     3,     3,
+      24,    21,    20,    13,    22,    13,    25,    19,     6,     4,
+       6,     4,    13,    13,    12,    12,    23,    26,    22,    25
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    15,    16,    17,    17,    17,    17,    17,    18,    19,
-      19,    19,    20,    21,    21,    21,    22,    23,    23,    23
+       0,    14,    16,    15,    17,    17,    17,    17,    17,    17,
+      18,    19,    20,    19,    19,    21,    22,    23,    22,    22,
+      24,    25,    26,    25,    25
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     4,     0,     5,     3,     3,     1,     5,     0,
-       3,     1,     5,     0,     5,     3,     5,     0,     5,     3
+       0,     2,     0,     8,     0,     5,     5,     3,     3,     1,
+       5,     0,     0,     4,     1,     5,     0,     0,     6,     3,
+       5,     0,     0,     6,     3
 };
 
 
@@ -1238,54 +1245,48 @@ yyreduce:
     {
         case 2:
 #line 30 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {*graph = GRAPH_INIT(); fprintf(stderr, "created GRAPH: %p\n", *graph);}
-#line 1243 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {*graph = GRAPH_INIT();}
+#line 1250 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 3:
-#line 32 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, " IN G\n");}
-#line 1249 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 10:
-#line 41 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {create_vertex(*graph, f, (yyvsp[-2].val), NULL);}
-#line 1255 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 11:
-#line 42 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {create_vertex(*graph, f, (yyvsp[0].val), NULL);}
-#line 1261 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+  case 12:
+#line 44 "parse/topologic_parser.y" /* yacc.c:1646  */
+    {create_vertex(*graph, f, (yyvsp[-1].val), NULL);}
+#line 1256 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 47 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-4].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-2].val)); if (!a && !b) create_edge(a, b, NULL, NULL);}
-#line 1267 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 46 "parse/topologic_parser.y" /* yacc.c:1646  */
+    {create_vertex(*graph, f, (yyvsp[0].val), NULL);}
+#line 1262 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 15:
-#line 48 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (!a && !b) create_edge(a, b, NULL, NULL);}
-#line 1273 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 18:
-#line 53 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-4].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-2].val)); if (!a && !b) create_edge(a, b, NULL, NULL);}
-#line 1279 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+  case 17:
+#line 51 "parse/topologic_parser.y" /* yacc.c:1646  */
+    {struct vertex *a = find((*graph)->vertices, (yyvsp[-3].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-1].val)); if (a && b) create_edge(a, b, edge_f, NULL);}
+#line 1268 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 54 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (!a && !b) create_edge(a, b, NULL, NULL);}
-#line 1285 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 53 "parse/topologic_parser.y" /* yacc.c:1646  */
+    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (a && b) create_edge(a, b, edge_f, NULL);}
+#line 1274 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 22:
+#line 58 "parse/topologic_parser.y" /* yacc.c:1646  */
+    {struct vertex *a = find((*graph)->vertices, (yyvsp[-3].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-1].val)); if (a && b) create_bi_edge(a, b, edge_f, NULL, NULL, NULL);}
+#line 1280 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 24:
+#line 60 "parse/topologic_parser.y" /* yacc.c:1646  */
+    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (a && b) create_bi_edge(a, b, edge_f, NULL, NULL, NULL);}
+#line 1286 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1289 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 1290 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1513,7 +1514,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 56 "parse/topologic_parser.y" /* yacc.c:1906  */
+#line 62 "parse/topologic_parser.y" /* yacc.c:1906  */
 
 
 void yyerror(struct graph** graph, const char *s) {
@@ -1524,8 +1525,6 @@ void yyerror(struct graph** graph, const char *s) {
 
 struct graph *parse_json(FILE *file) {
     if (!file) return NULL;
-
-    fprintf(stderr, "PARSE JSON\n");
     yyin = file;
     struct graph *graph = NULL;
     yyparse(&graph);

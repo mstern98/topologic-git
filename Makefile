@@ -6,8 +6,8 @@ OBJ=$(SRC:.c=.o)
 AR=ar
 
 BIN=topologic
-SRC=$(wildcard src/*.c) $(wildcard parse/*.c)
-INCLUDES= $(wildcard include/*.h) $(wildcard parse/*.h)
+SRC=$(wildcard src/*.c)
+INCLUDES= $(wildcard include/*.h)
 
 FLEX=parse/topologic_parser.lex
 BISON=parse/topologic_parser.y
@@ -31,8 +31,8 @@ $(BISON_C): $(BISON)
 	bison -d $(BISON) -o $(BISON_C)
 	$(CC) -g -c $(BISON_C) -o $(BISON_OBJ)
 
-$(BIN): $(OBJ) $(INCLUDES)
-	$(AR) rcs libtopologic.a $(OBJ) 
+$(BIN): $(OBJ) $(INCLUDES) $(BISON_OBJ) $(FLEX_OBJ)
+	$(AR) rcs libtopologic.a $(OBJ) $(BISON_OBJ) $(FLEX_OBJ)
 
 $(TESTS): $(BIN) $(OBJ) $(TEST_OBJ)
 	$(CC) $(CFLAGS) -o $@ libtopologic.a $(TEST_DIR)/$(@F).o $(LDFLAGS)

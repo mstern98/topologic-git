@@ -16,6 +16,5 @@ blanks          [ \t\n]+
 "["             return(L_SQUARE);
 "]"             return(R_SQUARE);
 ","             return(COMMA);
-"[0-9]+"        {yylval.val = atoi(yytext); return(VALUE);}
-'\"'            return(QUOTE);
+[0-9]+          {yylval.val = atoi(yytext); return(VALUE);}
 %%

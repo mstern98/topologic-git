@@ -55,8 +55,7 @@ extern int yydebug;
     L_SQUARE = 265,
     R_SQUARE = 266,
     COMMA = 267,
-    QUOTE = 268,
-    VALUE = 269
+    VALUE = 268
   };
 #endif
 
@@ -65,12 +64,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 9 "parse/topologic_parser.y" /* yacc.c:1909  */
+#line 10 "parse/topologic_parser.y" /* yacc.c:1909  */
 
     struct graph *graph;
     int val;
 
-#line 74 "parse/topologic_parser.tab.h" /* yacc.c:1909  */
+#line 73 "parse/topologic_parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

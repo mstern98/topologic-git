@@ -104,11 +104,11 @@ Will store the edges in edge_a and edge_b.
 If edge_a_to_b or edge_b_to_a is NULL it will not.
 **/
 int create_bi_edge(struct vertex *a,
-                             struct vertex *b,
-                             int (*f)(void *),
-                             void *glbl,
-                             struct edge **edge_a_to_b,
-                             struct edge **edge_b_to_a);
+                   struct vertex *b,
+                   int (*f)(void *),
+                   void *glbl,
+                   struct edge **edge_a_to_b,
+                   struct edge **edge_b_to_a);
 #define CREATE_NULL_BI_EDGE(a, b, f) create_bi_edge(a, b, f, NULL, NULL, NULL)
 #define CREATE_BI_EDGE(a, b, f, a_to_b, b_to_a) create_bi_edge(a, b, f, NULL, a_to_b, b_to_a)
 
