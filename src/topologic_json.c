@@ -100,8 +100,11 @@ void print(struct graph *graph)
         pthread_mutex_unlock(&graph->lock);
         return;
     }
-    FILE *out = fdopen(fd, "w+");
+
+    FILE *out = fdopen(fd, "w");
     if (!out) {
+        perror("");
+        fprintf(stderr, "FAILED OUT\n");
         close(fd);
         close(dirfd);
         pthread_mutex_unlock(&graph->lock);
@@ -120,7 +123,7 @@ void print(struct graph *graph)
     fprintf(out, " }\n");
     fprintf(out, "}\n");
 
-    close(fd);
+    fclose(out);
     close(dirfd);
     pthread_mutex_unlock(&graph->lock);
 }
