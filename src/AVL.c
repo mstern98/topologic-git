@@ -1,4 +1,4 @@
-#include "../include/topologic.h"
+#include "../include/AVL.h"
 
 struct AVLTree *init_avl() {
     struct AVLTree *tree = malloc(sizeof(struct AVLTree));

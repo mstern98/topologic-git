@@ -1,4 +1,5 @@
 #include "../include/topologic.h"
+#include "../parse/topologic_parser.tab.h"
 
 void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent) {
     struct stack *stack = init_stack();

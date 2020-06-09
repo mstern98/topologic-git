@@ -2,6 +2,7 @@
 #define __TOPOLOGIC_STACK__
 //#include "./topologic.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 
 struct stack_node {

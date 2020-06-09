@@ -306,6 +306,12 @@ Prints the graph with desired output
 void print(struct graph *graph);
 
 /**
+@PARAM file: graph input file
+@RETURN the graph specified in the file
+**/
+struct graph *parse_json(FILE *file);
+
+/**
 @PARAM graph: the graph
 @RETURN -1 for fail;
         0 for success

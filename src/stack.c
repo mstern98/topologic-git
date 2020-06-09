@@ -1,4 +1,4 @@
-#include "../include/topologic.h"
+#include "../include/stack.h"
 
 struct stack *init_stack() {
     struct stack *stack = malloc(sizeof(struct stack));
