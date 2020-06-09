@@ -21,6 +21,7 @@ struct edge{
     struct vertex* a;
     struct vertex* b;
     enum edge_type edge_type;
+    struct edge* bi_edge;
     pthread_mutex_t bi_edge_lock;
 };
 

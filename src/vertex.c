@@ -94,6 +94,12 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
         pthread_mutex_lock(&(edge->b->lock));
         remove_ID(edge->b->joining_vertices, vertex->id);
         pthread_mutex_unlock(&(edge->b->lock));
+        if (edge->edge_type == BI_EDGE) {
+            pthread_mutex_destroy(&edge->bi_edge_lock);
+            edge->bi_edge->bi_edge = NULL;
+            edge->bi_edge->edge_type = EDGE;
+        }
+        edge->bi_edge = NULL;
         edge->a = NULL;
         edge->b = NULL;
         edge->id = 0;

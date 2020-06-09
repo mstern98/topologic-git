@@ -19,6 +19,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
     edge->edge_type = EDGE;
     edge->a = a;
     edge->b = b;
+    edge->bi_edge = NULL;
 
     edge->glbl = glbl;
 
@@ -86,6 +87,9 @@ int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
     b_to_a->edge_type = BI_EDGE;
     b_to_a->bi_edge_lock = a_to_b->bi_edge_lock;
 
+    a_to_b->bi_edge = b_to_a;
+    b_to_a->bi_edge = a_to_b;
+
     if (edge_a_to_b) *edge_a_to_b = a_to_b;
     if (edge_b_to_a) *edge_b_to_a = b_to_a;
     return 0;
@@ -111,9 +115,13 @@ int remove_edge(struct vertex *a, struct vertex *b) {
     edge->id = 0;
 
     edge->glbl = NULL;
-    
-    if (edge->edge_type == BI_EDGE)
+
+    if (edge->edge_type == BI_EDGE) {
         pthread_mutex_destroy(&edge->bi_edge_lock);
+        edge->bi_edge->bi_edge = NULL;
+        edge->bi_edge->edge_type = EDGE;
+    }
+    edge->bi_edge = NULL;
     
     free(edge);
     edge = NULL;
@@ -137,9 +145,13 @@ int remove_edge_id(struct vertex *a, int id) {
     edge->id = 0;
     edge->glbl = NULL;
 
-    if (edge->edge_type == BI_EDGE)
+    if (edge->edge_type == BI_EDGE) {
         pthread_mutex_destroy(&edge->bi_edge_lock);
-    
+        edge->bi_edge->bi_edge = NULL;
+        edge->bi_edge->edge_type = EDGE;
+    }
+    edge->bi_edge = NULL;
+
     free(edge);
     edge = NULL;
     pthread_mutex_unlock(&a->lock); 
@@ -160,7 +172,10 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
     if (!a || !b) return -1;
     pthread_mutex_lock(&a->lock); 
     struct edge *edge = (struct edge *) find(a->edge_tree, b->id);
-    if (!edge) return -1;
+    if (!edge) {
+        pthread_mutex_unlock(&a->lock);
+        return -1;
+    }
     if (f) {
         edge->f = f;
     }
