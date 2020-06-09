@@ -91,14 +91,16 @@ void print(struct graph *graph)
     dup2(out_fd, fd);
 
     /**TODO: Print enums**/
-    printf("graph: {\n");
+    printf("{\n");
+    printf(" graph: {\n");
     printf("\tstate: %d\n\tmax state repeats: %d\n\ttimestamps: %d\n\tverbosity: %d\n\tnodes: %d\n", graph->state_count,
     graph->max_state_changes, 
     graph->snapshot_timestamp,
     graph->lvl_verbose,
     graph->vertices->size);
     print_state(graph);
-    printf("}\n");
+    printf(" }\n");
+    printf("}");
 
     close(fd);
     close(dirfd);
