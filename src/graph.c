@@ -1,6 +1,6 @@
 #include "../include/topologic.h"
 
-struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_timestamp, enum VERBOSITY lvl_verbose, enum CONTEXT context)
+struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_timestamp, enum VERBOSITY lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option)
 {
     struct graph *graph = malloc(sizeof(struct graph));
     if (!graph)
@@ -10,6 +10,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     graph->lvl_verbose = lvl_verbose;
     graph->context = context;
     graph->state_count = 0;
+		graph->mem_option = mem_option;
 
     if (pthread_mutex_init(&graph->lock, NULL) < 0)
     {

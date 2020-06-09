@@ -6,6 +6,7 @@ c_cpp_properties.json
 testing/avl_test
 testing/stack_test
 testing/graph_vertex_edge_test
+testing/mem_option_test
 testing/*.o
 src/*.o
 
