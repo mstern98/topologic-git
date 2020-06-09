@@ -7,6 +7,9 @@ testing/avl_test
 testing/stack_test
 testing/graph_vertex_edge_test
 testing/mem_option_test
+testing/generate_graph_json_test
 testing/*.o
+parse/topologic_parser.tab.c
+parse/topologic_parser.yy.c
 src/*.o
 
