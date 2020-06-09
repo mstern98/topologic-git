@@ -187,8 +187,12 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
     while ((edge = (struct edge *)pop(edges)) != NULL) {
+        if (edge->edge_type == BI_EDGE)
+            pthread_mutex_lock(&edge->bi_edge_lock);
         if ((int)(edge->f)(edge_argv) >= 0)
         {
+            if (edge->edge_type == BI_EDGE)
+                pthread_mutex_unlock(&edge->bi_edge_lock);
             if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
             {
                 pthread_mutex_lock(&graph->lock);
@@ -204,6 +208,8 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
             if (graph->context == SINGLE || graph->context == NONE)
                 break;
         }
+        else if (edge->edge_type == BI_EDGE)
+            pthread_mutex_lock(&edge->bi_edge_lock);
     }
     destroy_stack(edges);
 

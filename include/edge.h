@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include "./vertex.h"
 
+enum edge_type{
+    EDGE = 0,
+    BI_EDGE = 1
+};
+
 /** Edge **/
 struct edge{
     int id; //Hash for number passed in, 
@@ -15,6 +20,8 @@ struct edge{
     const void *const *a_vars; //To be shared among vertex a and shared edge
     struct vertex* a;
     struct vertex* b;
+    enum edge_type edge_type;
+    pthread_mutex_t bi_edge_lock;
 };
 
 struct edge_request{
