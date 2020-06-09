@@ -9,6 +9,8 @@ void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent)
         printf("%s\tid: %d\n", indent, edge->id);
         printf("%s\tfrom: %p\n", indent, edge->a);
         printf("%s\tto: %p\n", indent, edge->b);
+        printf("%s\tedge_type: %d\n", indent, edge->edge_type);
+        printf("%s\tbi_edge: %p\n", indent, edge->bi_edge);
         if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) 
             printf("%s\tf: %p\n", indent, edge->f);
         if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
