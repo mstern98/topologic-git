@@ -31,7 +31,7 @@ extern FILE *yyin;
 
 %start json
 %%
-json: L_BRACKET GRAPH   {*graph = GRAPH_INIT();}  
+json: L_BRACKET GRAPH   {*graph = GRAPH_INIT(); if (!(*graph)){fprintf(stderr, "Can't create graph\n"); return -1;}}  
       COLON L_BRACKET content R_BRACKET
       R_BRACKET
       ;
@@ -50,7 +50,7 @@ params: verb COMMA params
         | state
         |
         ;
-state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
+state: MAX_STATE COLON VALUE {if ($3 < 0) {fprintf(stderr, "Invalid Max State Changes %d\n", $3); return -1;} (*graph)->max_state_changes = $3;}
      ;
 verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = $3;}
     ;

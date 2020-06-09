@@ -1271,7 +1271,7 @@ yyreduce:
     {
         case 2:
 #line 34 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {*graph = GRAPH_INIT();}
+    {*graph = GRAPH_INIT(); if (!(*graph)){fprintf(stderr, "Can't create graph\n"); return -1;}}
 #line 1276 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1283,7 +1283,7 @@ yyreduce:
 
   case 17:
 #line 53 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {(*graph)->max_state_changes = (yyvsp[0].val);}
+    {if ((yyvsp[0].val) < 0) {fprintf(stderr, "Invalid Max State Changes %d\n", (yyvsp[0].val)); return -1;} (*graph)->max_state_changes = (yyvsp[0].val);}
 #line 1288 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 

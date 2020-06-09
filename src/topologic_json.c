@@ -1,33 +1,38 @@
 #include "../include/topologic.h"
-#include "../parse/topologic_parser.tab.h"
 
-void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent) {
+void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent, FILE *out) {
     struct stack *stack = init_stack();
     struct edge *edge = NULL;
     preorder(edges, stack);
-    printf("%sEdges: {", indent);
+    fprintf(out, "%s\"Edges\": {\n", indent);
     while ((edge = (struct edge *) pop(stack)) != NULL) {
-        printf("%s\tid: %d\n", indent, edge->id);
-        printf("%s\tfrom: %p\n", indent, edge->a);
-        printf("%s\tto: %p\n", indent, edge->b);
-        printf("%s\tedge_type: %d\n", indent, edge->edge_type);
-        printf("%s\tbi_edge: %p\n", indent, edge->bi_edge);
-        if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) 
-            printf("%s\tf: %p\n", indent, edge->f);
-        if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
-                        
-            printf("%s\tglbl: %p\n", indent, edge->glbl);
+        fprintf(out, "%s\t\"%d\": {\n", indent, edge->id);
+        fprintf(out, "%s\t\t\"id\": %d,\n", indent, edge->id);
+        fprintf(out, "%s\t\t\"from\": \"%p\",\n", indent, edge->a);
+        fprintf(out, "%s\t\t\"to\": \"%p\",\n", indent, edge->b);
+        fprintf(out, "%s\t\t\"edge_type\": %d,\n", indent, edge->edge_type);
+        fprintf(out, "%s\t\t\"bi_edge\": \"%p\"", indent, edge->bi_edge);
+        if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) {
+            fprintf(out, ",\n%s\t\t\"f\": \"%p\"", indent, edge->f);
         }
+        if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {  
+            fprintf(out, ",%s\t\t\"glbl\": \"%p\"", indent, edge->glbl);
+        }
+        fprintf(out, "\n%s\t}", indent);
+        if (stack->length > 0)
+            fprintf(out, ",\n");
+        else fprintf(out, "\n");
     }
+    fprintf(out, "%s}", indent);
     destroy_stack(stack);
 
 }
 
-void print_state(struct graph *graph)
+void print_state(struct graph *graph, FILE *out)
 {
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
     int vertex_id = 0;
-		void *glbl = NULL;
+	void *glbl = NULL;
     //int edge_sharedc;
     union shared_edge *edge_shared = NULL;
     struct vertex_result *(*f)(void *) = NULL;
@@ -35,6 +40,7 @@ void print_state(struct graph *graph)
     struct stack *stack = init_stack();
 
     inorder(graph->vertices, stack);
+    fprintf(out, "\t\"Vertices\": {\n");
     while ((v = (struct vertex *) pop(stack)) != NULL) {
         vertex_id = v->id;
         f = v->f;
@@ -43,33 +49,37 @@ void print_state(struct graph *graph)
 
         //TODO: Setup on Verbose
         if ((graph->lvl_verbose & VERTICES) == VERTICES) {
-            printf("\tVertex: {\n");
-            printf("\t\tid: %d\n", vertex_id);
-            printf("\t\tactive: %d\n", v->is_active);
+            fprintf(out, "\t\t\"%d\": {\n", vertex_id);
+            fprintf(out, "\t\t\t\"id\": %d,\n", vertex_id);
+            fprintf(out, "\t\t\t\"active\": %d", v->is_active);
             if ((graph->lvl_verbose & FUNCTIONS) == FUNCTIONS) {
-                printf("\t\tf: %p\n", f);
+                fprintf(out, ",\n\t\t\t\"f\": \"%p\"", f);
             }
             if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
-                
-                printf("\t\tglbl: %p\n", glbl);
-                printf("\t\tglbl: [");
-                //printf("\t\tedge_sharedc: %d\n", edge_sharedc);
-                printf("\t\tedge_shared: %p\n", edge_shared);
+                fprintf(out, ",\n\t\t\t\"glbl\": \"%p\",\n", glbl);
+                fprintf(out, "\t\t\t\"glbl\": [");
+                fprintf(out, "\t\t\t\"edge_shared\": \"%p\"", edge_shared);
             }
             if ((graph->lvl_verbose & EDGES) == EDGES) {
-                print_edges(graph, v->edge_tree, "\t\t\t");
+                fprintf(out, ",\n");
+                print_edges(graph, v->edge_tree, "\t\t\t", out);
             }
-            printf("\t},\n");
+            fprintf(out, "\n\t\t}");
         } else if ((graph->lvl_verbose & EDGES) == EDGES) {
-            print_edges(graph, v->edge_tree, "\t\t");
+            fprintf(out, "\t\t\"%d\": {\n", vertex_id);
+            print_edges(graph, v->edge_tree, "\t\t\t", out);
+            fprintf(out, "\t\t}");
         }
+        if (stack->length > 0) 
+            fprintf(out, ",\n");
+        else fprintf(out, "\n");
     }
+    fprintf(out, "\t}\n");
     destroy_stack(stack);
 }
 
 void print(struct graph *graph)
 {
-    int out_fd = fileno(stdout);
     if (!graph)
         return;
 
@@ -87,24 +97,30 @@ void print(struct graph *graph)
     int fd = openat(dirfd, buffer, O_CREAT | O_WRONLY, S_IRWXU);
     if (fd == -1) {
         close(dirfd);
+        pthread_mutex_unlock(&graph->lock);
         return;
     }
-    dup2(out_fd, fd);
+    FILE *out = fdopen(fd, "w+");
+    if (!out) {
+        close(fd);
+        close(dirfd);
+        pthread_mutex_unlock(&graph->lock);
+        return;
+    }
 
     /**TODO: Print enums**/
-    printf("{\n");
-    printf(" graph: {\n");
-    printf("\tstate: %d\n\tmax state repeats: %d\n\ttimestamps: %d\n\tverbosity: %d\n\tnodes: %d\n", graph->state_count,
+    fprintf(out, "{\n");
+    fprintf(out, " \"graph\": {\n");
+    fprintf(out, "\t\"state\": %d,\n\t\"max_state_repeats\": %d,\n\t\"timestamps\": %d,\n\t\"verbosity\": %d,\n\t\"nodes\": %d,\n", graph->state_count,
     graph->max_state_changes, 
     graph->snapshot_timestamp,
     graph->lvl_verbose,
     graph->vertices->size);
-    print_state(graph);
-    printf(" }\n");
-    printf("}");
+    print_state(graph, out);
+    fprintf(out, " }\n");
+    fprintf(out, "}\n");
 
     close(fd);
     close(dirfd);
-    dup2(fd, out_fd);
     pthread_mutex_unlock(&graph->lock);
 }

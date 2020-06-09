@@ -2,7 +2,7 @@
     "graph" : {
         "context" : 0,
         "mem_option" : 1,
-        "lvl_verbose": 2,
+        "lvl_verbose": 7,
         "max_state": 4,
         "vertices" : [
             1, 2, 3, 4
@@ -12,7 +12,8 @@
             "2" : 3
         },
         "bi_edges" : {
-            "1" : 4
+            "1" : 4,
+            "3" : 6
         }
     }
 }
