@@ -56,9 +56,10 @@ Creates a graph structures
 struct graph *graph_init(unsigned int max_state_changes,
                          unsigned int snapshot_timestamp,
                          enum VERBOSITY lvl_verbose,
-                         enum CONTEXT context);
+                         enum CONTEXT context,
+												 enum MEM_OPTION mem_option);
 #define MAX_STATE_CHANGES 100
-#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH)
+#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE)
 
 /**
 @PARAM graph: the graph
