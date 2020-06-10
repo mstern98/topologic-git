@@ -1,7 +1,7 @@
 CC=gcc
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
-CFLAGS=-Wall	-Werror	-g	#-O2
+CFLAGS=-Wall	-Werror	-g	-O2
 OBJ=$(SRC:.c=.o)
 AR=ar
 
@@ -22,7 +22,7 @@ TEST_SRC=$(wildcard testing/*.c)  #ADD MORE IF NEED BE
 TEST_OBJ=$(TEST_SRC:.c=.o)
 TEST_DIR=testing
 
-all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C)  $(BIN) $(TESTS)
+all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C) $(BIN) $(TESTS)
 
 $(FLEX_C):
 	flex $(FLEX)
