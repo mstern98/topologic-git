@@ -44,8 +44,10 @@ int submit_request(struct graph *graph, struct request *request)
     if (!graph || !request)
         return -1;
     int retval = 0;
-    pthread_mutex_lock(&graph->lock);
-    switch (request->request)
+		enum CONTEXT context = graph->context;
+		if(context!=SINGLE)
+			pthread_mutex_lock(&graph->lock);
+		switch (request->request)
     {
     case DESTROY_EDGE:
     case DESTROY_BI_EDGE:
@@ -59,8 +61,9 @@ int submit_request(struct graph *graph, struct request *request)
         retval = push(graph->modify, (void *)request);
         break;
     }
-    pthread_mutex_unlock(&graph->lock);
-    return retval;
+		if(context!=SINGLE)
+			pthread_mutex_unlock(&graph->lock);
+		return retval;
 }
 
 void procces_request(struct request *request)
@@ -148,7 +151,7 @@ void process_requests(struct graph *graph)
     if (!graph)
         return;
 
-    pthread_mutex_lock(&graph->lock);
+    if(graph->context!=SINGLE){pthread_mutex_lock(&graph->lock);}
 
     struct request *req = NULL;
     while ((req = (struct request *)pop(graph->modify)) != NULL)
@@ -158,7 +161,7 @@ void process_requests(struct graph *graph)
     while ((req = (struct request *)pop(graph->remove_vertices)) != NULL)
         procces_request(req);
 
-    pthread_mutex_unlock(&graph->lock);
+    if(graph->context!=SINGLE){pthread_mutex_unlock(&graph->lock);}
 }
 
 int destroy_request(struct request *request)

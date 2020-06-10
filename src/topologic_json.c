@@ -81,12 +81,13 @@ void print(struct graph *graph)
 {
     if (!graph)
         return;
-
-    pthread_mutex_lock(&graph->lock);
-    if (graph->lvl_verbose == NO_VERB)
+		if(graph->context!=SINGLE)
+			pthread_mutex_lock(&graph->lock);
+		if (graph->lvl_verbose == NO_VERB)
     {
-        pthread_mutex_unlock(&graph->lock);
-        return;
+        if(graph->context!=SINGLE)
+					pthread_mutex_unlock(&graph->lock);
+				return;
     }
 
     int dirfd = open("./", O_DIRECTORY | O_RDONLY);
@@ -96,8 +97,9 @@ void print(struct graph *graph)
     int fd = openat(dirfd, buffer, O_TRUNC | O_CREAT | O_WRONLY, S_IRWXU);
     if (fd == -1) {
         close(dirfd);
-        pthread_mutex_unlock(&graph->lock);
-        return;
+				if(graph->context!=SINGLE)
+					pthread_mutex_unlock(&graph->lock);
+				return;
     }
 
     FILE *out = fdopen(fd, "w");
@@ -106,8 +108,9 @@ void print(struct graph *graph)
         fprintf(stderr, "FAILED OUT\n");
         close(fd);
         close(dirfd);
-        pthread_mutex_unlock(&graph->lock);
-        return;
+				if(graph->context!=SINGLE)
+					pthread_mutex_unlock(&graph->lock);
+				return;
     }
 
     /**TODO: Print enums**/
@@ -124,5 +127,6 @@ void print(struct graph *graph)
 
     fclose(out);
     close(dirfd);
-    pthread_mutex_unlock(&graph->lock);
+		if(graph->context!=SINGLE)
+			pthread_mutex_unlock(&graph->lock);
 }
