@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #ifndef __TOPOLOGIC__
 #define __TOPOLOGIC__
 

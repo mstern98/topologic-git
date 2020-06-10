@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #include "../include/topologic.h"
 
 void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent, FILE *out)

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #include "../include/topologic.h"
 
 int start_set(struct graph *graph, int *id, int num_vertices)

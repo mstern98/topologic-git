@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #include "../include/topologic.h"
 
 struct edge *create_edge(struct graph* graph, struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl)

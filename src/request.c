@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #include "../include/topologic.h"
 
 struct request *create_request(enum REQUESTS request, void *args, void (*f)(void *))

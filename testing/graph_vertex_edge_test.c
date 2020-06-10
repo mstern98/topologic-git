@@ -1,5 +1,6 @@
-#include"../include/topologic.h"
+// SPDX-License-Identifier: MIT WITH bison-exception
 
+#include"../include/topologic.h"
 
 void test_graph_insert_vertex(struct graph*);
 //void test_run_single_enum(struct graph*);

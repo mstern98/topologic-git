@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #include "../include/topologic.h"
 
 struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(void *), int id, void *glbl) {

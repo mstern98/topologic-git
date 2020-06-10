@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT WITH bison-exception
+
 #include "../include/topologic.h"
 
 struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_timestamp, unsigned int max_loop, enum VERBOSITY lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option)
