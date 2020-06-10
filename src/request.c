@@ -10,7 +10,8 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     switch (request)
     {
     case GENERIC:
-        if(!f) {
+        if (!f)
+        {
             free(req);
             req = NULL;
             return NULL;
@@ -44,10 +45,10 @@ int submit_request(struct graph *graph, struct request *request)
     if (!graph || !request)
         return -1;
     int retval = 0;
-		enum CONTEXT context = graph->context;
-		if(context!=SINGLE)
-			pthread_mutex_lock(&graph->lock);
-		switch (request->request)
+    enum CONTEXT context = graph->context;
+    if (context != SINGLE)
+        pthread_mutex_lock(&graph->lock);
+    switch (request->request)
     {
     case DESTROY_EDGE:
     case DESTROY_BI_EDGE:
@@ -61,9 +62,9 @@ int submit_request(struct graph *graph, struct request *request)
         retval = push(graph->modify, (void *)request);
         break;
     }
-		if(context!=SINGLE)
-			pthread_mutex_unlock(&graph->lock);
-		return retval;
+    if (context != SINGLE)
+        pthread_mutex_unlock(&graph->lock);
+    return retval;
 }
 
 void procces_request(struct request *request)
@@ -77,25 +78,25 @@ void procces_request(struct request *request)
     }
     case DESTROY_EDGE_BY_ID:
     {
-        struct destroy_edge_id_request *args = (struct destroy_edge_id_request *) request->args;
+        struct destroy_edge_id_request *args = (struct destroy_edge_id_request *)request->args;
         remove_edge_id(args->a, args->id);
         break;
     }
     case DESTROY_EDGE:
     {
-        struct destroy_edge_request *args = (struct destroy_edge_request *) request->args;
+        struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
         remove_edge(args->a, args->b);
         break;
     }
     case DESTROY_BI_EDGE:
     {
-        struct destroy_edge_request *args = (struct destroy_edge_request *) request->args;
+        struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
         remove_bi_edge(args->a, args->b);
         break;
     }
     case DESTROY_VERTEX:
     {
-        struct destroy_vertex_request *args = (struct destroy_vertex_request *) request->args;
+        struct destroy_vertex_request *args = (struct destroy_vertex_request *)request->args;
         remove_vertex(args->graph, args->vertex);
         break;
     }
@@ -151,7 +152,10 @@ void process_requests(struct graph *graph)
     if (!graph)
         return;
 
-    if(graph->context!=SINGLE){pthread_mutex_lock(&graph->lock);}
+    if (graph->context != SINGLE)
+    {
+        pthread_mutex_lock(&graph->lock);
+    }
 
     struct request *req = NULL;
     while ((req = (struct request *)pop(graph->modify)) != NULL)
@@ -161,7 +165,10 @@ void process_requests(struct graph *graph)
     while ((req = (struct request *)pop(graph->remove_vertices)) != NULL)
         procces_request(req);
 
-    if(graph->context!=SINGLE){pthread_mutex_unlock(&graph->lock);}
+    if (graph->context != SINGLE)
+    {
+        pthread_mutex_unlock(&graph->lock);
+    }
 }
 
 int destroy_request(struct request *request)

@@ -10,7 +10,7 @@ struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_t
     graph->lvl_verbose = lvl_verbose;
     graph->context = context;
     graph->state_count = 0;
-		graph->mem_option = mem_option;
+    graph->mem_option = mem_option;
 
     if (pthread_mutex_init(&graph->lock, NULL) < 0)
     {
@@ -118,7 +118,7 @@ void destroy_graph_stack(struct stack *stack)
     if (!stack)
         return;
     struct request *request = NULL;
-    while ((request = (struct request *) pop(stack)) != NULL)
+    while ((request = (struct request *)pop(stack)) != NULL)
     {
         destroy_request(request);
     }
@@ -136,7 +136,7 @@ void destroy_graph_avl(struct graph *graph, struct AVLTree *tree)
         return;
     preorder(tree, tree_stack);
     struct vertex *vertex = NULL;
-    while ((vertex = (struct vertex *) pop(tree_stack)) != NULL)
+    while ((vertex = (struct vertex *)pop(tree_stack)) != NULL)
     {
         remove_vertex(graph, vertex);
     }
@@ -152,14 +152,20 @@ int destroy_graph(struct graph *graph)
         return -1;
     graph->state = TERMINATE;
 
-    if (graph->red_vertex_count > 0) {
+    if (graph->red_vertex_count > 0)
+    {
         pthread_cond_signal(&graph->red_cond);
-        while (graph->red_vertex_count > 0) {}
+        while (graph->red_vertex_count > 0)
+        {
+        }
     }
 
-    if (graph->black_vertex_count > 0) {
+    if (graph->black_vertex_count > 0)
+    {
         pthread_cond_signal(&graph->black_cond);
-        while (graph->black_vertex_count > 0) {}
+        while (graph->black_vertex_count > 0)
+        {
+        }
     }
 
     destroy_graph_avl(graph, graph->vertices);

@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include "./stack.h"
 
-struct AVLNode {
+struct AVLNode
+{
     void *data;
     int id;
     int height;
@@ -13,7 +14,8 @@ struct AVLNode {
     struct AVLNode *right;
 };
 
-struct AVLTree{
+struct AVLTree
+{
     struct AVLNode *root;
     int size;
 };

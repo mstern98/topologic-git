@@ -4,13 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-struct stack_node {
+struct stack_node
+{
     void *data;
     struct stack_node *next;
 };
 
-struct stack{
+struct stack
+{
     struct stack_node *root;
     int length;
 };

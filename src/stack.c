@@ -1,8 +1,10 @@
 #include "../include/stack.h"
 
-struct stack *init_stack() {
+struct stack *init_stack()
+{
     struct stack *stack = malloc(sizeof(struct stack));
-    if (!stack) {
+    if (!stack)
+    {
         return NULL;
     }
     stack->root = NULL;
@@ -10,8 +12,10 @@ struct stack *init_stack() {
     return stack;
 }
 
-void *pop(struct stack *stack) {
-    if (!stack || stack->length <= 0) {
+void *pop(struct stack *stack)
+{
+    if (!stack || stack->length <= 0)
+    {
         return NULL;
     }
 
@@ -23,31 +27,37 @@ void *pop(struct stack *stack) {
     node->data = NULL;
     free(node);
     node = NULL;
-    
+
     return data;
 }
 
-void *get(struct stack *stack, int index) {
-    if (index < 0 || !stack || index > stack->length) {
+void *get(struct stack *stack, int index)
+{
+    if (index < 0 || !stack || index > stack->length)
+    {
         return NULL;
     }
 
     int i = 0;
     struct stack_node *node = stack->root;
-    for (i = 0; i <= index; i++) {
+    for (i = 0; i <= index; i++)
+    {
         node = node->next;
     }
 
     return node->data;
 }
 
-int push(struct stack *stack, void *data) {
-    if (!stack) {
+int push(struct stack *stack, void *data)
+{
+    if (!stack)
+    {
         return -1;
     }
 
     struct stack_node *node = malloc(sizeof(struct stack_node));
-    if (!node) {
+    if (!node)
+    {
         return -1;
     }
 
@@ -58,11 +68,14 @@ int push(struct stack *stack, void *data) {
     return 0;
 }
 
-void destroy_stack(struct stack *stack) {
-    if (!stack) return;
+void destroy_stack(struct stack *stack)
+{
+    if (!stack)
+        return;
     struct stack_node *node = stack->root;
     struct stack_node *prev = NULL;
-    while (node != NULL) {
+    while (node != NULL)
+    {
         prev = node;
         node = node->next;
         prev->next = NULL;

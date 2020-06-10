@@ -31,7 +31,8 @@
 #include "./request.h"
 #include "./graph.h"
 
-struct fireable{
+struct fireable
+{
         struct graph *graph;
         struct vertex *vertex;
         void *args;
@@ -42,7 +43,7 @@ struct fireable{
  Wrapper function for fire, fire_1
 @PARAM vargp: arguments 
 **/
-void* fire_pthread(void* vargp);
+void *fire_pthread(void *vargp);
 
 /**
 @PARAM max_state_changes: # state changes before entering 
@@ -57,7 +58,7 @@ struct graph *graph_init(unsigned int max_state_changes,
                          unsigned int snapshot_timestamp,
                          enum VERBOSITY lvl_verbose,
                          enum CONTEXT context,
-												 enum MEM_OPTION mem_option);
+                         enum MEM_OPTION mem_option);
 #define MAX_STATE_CHANGES 100
 #define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE)
 
@@ -284,7 +285,6 @@ struct request *create_request(enum REQUESTS request,
                                void (*f)(void *));
 
 #define CREATE_REQUEST(request, args) create_request(request, args, NULL)
-
 
 /**
 @PARAM graph: the graph
