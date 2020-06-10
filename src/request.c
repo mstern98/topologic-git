@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT WITH bison-exception
+// Copyright © 2020 Matthew Stern, Benjamin Michalowicz
 
 #include "../include/topologic.h"
 

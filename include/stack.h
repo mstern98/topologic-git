@@ -1,6 +1,9 @@
+/* SPDX-License-Identifier: MIT WITH bison-exception */
+/* Copyright © 2020 Matthew Stern, Benjamin Michalowicz */
+
 #ifndef __TOPOLOGIC_STACK__
 #define __TOPOLOGIC_STACK__
-//#include "./topologic.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 

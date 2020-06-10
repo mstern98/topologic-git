@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT WITH bison-exception
+/* SPDX-License-Identifier: MIT WITH bison-exception */
+/* Copyright © 2020 Matthew Stern, Benjamin Michalowicz */
 
 #ifndef __TOPOLOGIC_REQUEST__
 #define __TOPOLOGIC_REQUEST__
