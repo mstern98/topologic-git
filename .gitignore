@@ -9,6 +9,7 @@ testing/graph_vertex_edge_test
 testing/mem_option_test
 testing/generate_graph_json_test
 testing/single_context_test
+testing/request_test
 testing/*.o
 parse/topologic_parser.tab.c
 parse/topologic_parser.yy.c
@@ -16,3 +17,5 @@ src/*.o
 state_*.json
 parse/*.c
 parse/*.h
+*.swp
+*.swo
