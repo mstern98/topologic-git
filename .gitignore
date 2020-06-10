@@ -13,4 +13,5 @@ parse/topologic_parser.tab.c
 parse/topologic_parser.yy.c
 src/*.o
 state_*.json
-
+parse/*.c
+parse/*.h
