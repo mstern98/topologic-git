@@ -13,6 +13,7 @@ FLEX=parse/topologic_parser.lex
 BISON=parse/topologic_parser.y
 FLEX_C=$(FLEX:.lex=.yy.c)
 BISON_C=$(BISON:.y=.tab.c)
+BISON_H=$(BISON:.y=.tab.h)
 FLEX_OBJ=$(FLEX_C:.c=.o)
 BISON_OBJ=$(BISON_C:.c=.o)
 
@@ -21,7 +22,7 @@ TEST_SRC=$(wildcard testing/*.c)  #ADD MORE IF NEED BE
 TEST_OBJ=$(TEST_SRC:.c=.o)
 TEST_DIR=testing
 
-all: $(FLEX) $(BISON) $(FLEX_C) $(BISON_C) $(BIN) $(TESTS)
+all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C)  $(BIN) $(TESTS)
 
 $(FLEX_C):
 	flex $(FLEX)
@@ -45,6 +46,6 @@ all:$(BIN)
 clean:
 	rm -f libtopologic.a
 	rm -f $(FLEX_C) $(FLEX_OBJ)
-	rm -f $(BISON_C) $(BISON_OBJ)
+	rm -f $(BISON_C) $(BISON_OBJ) $(BISON_H)
 	rm -f $(OBJ) $(BIN)
 	rm -f $(TESTS) $(TEST_OBJ)
