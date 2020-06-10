@@ -37,6 +37,7 @@ struct fireable
         struct vertex *vertex;
         void *args;
         enum STATES color;
+        int iloop;
 };
 
 /**
@@ -56,11 +57,12 @@ Creates a graph structures
 **/
 struct graph *graph_init(unsigned int max_state_changes,
                          unsigned int snapshot_timestamp,
+                         unsigned int max_loop,
                          enum VERBOSITY lvl_verbose,
                          enum CONTEXT context,
                          enum MEM_OPTION mem_option);
-#define MAX_STATE_CHANGES 100
-#define GRAPH_INIT() graph_init(MAX_STATE_CHANGES, START_STOP, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE)
+#define MAX_LOOPS 100
+#define GRAPH_INIT() graph_init(-1, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE)
 
 /**
 @PARAM graph: the graph
@@ -231,6 +233,8 @@ int modify_bi_edge(struct graph* graph,
 @PARAM color: the state in which unlocks fire process
               if STATE is set to PRINT then
               fire will fail
+@PARAM iloop: the number of times that vertex fired
+              in succession
 @RETURNS the result of the vertex
 fire will wake up the vertex and pass 
 args to the vertex to 
@@ -240,7 +244,8 @@ call switch and clean itself up
 int fire(struct graph *graph,
          struct vertex *vertex,
          void *args,
-         enum STATES color);
+         enum STATES color,
+         int iloop);
 
 /**
 @PARAM graph: the graph
@@ -249,13 +254,16 @@ int fire(struct graph *graph,
 Upon call the switch function will 
 compute the edge functions 
 connected to the vertex
+@PARAM iloop: the number of times that vertex fired
+              in succession
 @RETURNS 0 On success; the vertex connected to the
     successful edge will be fired; -1 on failure
 **/
 int switch_vertex(struct graph *graph,
                   struct vertex *vertex,
                   void *args,
-                  enum STATES color);
+                  enum STATES color,
+                  int iloop);
 
 /**
 @PARAM graph: the graph,

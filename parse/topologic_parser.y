@@ -27,6 +27,7 @@ extern FILE *yyin;
 %token LVL_VERBOSE
 %token CONTEXT
 %token MEM_OPT
+%token MAX_LOOP
 %token <val> VALUE
 
 %start json
@@ -44,10 +45,12 @@ params: verb COMMA params
         | state COMMA params
         | mem_opt COMMA params
         | context COMMA params
+        | max_loop COMMA params
         | verb
         | mem_opt
         | context
         | state
+        | max_loop
         |
         ;
 state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
@@ -57,6 +60,8 @@ verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = $3;}
 context: CONTEXT COLON VALUE {(*graph)->context = $3;}
        ;
 mem_opt: MEM_OPT COLON VALUE {(*graph)->mem_option = $3;}
+       ;
+max_loop: MAX_LOOP COLON VALUE {(*graph)->max_loop = $3;}
        ;
 g:  vs COMMA es COMMA bes
     | vs COMMA bes COMMA es

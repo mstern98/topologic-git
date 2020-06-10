@@ -63,9 +63,14 @@ void run_single(struct graph *graph, void **init_vertex_args) {
 
         process_requests(graph);
         print(graph);
+        ++(graph->state_count);
         if (successor == 0) 
             graph->state = TERMINATE;
         else successor = 0;
+        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) {
+            graph->state = TERMINATE;
+            break;
+        }
     }
 
     if (edge_argv) {
@@ -116,6 +121,7 @@ void run(struct graph *graph, void **init_vertex_args)
             argv->args = init_vertex_args[v_index];
             argv->color = RED;
             argv->vertex = v;
+            argv->iloop = 1;
 
             pthread_create(&graph->thread, NULL, fire_pthread, argv);
             ++v_index;
@@ -123,7 +129,6 @@ void run(struct graph *graph, void **init_vertex_args)
             argv = NULL;
         }
     }
-    graph->state_count = 1;
 
     if (!success)
     {
@@ -137,20 +142,19 @@ void run(struct graph *graph, void **init_vertex_args)
         }
         pthread_exit(NULL);
 
-        destroy_graph(graph);
+        //destroy_graph(graph);
         return;
     }
 
     print(graph);
 
-    if (graph->context != SINGLE)
+    pthread_cond_signal(&graph->red_cond);
+    while (graph->state != TERMINATE)
     {
-        pthread_cond_signal(&graph->red_cond);
-    }
-    while (1)
-    {
-        if (graph->state == TERMINATE)
-            return;
+        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) {
+            graph->state = TERMINATE;
+            break;
+        }
         switch (graph->state)
         {
         case RED:
@@ -183,15 +187,16 @@ void run(struct graph *graph, void **init_vertex_args)
                 if (graph->previous_color == RED)
                 {
                     if (graph->black_vertex_count == 0)
-                        return;
-
-                    pthread_cond_signal(&graph->black_cond);
+                        graph->state = TERMINATE;
+                    else
+                        pthread_cond_signal(&graph->black_cond);
                 }
                 else
                 {
                     if (graph->red_vertex_count == 0)
-                        return;
-                    pthread_cond_signal(&graph->red_cond);
+                        graph->state = TERMINATE;
+                    else
+                        pthread_cond_signal(&graph->red_cond);
                 }
             }
             break;
@@ -202,9 +207,11 @@ void run(struct graph *graph, void **init_vertex_args)
     }
 }
 
-int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES color)
+int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES color, int iloop)
 {
     if (!graph || !vertex)
+        return -1;
+    if (graph->max_loop != -1 && iloop >= graph->max_loop)
         return -1;
     enum STATES flip_color = BLACK;
     pthread_mutex_lock(&vertex->lock);
@@ -275,7 +282,10 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
             }
             if (graph->context == SWITCH)
             {
-                if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
+                int iloop_b = 1;
+                if (edge->b == vertex)
+                    iloop_b = iloop + 1;
+                if (switch_vertex(graph, edge->b, vertex_argv, flip_color, iloop_b) < 0)
                 {
                     pthread_mutex_lock(&graph->lock);
                     if (color == RED)
@@ -318,9 +328,11 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     vertex->is_active = 0;
     pthread_mutex_unlock(&vertex->lock);
     
-    if (graph->context == NONE && next_vertex != NULL) {
-        return fire(graph, next_vertex, vertex_argv, flip_color);
-    }
+    int iloop_b = 1;
+    if (next_vertex == vertex)
+        iloop_b = iloop + 1;
+    if (graph->context == NONE && next_vertex != NULL)
+        return fire(graph, next_vertex, vertex_argv, flip_color, iloop_b);
     return 0;
 }
 
@@ -334,13 +346,14 @@ void *fire_pthread(void *vargp)
     struct vertex *v = fireable->vertex;
     void *args = fireable->args;
     enum STATES color = fireable->color;
+    int iloop = fireable->iloop;
 
-    int ret_val = fire(graph, v, args, color);
+    int ret_val = fire(graph, v, args, color, iloop);
     pthread_exit((void *)(intptr_t)ret_val);
     return (void *)(intptr_t)ret_val;
 }
 
-int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum STATES color)
+int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum STATES color, int iloop)
 {
     //HANDLE STUFF LIKE THREADS HERE
     //Check if graph context = single, none, or switch?)
@@ -352,6 +365,7 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum S
     argv->vertex = vertex;
     argv->args = args;
     argv->color = color;
+    argv->iloop = iloop;
     pthread_create(&graph->thread, NULL, fire_pthread, argv);
     free(argv);
 

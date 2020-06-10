@@ -4,6 +4,7 @@
         "mem_option" : 1,
         "lvl_verbose": 15,
         "max_state": 4,
+        "max_loop": 1000,
         "vertices" : [
             1, 2, 3, 4
         ],

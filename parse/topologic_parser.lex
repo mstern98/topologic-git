@@ -20,5 +20,6 @@ blanks          [ \t\n]+
 "lvl_verbose"   return(LVL_VERBOSE);
 "mem_option"    return(MEM_OPT);
 "context"       return(CONTEXT);
+"max_loop"      return(MAX_LOOP);
 [0-9]+          {yylval.val = atoi(yytext); return(VALUE);}
 %%

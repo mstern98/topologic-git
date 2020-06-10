@@ -37,7 +37,6 @@ void print_state(struct graph *graph, FILE *out)
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
     int vertex_id = 0;
     void *glbl = NULL;
-    //int edge_sharedc;
     union shared_edge *edge_shared = NULL;
     struct vertex_result *(*f)(void *) = NULL;
     struct vertex *v = NULL;
@@ -52,7 +51,6 @@ void print_state(struct graph *graph, FILE *out)
         edge_shared = v->shared;
         glbl = v->glbl;
 
-        //TODO: Setup on Verbose
         if ((graph->lvl_verbose & VERTICES) == VERTICES)
         {
             fprintf(out, "\t\t\"%d\": {\n", vertex_id);
@@ -67,6 +65,7 @@ void print_state(struct graph *graph, FILE *out)
                 fprintf(out, ",\n\t\t\t\"glbl\": \"%p\",\n", glbl);
                 fprintf(out, "\t\t\t\"edge_shared\": \"%p\"", edge_shared);
             }
+            fprintf(out, ",\n\t\t\t\"edges:\": %d", v->edge_tree->size);
             if ((graph->lvl_verbose & EDGES) == EDGES)
             {
                 fprintf(out, ",\n");
@@ -95,7 +94,14 @@ void print(struct graph *graph)
         return;
     if (graph->context != SINGLE)
         pthread_mutex_lock(&graph->lock);
-    if (graph->lvl_verbose == NO_VERB)
+    if (graph->lvl_verbose == NO_VERB || graph->snapshot_timestamp == -1)
+    {
+        if (graph->context != SINGLE)
+            pthread_mutex_unlock(&graph->lock);
+        return;
+    }
+    if ((graph->snapshot_timestamp == 0 && (graph->state_count != 0 || (graph->red_vertex_count != 0 && graph->black_vertex_count != 0))) ||
+        (graph->snapshot_timestamp != 0 && graph->state_count % graph->snapshot_timestamp != 0))
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
@@ -131,8 +137,9 @@ void print(struct graph *graph)
     /**TODO: Print enums**/
     fprintf(out, "{\n");
     fprintf(out, " \"graph\": {\n");
-    fprintf(out, "\t\"state\": %d,\n\t\"max_state_repeats\": %d,\n\t\"timestamps\": %d,\n\t\"verbosity\": %d,\n\t\"nodes\": %d,\n", graph->state_count,
+    fprintf(out, "\t\"state\": %d,\n\t\"max_state\": %d,\n\t\"max_loop\": %d,\n\t\"timestamps\": %d,\n\t\"verbosity\": %d,\n\t\"vertices\": %d,\n", graph->state_count,
             graph->max_state_changes,
+            graph->max_loop,
             graph->snapshot_timestamp,
             graph->lvl_verbose,
             graph->vertices->size);
