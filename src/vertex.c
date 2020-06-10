@@ -9,7 +9,8 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(voi
     struct vertex *vertex = malloc(sizeof(struct vertex));
     if (!vertex) {
 			if(context!=SINGLE){
-        pthread_mutex_unlock(&graph->lock);  
+        pthread_mutex_unlock(&graph->lock); 
+			}
 			return NULL;
     }
 
