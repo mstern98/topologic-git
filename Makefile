@@ -13,6 +13,7 @@ FLEX=parse/topologic_parser.lex
 BISON=parse/topologic_parser.y
 FLEX_C=$(FLEX:.lex=.yy.c)
 BISON_C=$(BISON:.y=.tab.c)
+BISON_H=$(BISON:.y=.tab.h)
 FLEX_OBJ=$(FLEX_C:.c=.o)
 BISON_OBJ=$(BISON_C:.c=.o)
 
@@ -45,6 +46,6 @@ all:$(BIN)
 clean:
 	rm -f libtopologic.a
 	rm -f $(FLEX_C) $(FLEX_OBJ)
-	rm -f $(BISON_C) $(BISON_OBJ)
+	rm -f $(BISON_C) $(BISON_OBJ) $(BISON_H)
 	rm -f $(OBJ) $(BIN)
 	rm -f $(TESTS) $(TEST_OBJ)
