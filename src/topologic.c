@@ -257,6 +257,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
         args = NULL;
     }
 
+    struct vertex *next_vertex = NULL;
     struct stack *edges = init_stack();
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
@@ -272,21 +273,22 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
             {
                 pthread_mutex_unlock(&edge->bi_edge_lock);
             }
-
-            if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
+            if (graph->context == SWITCH)
             {
-                pthread_mutex_lock(&graph->lock);
-                if (color == RED)
-                    graph->red_vertex_count--;
-                else
-                    graph->black_vertex_count--;
-                pthread_mutex_unlock(&graph->lock);
-                pthread_mutex_unlock(&vertex->lock);
-                return -1;
+                if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
+                {
+                    pthread_mutex_lock(&graph->lock);
+                    if (color == RED)
+                        graph->red_vertex_count--;
+                    else
+                        graph->black_vertex_count--;
+                    pthread_mutex_unlock(&graph->lock);
+                    pthread_mutex_unlock(&vertex->lock);
+                    return -1;
+                }
             }
-            if (graph->context == NONE) {
-                destroy_stack(edges);
-                edges = NULL;
+            else if (graph->context == NONE) {
+                next_vertex = edge->b;
                 break;
             }
         }
@@ -296,6 +298,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
         }
     }
     destroy_stack(edges);
+    edges = NULL;
 
     if (v_res->edge_argv)
     {
@@ -315,6 +318,9 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     vertex->is_active = 0;
     pthread_mutex_unlock(&vertex->lock);
     
+    if (graph->context == NONE && next_vertex != NULL) {
+        return fire(graph, next_vertex, vertex_argv, flip_color);
+    }
     return 0;
 }
 
