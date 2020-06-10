@@ -133,7 +133,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex) {
 		vertex->joining_vertices = NULL;
 		struct vertex *joining_vertex = NULL;
 		while ((joining_vertex = (struct vertex *) pop(stack)) != NULL) {
-			remove_edge_id(joining_vertex, vertex->id);
+			remove_edge_id(graph, joining_vertex, vertex->id);
 		}
 
 		destroy_stack(stack);

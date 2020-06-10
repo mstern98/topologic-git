@@ -67,7 +67,7 @@ int submit_request(struct graph *graph, struct request *request)
     return retval;
 }
 
-void procces_request(struct request *request)
+void procces_request(struct graph* graph, struct request *request)
 {
     switch (request->request)
     {
@@ -79,19 +79,19 @@ void procces_request(struct request *request)
     case DESTROY_EDGE_BY_ID:
     {
         struct destroy_edge_id_request *args = (struct destroy_edge_id_request *)request->args;
-        remove_edge_id(args->a, args->id);
+        remove_edge_id(graph,args->a, args->id);
         break;
     }
     case DESTROY_EDGE:
     {
         struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
-        remove_edge(args->a, args->b);
+        remove_edge(graph,args->a, args->b);
         break;
     }
     case DESTROY_BI_EDGE:
     {
         struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
-        remove_bi_edge(args->a, args->b);
+        remove_bi_edge(graph,args->a, args->b);
         break;
     }
     case DESTROY_VERTEX:
@@ -109,13 +109,13 @@ void procces_request(struct request *request)
     case CREAT_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        create_edge(args->a, args->b, args->f, args->glbl);
+        create_edge(graph, args->a, args->b, args->f, args->glbl);
         break;
     }
     case CREAT_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        create_bi_edge(args->a, args->b, args->f, args->glbl, NULL, NULL);
+        create_bi_edge(graph, args->a, args->b, args->f, args->glbl, NULL, NULL);
         break;
     }
     case MOD_VERTEX:
@@ -133,13 +133,13 @@ void procces_request(struct request *request)
     case MOD_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        modify_edge(args->a, args->b, args->f, args->glbl);
+        modify_edge(graph, args->a, args->b, args->f, args->glbl);
         break;
     }
     case MOD_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        modify_bi_edge(args->a, args->b, args->f, args->glbl);
+        modify_bi_edge(graph, args->a, args->b, args->f, args->glbl);
         break;
     }
     default:
@@ -159,11 +159,11 @@ void process_requests(struct graph *graph)
 
     struct request *req = NULL;
     while ((req = (struct request *)pop(graph->modify)) != NULL)
-        procces_request(req);
+        procces_request(graph, req);
     while ((req = (struct request *)pop(graph->remove_edges)) != NULL)
-        procces_request(req);
+        procces_request(graph, req);
     while ((req = (struct request *)pop(graph->remove_vertices)) != NULL)
-        procces_request(req);
+        procces_request(graph, req);
 
     if (graph->context != SINGLE)
     {
