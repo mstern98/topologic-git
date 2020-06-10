@@ -51,7 +51,7 @@ void run_single(struct graph *graph, void **init_vertex_args) {
             args = res->vertex_argv;
         }
         while ((edge = (struct edge *)pop(edges)) != NULL) {
-            if (successor == 0 && (int)(edge->f)(edge_argv) == 0) {
+            if (successor == 0 && (int)(edge->f)(edge_argv) >= 0) {
                 vertex = edge->b;
                 successor = 1;
             }
@@ -284,12 +284,15 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
                 pthread_mutex_unlock(&vertex->lock);
                 return -1;
             }
-            if (graph->context == SINGLE || graph->context == NONE)
+            if (graph->context == NONE) {
+                destroy_stack(edges);
+                edges = NULL;
                 break;
+            }
         }
         else if (edge->edge_type == BI_EDGE)
         {
-            pthread_mutex_lock(&edge->bi_edge_lock);  
+            pthread_mutex_unlock(&edge->bi_edge_lock);  
         }
     }
     destroy_stack(edges);
