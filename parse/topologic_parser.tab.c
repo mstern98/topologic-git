@@ -511,9 +511,9 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     2,     1,     0,     0,     4,     0,     0,
-       0,     0,     0,     0,     7,    15,    12,    14,    13,     6,
-      25,     0,     0,     0,     0,     0,     0,     5,    16,    16,
+       0,     0,     0,     2,     1,     0,     0,     7,     0,     0,
+       0,     0,     0,     0,     6,    15,    12,    14,    13,     5,
+      25,     0,     0,     0,     0,     0,     0,     4,    16,    16,
       16,    16,     0,    27,    17,    18,    19,    20,     3,     9,
        8,    11,    10,     0,     0,    23,    24,    30,     0,     0,
        0,     0,     0,    28,    26,    32,    37,    21,    22,    27,
@@ -587,7 +587,7 @@ static const yytype_uint8 yyr1[] =
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     0,     8,     0,     2,     1,     1,     3,     3,
+       0,     2,     0,     8,     2,     1,     1,     0,     3,     3,
        3,     3,     1,     1,     1,     1,     0,     3,     3,     3,
        3,     5,     5,     3,     3,     1,     5,     0,     0,     4,
        1,     5,     0,     0,     6,     3,     5,     0,     0,     6,
@@ -1275,74 +1275,68 @@ yyreduce:
 #line 1276 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 4:
-#line 38 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {printf(" NIL \n");}
-#line 1282 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
-    break;
-
   case 17:
 #line 53 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {if ((yyvsp[0].val) < 0) {fprintf(stderr, "Invalid Max State Changes %d\n", (yyvsp[0].val)); return -1;} (*graph)->max_state_changes = (yyvsp[0].val);}
-#line 1288 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {(*graph)->max_state_changes = (yyvsp[0].val);}
+#line 1282 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
 #line 55 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->lvl_verbose = (yyvsp[0].val);}
-#line 1294 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 1288 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
 #line 57 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->context = (yyvsp[0].val);}
-#line 1300 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 1294 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 59 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->mem_option = (yyvsp[0].val);}
-#line 1306 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 1300 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
 #line 70 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {create_vertex(*graph, f, (yyvsp[-1].val), NULL);}
-#line 1312 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {if (create_vertex(*graph, f, (yyvsp[-1].val), NULL) < 0) fprintf(stderr, "Failed To Create Vertex %d\n", (yyvsp[-1].val));}
+#line 1306 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
 #line 72 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {create_vertex(*graph, f, (yyvsp[0].val), NULL);}
-#line 1318 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {if (create_vertex(*graph, f, (yyvsp[0].val), NULL) < 0) fprintf(stderr, "Failed To Create Vertex %d\n", (yyvsp[0].val));}
+#line 1312 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
 #line 77 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-3].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-1].val)); if (a && b) create_edge(a, b, edge_f, NULL);}
-#line 1324 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {struct vertex *a = find((*graph)->vertices, (yyvsp[-3].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-1].val)); if (a && b) {if (create_edge(a, b, edge_f, NULL) == NULL) fprintf(stderr, "Failed to create Edge Between %d and %d\n", a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p b:%p\n", a, b);}
+#line 1318 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
 #line 79 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (a && b) create_edge(a, b, edge_f, NULL);}
-#line 1330 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (a && b) {if (create_edge(a, b, edge_f, NULL) == NULL) fprintf(stderr, "Failed to create Edge Between %d and %d\n", a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p b:%p\n", a, b);}
+#line 1324 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
 #line 84 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-3].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-1].val)); if (a && b) create_bi_edge(a, b, edge_f, NULL, NULL, NULL);}
-#line 1336 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {int val = 0; struct vertex *a = find((*graph)->vertices, (yyvsp[-3].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[-1].val)); if (a && b) { if((val = create_bi_edge(a, b, edge_f, NULL, NULL, NULL) < 0)) fprintf(stderr, "%d: Failed to bi create Edge Between %d and %d\n", val, a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p b:%p\n", a, b);}
+#line 1330 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
 #line 86 "parse/topologic_parser.y" /* yacc.c:1646  */
-    {struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (a && b) create_bi_edge(a, b, edge_f, NULL, NULL, NULL);}
-#line 1342 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+    {int val = 0; struct vertex *a = find((*graph)->vertices, (yyvsp[-2].val)); struct vertex *b = find((*graph)->vertices, (yyvsp[0].val)); if (a && b) { if((val = create_bi_edge(a, b, edge_f, NULL, NULL, NULL) < 0)) fprintf(stderr, "%d: Failed to bi create Edge Between %d and %d\n", val, a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p b:%p\n", a, b);}
+#line 1336 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1346 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
+#line 1340 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
