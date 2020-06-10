@@ -450,9 +450,9 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    34,    34,    34,    38,    39,    40,    41,    43,    44,
-      45,    46,    47,    48,    49,    50,    51,    53,    55,    57,
-      59,    61,    62,    63,    64,    65,    67,    69,    70,    70,
+       0,    34,    34,    34,    38,    39,    40,    42,    43,    44,
+      45,    46,    47,    48,    49,    50,    52,    54,    56,    58,
+      60,    61,    62,    63,    64,    65,    67,    69,    70,    70,
       72,    74,    76,    77,    77,    79,    81,    83,    84,    84,
       86
 };
@@ -511,12 +511,12 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     2,     1,     0,     0,     7,     0,     0,
-       0,     0,     0,     0,     6,    15,    12,    14,    13,     5,
-      25,     0,     0,     0,     0,     0,     0,     4,    16,    16,
-      16,    16,     0,    27,    17,    18,    19,    20,     3,     9,
-       8,    11,    10,     0,     0,    23,    24,    30,     0,     0,
-       0,     0,     0,    28,    26,    32,    37,    21,    22,    27,
+       0,     0,     0,     2,     1,     0,     0,    15,     0,     0,
+       0,     0,     0,     0,     6,    14,    11,    13,    12,     5,
+      24,     0,     0,     0,     0,     0,     0,     4,    15,    15,
+      15,    15,     0,    27,    16,    17,    18,    19,     3,     8,
+       7,    10,     9,     0,     0,    22,    23,    30,     0,     0,
+       0,     0,     0,    28,    26,    32,    37,    20,    21,    27,
        0,     0,     0,     0,    29,     0,    31,     0,    36,    35,
       40,    33,    38,    32,    37,    34,    39
 };
@@ -577,9 +577,9 @@ static const yytype_uint8 yystos[] =
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    18,    20,    19,    21,    21,    21,    21,    22,    22,
-      22,    22,    22,    22,    22,    22,    22,    23,    24,    25,
-      26,    27,    27,    27,    27,    27,    28,    29,    30,    29,
+       0,    18,    20,    19,    21,    21,    21,    22,    22,    22,
+      22,    22,    22,    22,    22,    22,    23,    24,    25,    26,
+      27,    27,    27,    27,    27,    27,    28,    29,    30,    29,
       29,    31,    32,    33,    32,    32,    34,    35,    36,    35,
       35
 };
@@ -587,9 +587,9 @@ static const yytype_uint8 yyr1[] =
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     0,     8,     2,     1,     1,     0,     3,     3,
-       3,     3,     1,     1,     1,     1,     0,     3,     3,     3,
-       3,     5,     5,     3,     3,     1,     5,     0,     0,     4,
+       0,     2,     0,     8,     2,     1,     1,     3,     3,     3,
+       3,     1,     1,     1,     1,     0,     3,     3,     3,     3,
+       5,     5,     3,     3,     1,     0,     5,     0,     0,     4,
        1,     5,     0,     0,     6,     3,     5,     0,     0,     6,
        3
 };
@@ -1275,26 +1275,26 @@ yyreduce:
 #line 1276 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 17:
-#line 53 "parse/topologic_parser.y" /* yacc.c:1646  */
+  case 16:
+#line 52 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->max_state_changes = (yyvsp[0].val);}
 #line 1282 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 18:
-#line 55 "parse/topologic_parser.y" /* yacc.c:1646  */
+  case 17:
+#line 54 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->lvl_verbose = (yyvsp[0].val);}
 #line 1288 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 19:
-#line 57 "parse/topologic_parser.y" /* yacc.c:1646  */
+  case 18:
+#line 56 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->context = (yyvsp[0].val);}
 #line 1294 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 20:
-#line 59 "parse/topologic_parser.y" /* yacc.c:1646  */
+  case 19:
+#line 58 "parse/topologic_parser.y" /* yacc.c:1646  */
     {(*graph)->mem_option = (yyvsp[0].val);}
 #line 1300 "parse/topologic_parser.tab.c" /* yacc.c:1646  */
     break;
