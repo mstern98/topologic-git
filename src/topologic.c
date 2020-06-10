@@ -67,6 +67,21 @@ void run_single(struct graph *graph, void **init_vertex_args) {
             graph->state = TERMINATE;
         else successor = 0;
     }
+
+    if (edge_argv) {
+        free(edge_argv);
+        edge_argv = NULL;
+    }
+    if (args) {
+        free(args);
+        args = NULL;
+    }
+    if (res) {
+        free(res);
+        res = NULL;
+    }
+    destroy_stack(edges);
+    edges = NULL;
 }
 
 void run(struct graph *graph, void **init_vertex_args)
