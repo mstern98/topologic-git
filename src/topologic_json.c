@@ -16,7 +16,7 @@ void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent,
             fprintf(out, ",\n%s\t\t\"f\": \"%p\"", indent, edge->f);
         }
         if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {  
-            fprintf(out, ",%s\t\t\"glbl\": \"%p\"", indent, edge->glbl);
+            fprintf(out, ",\n%s\t\t\"glbl\": \"%p\"", indent, edge->glbl);
         }
         fprintf(out, "\n%s\t}", indent);
         if (stack->length > 0)
@@ -57,7 +57,6 @@ void print_state(struct graph *graph, FILE *out)
             }
             if ((graph->lvl_verbose & GLOBALS) == GLOBALS) {
                 fprintf(out, ",\n\t\t\t\"glbl\": \"%p\",\n", glbl);
-                fprintf(out, "\t\t\t\"glbl\": [");
                 fprintf(out, "\t\t\t\"edge_shared\": \"%p\"", edge_shared);
             }
             if ((graph->lvl_verbose & EDGES) == EDGES) {
@@ -68,7 +67,7 @@ void print_state(struct graph *graph, FILE *out)
         } else if ((graph->lvl_verbose & EDGES) == EDGES) {
             fprintf(out, "\t\t\"%d\": {\n", vertex_id);
             print_edges(graph, v->edge_tree, "\t\t\t", out);
-            fprintf(out, "\t\t}");
+            fprintf(out, "\n\t\t}");
         }
         if (stack->length > 0) 
             fprintf(out, ",\n");
@@ -94,7 +93,7 @@ void print(struct graph *graph)
     if (dirfd == -1) return;
     char buffer[256];
     sprintf(buffer, "state_%d.json", graph->state_count);
-    int fd = openat(dirfd, buffer, O_CREAT | O_WRONLY, S_IRWXU);
+    int fd = openat(dirfd, buffer, O_TRUNC | O_CREAT | O_WRONLY, S_IRWXU);
     if (fd == -1) {
         close(dirfd);
         pthread_mutex_unlock(&graph->lock);
