@@ -27,6 +27,48 @@ int start_set(struct graph *graph, int *id, int num_vertices)
     return 0;
 }
 
+void run_single(struct graph *graph, void **init_vertex_args) {
+    if (!graph || graph->context != SINGLE || graph->start->length > 1 || graph->start->length == 0) {
+        return;
+    }
+    int successor = 0;
+    struct stack *edges = init_stack();
+    if (!edges) return;
+    struct vertex *vertex = (struct vertex *) pop(graph->start);
+    if (!vertex) return;
+    struct vertex_result *res = NULL;
+    void *edge_argv = NULL;
+    struct edge *edge = NULL;
+    
+    void *args = init_vertex_args[0];
+    preorder(vertex->edge_tree, edges);
+
+    while (graph->state != TERMINATE) {
+        res = (struct vertex_result *) (vertex->f)(args);
+        if (res)
+        {
+            edge_argv = res->edge_argv;
+            args = res->vertex_argv;
+        }
+        while ((edge = (struct edge *)pop(edges)) != NULL) {
+            if (successor == 0 && (int)(edge->f)(edge_argv) == 0) {
+                vertex = edge->b;
+                successor = 1;
+            }
+        }
+        free(edge_argv);
+        edge_argv = NULL;
+        free(res);
+        res = NULL;
+
+        process_requests(graph);
+        print(graph);
+        if (successor == 0) 
+            graph->state = TERMINATE;
+        else successor = 0;
+    }
+}
+
 void run(struct graph *graph, void **init_vertex_args)
 {
     if (!graph->start || graph->state == TERMINATE)
@@ -34,6 +76,11 @@ void run(struct graph *graph, void **init_vertex_args)
         //destroy_graph(graph);
         return;
     }
+    if (graph->context == SINGLE) {
+        run_single(graph, init_vertex_args);
+        return;
+    }
+
     int success = 0, v_index = 0;
     struct vertex *v = NULL;
     while ((v = (struct vertex *)pop(graph->start)))
@@ -98,11 +145,7 @@ void run(struct graph *graph, void **init_vertex_args)
                 process_requests(graph);
                 graph->state = PRINT;
                 graph->previous_color = RED;
-                if (graph->context != SINGLE)
-                {
-                    pthread_cond_signal(&graph->print_cond);
-                }
-
+                pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
             }
             break;
@@ -113,10 +156,7 @@ void run(struct graph *graph, void **init_vertex_args)
                 process_requests(graph);
                 graph->state = PRINT;
                 graph->previous_color = BLACK;
-                if (graph->context != SINGLE)
-                {
-                    pthread_cond_signal(&graph->print_cond);
-                }
+                pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
             }
             break;
@@ -130,28 +170,18 @@ void run(struct graph *graph, void **init_vertex_args)
                     if (graph->black_vertex_count == 0)
                         return;
 
-                    if (graph->context != SINGLE)
-                    {
-                        pthread_cond_signal(&graph->black_cond);
-                    }
+                    pthread_cond_signal(&graph->black_cond);
                 }
                 else
                 {
                     if (graph->red_vertex_count == 0)
                         return;
-
-                    if (graph->context != SINGLE)
-                    {
-                        pthread_cond_signal(&graph->red_cond);
-                    }
+                    pthread_cond_signal(&graph->red_cond);
                 }
             }
             break;
         default:
-            if (graph->context != SINGLE)
-            {
-                pthread_exit(NULL);
-            }
+            pthread_exit(NULL);
             return;
         }
     }
@@ -162,70 +192,39 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     if (!graph || !vertex)
         return -1;
     enum STATES flip_color = BLACK;
-    if (graph->context != SINGLE)
-    {
-        pthread_mutex_lock(&vertex->lock);
-    }
+    pthread_mutex_lock(&vertex->lock);
 
     vertex->is_active = 1;
     if (color == RED)
     {
-        if (graph->context != SINGLE)
-            pthread_cond_wait(&graph->red_cond, &vertex->lock);
-
-        if (graph->context != SINGLE)
-            pthread_mutex_lock(&graph->lock);
-
+        pthread_cond_wait(&graph->red_cond, &vertex->lock);
+        pthread_mutex_lock(&graph->lock);
         graph->red_vertex_count++;
-
-        if (graph->context != SINGLE)
-            pthread_mutex_unlock(&graph->lock);
+        pthread_mutex_unlock(&graph->lock);
     }
     else if (color == BLACK)
     {
-        if (graph->context != SINGLE)
-        {
-            pthread_cond_wait(&graph->black_cond, &vertex->lock);
-        }
+        pthread_cond_wait(&graph->black_cond, &vertex->lock);
         flip_color = RED;
-
-        if (graph->context != SINGLE)
-        {
-            pthread_mutex_lock(&graph->lock);
-        }
+        pthread_mutex_lock(&graph->lock);
         graph->black_vertex_count++;
-
-        if (graph->context != SINGLE)
-        {
-            pthread_mutex_unlock(&graph->lock);
-        }
+        pthread_mutex_unlock(&graph->lock);
     }
     else
     {
-        if (graph->context != SINGLE)
-        {
-            pthread_mutex_unlock(&vertex->lock);
-        }
+        pthread_mutex_unlock(&vertex->lock);
         return -1;
     }
 
     if (graph->state == TERMINATE)
     {
-        if (graph->context != SINGLE)
-        {
-            pthread_mutex_lock(&graph->lock);
-        }
-
+        pthread_mutex_lock(&graph->lock);
         if (color == RED)
             graph->red_vertex_count--;
         else
             graph->black_vertex_count--;
-
-        if (graph->context != SINGLE)
-        {
-            pthread_mutex_unlock(&graph->lock);
-            pthread_mutex_unlock(&vertex->lock);
-        }
+        pthread_mutex_unlock(&graph->lock);
+        pthread_mutex_unlock(&vertex->lock);
         return -1;
     }
 
@@ -250,39 +249,24 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     {
         if (edge->edge_type == BI_EDGE)
         {
-            if (graph->context != SINGLE)
-            {
-                pthread_mutex_lock(&edge->bi_edge_lock);
-            }
+            pthread_mutex_lock(&edge->bi_edge_lock);
         }
         if ((int)(edge->f)(edge_argv) >= 0)
         {
             if (edge->edge_type == BI_EDGE)
             {
-                if (graph->context != SINGLE)
-                {
-                    pthread_mutex_unlock(&edge->bi_edge_lock);
-                }
+                pthread_mutex_unlock(&edge->bi_edge_lock);
             }
 
             if (switch_vertex(graph, edge->b, vertex_argv, flip_color) < 0)
             {
-                if (graph->context != SINGLE)
-                    pthread_mutex_lock(&graph->lock);
+                pthread_mutex_lock(&graph->lock);
                 if (color == RED)
                     graph->red_vertex_count--;
                 else
                     graph->black_vertex_count--;
-
-                if (graph->context != SINGLE)
-                {
-                    pthread_mutex_unlock(&graph->lock);
-                }
-
-                if (graph->context != SINGLE)
-                {
-                    pthread_mutex_unlock(&vertex->lock);
-                }
+                pthread_mutex_unlock(&graph->lock);
+                pthread_mutex_unlock(&vertex->lock);
                 return -1;
             }
             if (graph->context == SINGLE || graph->context == NONE)
@@ -290,10 +274,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
         }
         else if (edge->edge_type == BI_EDGE)
         {
-            if (graph->context != SINGLE)
-            {
-                pthread_mutex_lock(&edge->bi_edge_lock);
-            }
+            pthread_mutex_lock(&edge->bi_edge_lock);  
         }
     }
     destroy_stack(edges);
@@ -306,25 +287,16 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     free(v_res);
     v_res = NULL;
 
-    if (graph->context != SINGLE)
-    {
-        pthread_mutex_lock(&graph->lock);
-    }
+    pthread_mutex_lock(&graph->lock);
     if (color == RED)
         graph->red_vertex_count--;
     else
         graph->black_vertex_count--;
 
-    if (graph->context != SINGLE)
-    {
-        pthread_mutex_unlock(&graph->lock);
-    }
-
+    pthread_mutex_unlock(&graph->lock);
     vertex->is_active = 0;
-    if (graph->context != SINGLE)
-    {
-        pthread_mutex_unlock(&vertex->lock);
-    }
+    pthread_mutex_unlock(&vertex->lock);
+    
     return 0;
 }
 
@@ -340,10 +312,7 @@ void *fire_pthread(void *vargp)
     enum STATES color = fireable->color;
 
     int ret_val = fire(graph, v, args, color);
-    if (graph->context != SINGLE)
-    {
-        pthread_exit((void *)(intptr_t)ret_val);
-    }
+    pthread_exit((void *)(intptr_t)ret_val);
     return (void *)(intptr_t)ret_val;
 }
 
@@ -359,11 +328,7 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum S
     argv->vertex = vertex;
     argv->args = args;
     argv->color = color;
-    if (graph->context != SINGLE)
-    {
-
-        pthread_create(&graph->thread, NULL, fire_pthread, argv);
-    }
+    pthread_create(&graph->thread, NULL, fire_pthread, argv);
     free(argv);
 
     return 0;
