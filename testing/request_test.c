@@ -103,7 +103,7 @@ void test_create_request(struct graph* graph){
 	for(i=0; i<MAX_VERTICES; i++){
 		struct request* request;
 		int id = i;
-		struct vertex_result*(*f)(void*) = &vertexFunction;
+		struct vertex_result*(*f)(void*) = vertexFunction;
 		void* glbl=malloc(DEFAULT_BUFFER);
 		assert(glbl!=NULL);
 		void* args = malloc(sizeof(struct graph)+sizeof(struct vertext_result*(void*))+sizeof(int)+DEFAULT_BUFFER);
@@ -127,17 +127,28 @@ void test_submit_request(struct graph* graph){
 	int i = 0;
 	for(i=0; i<MAX_VERTICES; i++){
 		int id = i;
-		struct vertex_result*(*f)(void*) = &vertexFunction;
+		struct vertex_result*(*f)(void*) = vertexFunction;
 		void* glbl = NULL;
 		glbl=malloc(DEFAULT_BUFFER);
 		assert(glbl!=NULL);
-		void* args = malloc(sizeof(struct graph)+sizeof(struct vertext_result*(void*))+sizeof(int)+DEFAULT_BUFFER);
+		void* args = malloc(sizeof(struct graph)+sizeof(struct vertext_result*(void*))+sizeof(int)+DEFAULT_BUFFER+3);
 		int counter = 0;
-		memcpy(args+counter, graph, sizeof(struct graph)); counter+=sizeof(graph);
-		memcpy(args+counter, f, sizeof(struct vertex_result*(void*))); counter+=sizeof(struct vertex_result*(void*));
-		memcpy(args+counter, &id, sizeof(int)); counter+=sizeof(int);
+		memcpy(args+counter, graph, sizeof(struct graph)); 
+		counter+=sizeof(graph)+1;
+		memcpy(args+counter, f, sizeof(struct vertex_result*(void*))); 
+		counter+=sizeof(struct vertex_result*(void*))+1;
+		memcpy(args+counter, &id, sizeof(int)); 
+		counter+=sizeof(int)+1;
 		memcpy(args+counter, glbl, DEFAULT_BUFFER);
-		struct request* req = CREATE_REQUEST(CREAT_VERTEX, args);
+
+
+		//struct request* req = CREATE_REQUEST(CREAT_VERTEX, args);
+		struct request* req = malloc(sizeof(struct request));
+		assert(req!=NULL);
+		req->request=CREAT_VERTEX;
+		req->args = args;
+		req->f=NULL;
+		assert(req!=NULL);
 		assert(submit_request(graph, req)==0);
 		//free(args);
 		//free(req);
@@ -179,7 +190,7 @@ void test_submit_request(struct graph* graph){
 void test_process_requests(struct graph* graph){
 	assert(graph!=NULL);
 
-	process_requests(graph);
+	assert(process_requests(graph)==0);
 	fprintf(stderr, "REQUEST PROCESSING HAS PASSED\n");
 }
 
