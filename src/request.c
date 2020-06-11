@@ -271,5 +271,8 @@ int destroy_request(struct request *request)
     free(request->args);
     request->args = NULL;
     request->request = 0;
+    request->f = NULL;
+    free(request);
+    request = NULL;
     return 0;
 }
