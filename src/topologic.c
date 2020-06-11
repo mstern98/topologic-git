@@ -30,19 +30,19 @@ int start_set(struct graph *graph, int *id, int num_vertices)
     return 0;
 }
 
-void run_single(struct graph *graph, void **init_vertex_args)
+int run_single(struct graph *graph, void **init_vertex_args)
 {
     if (!graph || graph->context != SINGLE || graph->start->length > 1 || graph->start->length == 0)
     {
-        return;
+        return -1;
     }
     int successor = 0;
     struct stack *edges = init_stack();
     if (!edges)
-        return;
+        return -1;
     struct vertex *vertex = (struct vertex *)pop(graph->start);
     if (!vertex)
-        return;
+        return -1;
     struct vertex_result *res = NULL;
     void *edge_argv = NULL;
     struct edge *edge = NULL;
@@ -50,6 +50,7 @@ void run_single(struct graph *graph, void **init_vertex_args)
     void *args = init_vertex_args[0];
     preorder(vertex->edge_tree, edges);
 
+    int ret = 0;
     while (graph->state != TERMINATE)
     {
         res = (struct vertex_result *)(vertex->f)(args);
@@ -66,14 +67,17 @@ void run_single(struct graph *graph, void **init_vertex_args)
                 successor = 1;
             }
         }
-        free(edge_argv);
+        if (edge_argv)
+            free(edge_argv);
         edge_argv = NULL;
-        free(res);
+        if (res)
+            free(res);
         res = NULL;
 
         if (process_requests(graph) < 0)
         {
             graph->state = TERMINATE;
+            ret = -1;
             break;
         }
         print(graph);
@@ -106,19 +110,19 @@ void run_single(struct graph *graph, void **init_vertex_args)
     }
     destroy_stack(edges);
     edges = NULL;
+    return ret;
 }
 
-void run(struct graph *graph, void **init_vertex_args)
+int run(struct graph *graph, void **init_vertex_args)
 {
     if (!graph->start || graph->state == TERMINATE)
     {
         //destroy_graph(graph);
-        return;
+        return -1;
     }
     if (graph->context == SINGLE)
     {
-        run_single(graph, init_vertex_args);
-        return;
+        return run_single(graph, init_vertex_args);
     }
 
     int success = 0, v_index = 0;
@@ -163,7 +167,7 @@ void run(struct graph *graph, void **init_vertex_args)
         pthread_exit(NULL);
 
         //destroy_graph(graph);
-        return;
+        return -1;
     }
 
     print(graph);
@@ -204,7 +208,7 @@ void run(struct graph *graph, void **init_vertex_args)
                 if (process_requests(graph) < 0)
                 {
                     graph->state = TERMINATE;
-                    break;
+                    return -1;
                 }
                 print(graph);
                 graph->state_count++;
@@ -226,9 +230,10 @@ void run(struct graph *graph, void **init_vertex_args)
             break;
         default:
             pthread_exit(NULL);
-            return;
+            return -1;
         }
     }
+    return 0;
 }
 
 int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES color, int iloop)

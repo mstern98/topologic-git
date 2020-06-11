@@ -217,28 +217,46 @@ int procces_request(struct graph *graph, struct request *request)
     return 0;
 }
 
-void process_requests(struct graph *graph)
+int process_requests(struct graph *graph)
 {
     if (!graph)
-        return;
+        return -1;
 
     if (graph->context != SINGLE)
-    {
         pthread_mutex_lock(&graph->lock);
-    }
 
     struct request *req = NULL;
     while ((req = (struct request *)pop(graph->modify)) != NULL)
-        procces_request(graph, req);
+    {
+        if (procces_request(graph, req) < 0)
+        {
+            if (graph->context != SINGLE)
+                pthread_mutex_unlock(&graph->lock);
+            return -1;
+        }
+    }
     while ((req = (struct request *)pop(graph->remove_edges)) != NULL)
-        procces_request(graph, req);
+    {
+        if (procces_request(graph, req) < 0)
+        {
+            if (graph->context != SINGLE)
+                pthread_mutex_unlock(&graph->lock);
+            return -1;
+        }
+    }
     while ((req = (struct request *)pop(graph->remove_vertices)) != NULL)
-        procces_request(graph, req);
+    {
+        if (procces_request(graph, req) < 0)
+        {
+            if (graph->context != SINGLE)
+                pthread_mutex_unlock(&graph->lock);
+            return -1;
+        }
+    }
 
     if (graph->context != SINGLE)
-    {
         pthread_mutex_unlock(&graph->lock);
-    }
+    return 0;
 }
 
 int destroy_request(struct request *request)

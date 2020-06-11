@@ -316,9 +316,11 @@ int process_requests(struct graph *graph);
 /**
 @PARAM graph: the graph
 @PARAM vertex_args: array of vertex arguments for f
+@RETURN 0 if run terminates normally
+        -1 if it fails
 Attempts to run the graph else aborts.
 **/
-void run(struct graph *graph,
+int run(struct graph *graph,
          void **vertex_args);
 
 /**
