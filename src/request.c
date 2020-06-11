@@ -239,7 +239,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(req) < 0)
+        if (procces_request(req) < 0) 
             return -1;
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
