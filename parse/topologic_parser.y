@@ -86,9 +86,9 @@ e:  /* empty */
 bes:BI_EDGE_ COLON L_BRACKET be R_BRACKET
     ;
 be: /* empty */
-    | VALUE COLON VALUE COMMA {int val = 0; struct vertex *a = find((*graph)->vertices, $1); struct vertex *b = find((*graph)->vertices, $3); if (a && b) { if((val = create_bi_edge(*graph, a, b, edge_f, NULL, NULL, NULL) < 0)) fprintf(stderr, "%d: Failed to bi create Edge Between %d and %d\n", val, a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p b:%p\n", a, b);}
+    | VALUE COLON VALUE COMMA {int val = 0; struct vertex *a = find((*graph)->vertices, $1); struct vertex *b = find((*graph)->vertices, $3); if (a && b) { if((val = create_bi_edge(*graph, a, b, edge_f, NULL, NULL, NULL) < 0)) fprintf(stderr, "%d: Failed to bi create Edge Between %d and %d\n", val, a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p(%d) b:%p(%d)\n", a, $1, b, $3);}
       be
-    | VALUE COLON VALUE {int val = 0; struct vertex *a = find((*graph)->vertices, $1); struct vertex *b = find((*graph)->vertices, $3); if (a && b) { if((val = create_bi_edge(*graph,a, b, edge_f, NULL, NULL, NULL) < 0)) fprintf(stderr, "%d: Failed to bi create Edge Between %d and %d\n", val, a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p b:%p\n", a, b);}
+    | VALUE COLON VALUE {int val = 0; struct vertex *a = find((*graph)->vertices, $1); struct vertex *b = find((*graph)->vertices, $3); if (a && b) { if((val = create_bi_edge(*graph,a, b, edge_f, NULL, NULL, NULL) < 0)) fprintf(stderr, "%d: Failed to bi create Edge Between %d and %d\n", val, a->id, b->id);} else fprintf(stderr, "Invalid Vertices a:%p(%d) b:%p(%d)\n", a, $1, b, $3);}
     ;
 %%
 
