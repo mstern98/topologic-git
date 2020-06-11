@@ -6,24 +6,7 @@
 
 #include <pthread.h>
 #include <signal.h>
-
-/** 
-Enum for how the graph handles context switches,
-or not at all
-NONE: First valid edge is taken only
-      and the process does not change
-SINGLE: Is the same as NONE 
-        but only one vertex may be selected as start
-SWITCH: All valid edges are taken. 
-        A process per vertex is spawned and
-        previous process is killed.
-**/
-enum CONTEXT
-{
-        NONE = 0,
-        SINGLE = 1,
-        SWITCH = 2
-};
+#include "./context.h"
 
 /** 
 Enum for memory handling when forking -- if mem amount is exceeded 

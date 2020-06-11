@@ -82,7 +82,7 @@ int procces_request(struct graph *graph, struct request *request)
     case DESTROY_EDGE_BY_ID:
     {
         struct destroy_edge_id_request *args = (struct destroy_edge_id_request *)request->args;
-        int ret = remove_edge_id(graph, args->a, args->id);
+        int ret = remove_edge_id(args->a, args->id);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Edge Id Request (%p)\n", request);
@@ -94,7 +94,7 @@ int procces_request(struct graph *graph, struct request *request)
     case DESTROY_EDGE:
     {
         struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
-        int ret = remove_edge(graph, args->a, args->b);
+        int ret = remove_edge(args->a, args->b);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Edge Request (%p)\n", request);
@@ -106,7 +106,7 @@ int procces_request(struct graph *graph, struct request *request)
     case DESTROY_BI_EDGE:
     {
         struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
-        int ret = remove_bi_edge(graph, args->a, args->b);
+        int ret = remove_bi_edge(args->a, args->b);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Bi Edge Request (%p)\n", request);
@@ -142,7 +142,7 @@ int procces_request(struct graph *graph, struct request *request)
     case CREAT_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        struct edge *ret = create_edge(graph, args->a, args->b, args->f, args->glbl);
+        struct edge *ret = create_edge(args->a, args->b, args->f, args->glbl);
         if (!ret)
         {
             //fprintf(stderr, "Failed Create Edge Request (%p)\n", request);
@@ -154,7 +154,7 @@ int procces_request(struct graph *graph, struct request *request)
     case CREAT_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        int ret = create_bi_edge(graph, args->a, args->b, args->f, args->glbl, NULL, NULL);
+        int ret = create_bi_edge(args->a, args->b, args->f, args->glbl, NULL, NULL);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Edge Id Request: %d (%p)\n", ret, request);
@@ -190,7 +190,7 @@ int procces_request(struct graph *graph, struct request *request)
     case MOD_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        int ret = modify_edge(graph, args->a, args->b, args->f, args->glbl);
+        int ret = modify_edge(args->a, args->b, args->f, args->glbl);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Modify Edge Request (%p)\n", request);
@@ -202,7 +202,7 @@ int procces_request(struct graph *graph, struct request *request)
     case MOD_BI_EDGE:
     {
         struct edge_request *args = (struct edge_request *)request->args;
-        int ret = modify_bi_edge(graph, args->a, args->b, args->f, args->glbl);
+        int ret = modify_bi_edge(args->a, args->b, args->f, args->glbl);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Modify Bi Edge Request: %d (%p)\n", ret, request);

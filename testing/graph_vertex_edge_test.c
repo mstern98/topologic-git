@@ -117,7 +117,7 @@ void test_graph_add_edge(struct graph* graph){
 		}
 		assert(b!=NULL);
 		struct edge* edge;
-		assert((edge=create_edge(graph,a, b, f, glbl))!=NULL);	
+		assert((edge=create_edge(a, b, f, glbl))!=NULL);	
 	}
 	
 	fprintf(stderr,"EDGE INSERTION INTO GRAPH PASSED\n");
@@ -140,7 +140,7 @@ void test_graph_add_bi_edge(struct graph* graph){
 		}
 		assert(b!=NULL);
 		struct edge* edge_a_to_b, *edge_b_to_a;
-		assert((create_bi_edge(graph,a, b, f, glbl, &edge_a_to_b, &edge_b_to_a))==0);	
+		assert((create_bi_edge(a, b, f, glbl, &edge_a_to_b, &edge_b_to_a))==0);	
 		assert(edge_a_to_b != NULL);
 		assert(edge_b_to_a != NULL);
 	}
@@ -177,10 +177,10 @@ void test_graph_modify_edge(struct graph* graph){
 
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
-		assert(modify_edge(graph, v, v2, &(testFuncEdge2), NULL)==0);
-		assert(modify_edge(graph,v, v2, &testFuncEdge, NULL)==0);
-		assert(modify_edge(graph,NULL,v2, NULL, NULL)<0);
-		assert(modify_edge(graph,v,v2,NULL,NULL)==0);
+		assert(modify_edge(v, v2, &(testFuncEdge2), NULL)==0);
+		assert(modify_edge(v, v2, &testFuncEdge, NULL)==0);
+		assert(modify_edge(NULL,v2, NULL, NULL)<0);
+		assert(modify_edge(v,v2,NULL,NULL)==0);
 	}
 	fprintf(stderr, "EDGE MODIFICATION PASSED\n");
 
@@ -198,10 +198,10 @@ void test_graph_modify_bi_edge(struct graph* graph){
 		assert(v2!=NULL);
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
-		assert(modify_bi_edge(graph,v, v2, &(testFuncEdge2), NULL)==0);
-		assert(modify_bi_edge(graph,v, v2, &testFuncEdge, NULL)==0);
-		assert(modify_bi_edge(graph,NULL,v2, NULL, NULL)<=-1);
-		assert(modify_bi_edge(graph,v,v2,NULL,NULL)==0);
+		assert(modify_bi_edge(v, v2, &(testFuncEdge2), NULL)==0);
+		assert(modify_bi_edge(v, v2, &testFuncEdge, NULL)==0);
+		assert(modify_bi_edge(NULL,v2, NULL, NULL)<=-1);
+		assert(modify_bi_edge(v,v2,NULL,NULL)==0);
 	}
 	fprintf(stderr, "EDGE MODIFICATION PASSED\n");
 
@@ -220,7 +220,7 @@ void test_graph_remove_bi_edge(struct graph* graph){
 		assert(v2!=NULL);
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
-		assert(remove_bi_edge(graph,v, v2)==0); 
+		assert(remove_bi_edge(v, v2)==0); 
 	}
 	fprintf(stderr, "BI-DIRECTIONAL EDGE REMOVAL FROM GRAPH PASSED\n");
 
@@ -236,7 +236,7 @@ void test_graph_remove_edge(struct graph* graph){
 		assert(v2!=NULL);
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
-		assert(remove_edge(graph,v, v2)==0);
+		assert(remove_edge(v, v2)==0);
 	}
 	fprintf(stderr, "EDGE REMOVAL FROM GRAPH PASSED\n");
 

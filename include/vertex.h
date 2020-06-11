@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "./stack.h"
 #include "./AVL.h"
+#include "./context.h"
 
 /**vertex_result**/
 struct vertex_result
@@ -34,6 +35,7 @@ struct vertex
     pthread_mutex_t lock;
     struct AVLTree *edge_tree;
     struct AVLTree *joining_vertices;
+    enum CONTEXT context;
 };
 
 struct vertex_request
