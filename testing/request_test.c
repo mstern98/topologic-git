@@ -90,7 +90,7 @@ void test_create_request(struct graph* graph){
 		struct request* request;
 		int id = i;
 		struct vertex_result*(*f)(void*) = vertexFunction;
-		void* glbl= NULL;
+		void* glbl = NULL;
 		struct vertex_request *v_req = malloc(sizeof(struct vertex_request));
 
 		v_req->f = f;
@@ -99,6 +99,7 @@ void test_create_request(struct graph* graph){
 		v_req->id = id;
 		assert((request=CREATE_REQUEST(CREAT_VERTEX, v_req))!=NULL);
 		free(request);
+		free(v_req);
 	}
 	fprintf(stderr, "REQUEST CREATION PASSED\n");
 

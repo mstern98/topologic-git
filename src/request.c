@@ -214,6 +214,10 @@ int procces_request(struct request *request)
     default:
         return 0;
     }
+    free(request->args);
+    request->args = NULL;
+    free(request);
+    request = NULL;
     return 0;
 }
 
