@@ -281,8 +281,8 @@ int start_set(struct graph *graph,
 Submits a request to be processed after all active nodes 
 complete
 **/
-int submit_request(struct graph *graph,
-                   struct request *request);
+int submit_request(struct graph*,
+									 struct request *request);
 
 /**
 @PARAM request: the desired request
