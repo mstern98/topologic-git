@@ -53,6 +53,12 @@ int run_single(struct graph *graph, void **init_vertex_args)
     int ret = 0;
     while (graph->state != TERMINATE)
     {
+        pthread_mutex_lock(&graph->lock);
+        while (!graph->pause)
+        {
+            pthread_cond_wait(&graph->pause_cond, &graph->lock);
+        }
+        pthread_mutex_unlock(&graph->lock);
         res = (struct vertex_result *)(vertex->f)(args);
         if (res)
         {
@@ -175,6 +181,12 @@ int run(struct graph *graph, void **init_vertex_args)
     pthread_cond_signal(&graph->red_cond);
     while (graph->state != TERMINATE)
     {
+        pthread_mutex_lock(&graph->lock);
+        while (!graph->pause)
+        {
+            pthread_cond_wait(&graph->pause_cond, &graph->lock);
+        }
+        pthread_mutex_unlock(&graph->lock);
         if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes)
         {
             graph->state = TERMINATE;
@@ -188,7 +200,7 @@ int run(struct graph *graph, void **init_vertex_args)
                 /** TODO: REAP RED **/
                 graph->state = PRINT;
                 graph->previous_color = RED;
-                pthread_cond_signal(&graph->print_cond);
+                //pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
             }
             break;
@@ -198,7 +210,7 @@ int run(struct graph *graph, void **init_vertex_args)
                 /** TODO: REAP BLACK **/
                 graph->state = PRINT;
                 graph->previous_color = BLACK;
-                pthread_cond_signal(&graph->print_cond);
+                //pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
             }
             break;
@@ -399,5 +411,32 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum S
     pthread_create(&graph->thread, NULL, fire_pthread, argv);
     free(argv);
 
+    return 0;
+}
+
+int pause_graph(struct graph *graph)
+{
+    if (!graph)
+        return -1;
+    if (graph->pause == 1)
+        return -1;
+
+    pthread_mutex_lock(&graph->lock);
+    graph->pause = 1;
+    pthread_cond_signal(&graph->pause_cond);
+    pthread_mutex_unlock(&graph->lock);
+    return 0;
+}
+
+int resume_graph(struct graph *graph)
+{
+    if (!graph)
+        return -1;
+    if (graph->pause == 0)
+        return -1;
+
+    pthread_mutex_lock(&graph->lock);
+    graph->pause = 0;
+    pthread_mutex_unlock(&graph->lock);
     return 0;
 }

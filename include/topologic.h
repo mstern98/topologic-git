@@ -325,6 +325,22 @@ int run(struct graph *graph,
 
 /**
 @PARAM graph: the graph
+@RETURN 0 for success
+        -1 if it fails
+Resumes run
+**/
+int resume_graph(struct graph *graph);
+
+/**
+@PARAM graph: the graph
+@RETURN 0 for success
+        -1 if it fails
+Pauses run
+**/
+int pause_graph(struct graph *graph);
+
+/**
+@PARAM graph: the graph
 Prints the graph with desired output
 **/
 void print(struct graph *graph);
