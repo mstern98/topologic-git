@@ -5,8 +5,7 @@
 #include "../include/test.h"
 
 void init(struct graph**);
-void setup_vertices(struct graph*);
-void setup_edges(struct graph*);
+
 
 void test_create_request(struct graph*);
 void test_submit_request(struct graph*);
@@ -56,8 +55,8 @@ int main(){
 	test_process_requests(graph);
 	test_destroy_request(graph);
 
-	//cleanup(graph);
-	destroy_graph(graph);
+	cleanup(graph);
+	//destroy_graph(graph);
 	graph=NULL;
 	fprintf(stderr, "REQUEST TESTS PASSED\n");
 
@@ -68,7 +67,7 @@ int main(){
 void cleanup(struct graph* graph){
 	assert(graph!=NULL);
 	int i = 0;
-	for(i =0; i< MAX_VERTICES; i++){
+	/*for(i =0; i< MAX_VERTICES; i++){
 		struct vertex* v = (struct vertex*)find(graph->vertices, i);
 		struct vertex* v2 = (struct vertex*)find(graph->vertices, ((i+1)>=MAX_VERTICES ? 0 : i+1)); 
 		assert(v!=NULL);
@@ -76,6 +75,12 @@ void cleanup(struct graph* graph){
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
 		assert(remove_edge(graph,v, v2)==0);
+	}*/
+	for(i = 0; i<MAX_VERTICES; i++){
+		struct vertex* v = (struct vertex*)find(graph->vertices, i);
+		if(v==NULL) continue;
+		if(v->glbl){free(v->glbl); v->glbl=NULL;}
+		remove_vertex(graph,v);
 	}
 	destroy_graph(graph);
 	graph=NULL;
@@ -88,36 +93,7 @@ void init(struct graph** graph){
 	assert(*graph!=NULL);
 }
 
-void setup_vertices(struct graph* graph){
-	assert(graph!=NULL);
-	int i = 0;
-	for(i=0; i<MAX_VERTICES; i++){
-		int id = i;
-		struct vertex_result*(*f)(void*) = &vertexFunction;
-		void* glbl = malloc(DEFAULT_BUFFER);
-		assert(create_vertex(graph, f, id, glbl)!=NULL);
-	}
-}
 
-void setup_edges(struct graph* graph){
-	assert(graph!=NULL);
-	int i = 0;
-	int (*f)(void*) = &edgeFunction;
-	for(i=0; i<MAX_EDGES; i++){
-		void* glbl = malloc(DEFAULT_BUFFER);
-		struct vertex* a = find(graph->vertices, (i));
-		assert(a!=NULL);
-		struct vertex* b;
-		if(i+1==MAX_VERTICES){
-				b = find(graph->vertices, (0));
-		}else{
-				b = find(graph->vertices, (i+1));
-		}
-		assert(b!=NULL);
-		struct edge* edge;
-		assert((edge=create_edge(graph,a, b, f, glbl))!=NULL);
-	}
-}
 
 
 void test_create_request(struct graph* graph){
@@ -125,6 +101,7 @@ void test_create_request(struct graph* graph){
 
 	int i = 0;
 	for(i=0; i<MAX_VERTICES; i++){
+		struct request* request;
 		int id = i;
 		struct vertex_result*(*f)(void*) = &vertexFunction;
 		void* glbl=malloc(DEFAULT_BUFFER);
@@ -135,7 +112,10 @@ void test_create_request(struct graph* graph){
 		memcpy(args+counter, f, sizeof(struct vertex_result*(void*))); counter+=sizeof(struct vertex_result*(void*));
 		memcpy(args+counter, &id, sizeof(int)); counter+=sizeof(int);
 		memcpy(args+counter, glbl, DEFAULT_BUFFER);
-		assert(CREATE_REQUEST(CREAT_VERTEX, args)!=NULL);
+		assert((request=CREATE_REQUEST(CREAT_VERTEX, args))!=NULL);
+		free(request);
+		free(glbl);
+		free(args);
 	}
 	fprintf(stderr, "REQUEST CREATION PASSED\n");
 
@@ -143,14 +123,80 @@ void test_create_request(struct graph* graph){
 
 void test_submit_request(struct graph* graph){
 	assert(graph!=NULL);
+
+	int i = 0;
+	for(i=0; i<MAX_VERTICES; i++){
+		int id = i;
+		struct vertex_result*(*f)(void*) = &vertexFunction;
+		void* glbl = NULL;
+		glbl=malloc(DEFAULT_BUFFER);
+		assert(glbl!=NULL);
+		void* args = malloc(sizeof(struct graph)+sizeof(struct vertext_result*(void*))+sizeof(int)+DEFAULT_BUFFER);
+		int counter = 0;
+		memcpy(args+counter, graph, sizeof(struct graph)); counter+=sizeof(graph);
+		memcpy(args+counter, f, sizeof(struct vertex_result*(void*))); counter+=sizeof(struct vertex_result*(void*));
+		memcpy(args+counter, &id, sizeof(int)); counter+=sizeof(int);
+		memcpy(args+counter, glbl, DEFAULT_BUFFER);
+		struct request* req = CREATE_REQUEST(CREAT_VERTEX, args);
+		assert(submit_request(graph, req)==0);
+		//free(args);
+		//free(req);
+		free(glbl);
+	}
+
+
+	/*for(i=0; i<MAX_EDGES; i++){
+
+		int (*f)(void*) = &edgeFunction;
+		void* glbl = malloc(DEFAULT_BUFFER);
+		struct vertex* a = (struct vertex*)find(graph->vertices, (i));
+		assert(a!=NULL);
+		struct vertex* b;
+		if(i+1==MAX_VERTICES){
+				b = (struct vertex*) find(graph->vertices, (0));
+		}else{
+				b = (struct vertex*)find(graph->vertices, (i+1));
+		}
+		assert(b!=NULL);
+		//struct edge* edge;
+		
+		int counter = 0;
+		void* args = malloc(sizeof(struct vertex)*2 + sizeof(int(void*)) + DEFAULT_BUFFER);
+		//memcpy(args+counter, graph, sizeof(struct graph)); counter+=sizeof(graph);
+		memcpy(args+counter, a, sizeof(struct vertex)); counter+=sizeof(struct vertex);
+		memcpy(args+counter, b, sizeof(struct vertex)); counter+=sizeof(struct vertex);
+
+		memcpy(args+counter, f, sizeof(struct vertex_result*(void*))); counter+=sizeof(struct vertex_result*(void*));
+		memcpy(args+counter, glbl, DEFAULT_BUFFER);
+		assert(submit_request(graph, CREATE_REQUEST(CREAT_EDGE, args))==0);
+	}*/
+
+	fprintf(stderr, "REQUEST SUBMISSION PASSED\n");
+
+
 }
 
 void test_process_requests(struct graph* graph){
 	assert(graph!=NULL);
+
+	process_requests(graph);
+	fprintf(stderr, "REQUEST PROCESSING HAS PASSED\n");
 }
 
 void test_destroy_request(struct graph* graph){
 	assert(graph!=NULL);
+	struct request* request;
+
+	while((request=(struct request*) pop(graph->modify))!=NULL){
+		destroy_request(request);
+	}
+	while((request=(struct request*)pop(graph->remove_edges))!=NULL){
+		destroy_request(request);
+	}
+	while((request=(struct request*)pop(graph->remove_vertices))!=NULL){
+		destroy_request(request);
+	}
+	//assert(graph!=NULL);
 }
 
 

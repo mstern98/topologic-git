@@ -19,3 +19,4 @@ parse/*.c
 parse/*.h
 *.swp
 *.swo
+*.txt
