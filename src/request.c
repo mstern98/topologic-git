@@ -70,7 +70,7 @@ int submit_request(struct graph* graph, struct request *request)
     return retval;
 }
 
-int procces_request(struct graph *graph, struct request *request)
+int procces_request(struct request *request)
 {
     switch (request->request)
     {
@@ -230,7 +230,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(graph,req) < 0)
+        if (procces_request(req) < 0)
             return -1;
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
@@ -248,7 +248,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(graph,req) < 0)
+        if (procces_request(req) < 0)
             return -1;
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
