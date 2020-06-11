@@ -43,9 +43,9 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     return req;
 }
 
-int submit_request(struct graph *graph, struct request *request)
+int submit_request(struct request *request)
 {
-    if (!graph || !request)
+    if (!request)
         return -1;
     int retval = 0;
     enum CONTEXT context = graph->context;
@@ -228,30 +228,30 @@ int process_requests(struct graph *graph)
     struct request *req = NULL;
     while ((req = (struct request *)pop(graph->modify)) != NULL)
     {
-        if (procces_request(graph, req) < 0)
-        {
-            if (graph->context != SINGLE)
-                pthread_mutex_unlock(&graph->lock);
+        if (graph->context != SINGLE)
+            pthread_mutex_unlock(&graph->lock);
+        if (procces_request(req) < 0)
             return -1;
-        }
+        if (graph->context != SINGLE)
+            pthread_mutex_lock(&graph->lock);
     }
     while ((req = (struct request *)pop(graph->remove_edges)) != NULL)
     {
-        if (procces_request(graph, req) < 0)
-        {
-            if (graph->context != SINGLE)
-                pthread_mutex_unlock(&graph->lock);
+        if (graph->context != SINGLE)
+            pthread_mutex_unlock(&graph->lock);
+        if (procces_request(req) < 0)
             return -1;
-        }
+        if (graph->context != SINGLE)
+            pthread_mutex_lock(&graph->lock);
     }
     while ((req = (struct request *)pop(graph->remove_vertices)) != NULL)
     {
-        if (procces_request(graph, req) < 0)
-        {
-            if (graph->context != SINGLE)
-                pthread_mutex_unlock(&graph->lock);
+        if (graph->context != SINGLE)
+            pthread_mutex_unlock(&graph->lock);
+        if (procces_request(req) < 0)
             return -1;
-        }
+        if (graph->context != SINGLE)
+            pthread_mutex_lock(&graph->lock);
     }
 
     if (graph->context != SINGLE)
