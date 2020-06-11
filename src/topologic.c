@@ -30,31 +30,38 @@ int start_set(struct graph *graph, int *id, int num_vertices)
     return 0;
 }
 
-void run_single(struct graph *graph, void **init_vertex_args) {
-    if (!graph || graph->context != SINGLE || graph->start->length > 1 || graph->start->length == 0) {
+void run_single(struct graph *graph, void **init_vertex_args)
+{
+    if (!graph || graph->context != SINGLE || graph->start->length > 1 || graph->start->length == 0)
+    {
         return;
     }
     int successor = 0;
     struct stack *edges = init_stack();
-    if (!edges) return;
-    struct vertex *vertex = (struct vertex *) pop(graph->start);
-    if (!vertex) return;
+    if (!edges)
+        return;
+    struct vertex *vertex = (struct vertex *)pop(graph->start);
+    if (!vertex)
+        return;
     struct vertex_result *res = NULL;
     void *edge_argv = NULL;
     struct edge *edge = NULL;
-    
+
     void *args = init_vertex_args[0];
     preorder(vertex->edge_tree, edges);
 
-    while (graph->state != TERMINATE) {
-        res = (struct vertex_result *) (vertex->f)(args);
+    while (graph->state != TERMINATE)
+    {
+        res = (struct vertex_result *)(vertex->f)(args);
         if (res)
         {
             edge_argv = res->edge_argv;
             args = res->vertex_argv;
         }
-        while ((edge = (struct edge *)pop(edges)) != NULL) {
-            if (successor == 0 && (int)(edge->f)(edge_argv) >= 0) {
+        while ((edge = (struct edge *)pop(edges)) != NULL)
+        {
+            if (successor == 0 && (int)(edge->f)(edge_argv) >= 0)
+            {
                 vertex = edge->b;
                 successor = 1;
             }
@@ -64,27 +71,36 @@ void run_single(struct graph *graph, void **init_vertex_args) {
         free(res);
         res = NULL;
 
-        process_requests(graph);
+        if (process_requests(graph) < 0)
+        {
+            graph->state = TERMINATE;
+            break;
+        }
         print(graph);
         ++(graph->state_count);
-        if (successor == 0) 
+        if (successor == 0)
             graph->state = TERMINATE;
-        else successor = 0;
-        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) {
+        else
+            successor = 0;
+        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes)
+        {
             graph->state = TERMINATE;
             break;
         }
     }
 
-    if (edge_argv) {
+    if (edge_argv)
+    {
         free(edge_argv);
         edge_argv = NULL;
     }
-    if (args) {
+    if (args)
+    {
         free(args);
         args = NULL;
     }
-    if (res) {
+    if (res)
+    {
         free(res);
         res = NULL;
     }
@@ -99,7 +115,8 @@ void run(struct graph *graph, void **init_vertex_args)
         //destroy_graph(graph);
         return;
     }
-    if (graph->context == SINGLE) {
+    if (graph->context == SINGLE)
+    {
         run_single(graph, init_vertex_args);
         return;
     }
@@ -154,7 +171,8 @@ void run(struct graph *graph, void **init_vertex_args)
     pthread_cond_signal(&graph->red_cond);
     while (graph->state != TERMINATE)
     {
-        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) {
+        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes)
+        {
             graph->state = TERMINATE;
             break;
         }
@@ -164,7 +182,6 @@ void run(struct graph *graph, void **init_vertex_args)
             if (graph->red_vertex_count == 0)
             {
                 /** TODO: REAP RED **/
-                process_requests(graph);
                 graph->state = PRINT;
                 graph->previous_color = RED;
                 pthread_cond_signal(&graph->print_cond);
@@ -175,7 +192,6 @@ void run(struct graph *graph, void **init_vertex_args)
             if (graph->black_vertex_count == 0)
             {
                 /** TODO: REAP BLACK **/
-                process_requests(graph);
                 graph->state = PRINT;
                 graph->previous_color = BLACK;
                 pthread_cond_signal(&graph->print_cond);
@@ -185,6 +201,11 @@ void run(struct graph *graph, void **init_vertex_args)
         case PRINT:
             if (graph->print_flag == 0)
             {
+                if (process_requests(graph) < 0)
+                {
+                    graph->state = TERMINATE;
+                    break;
+                }
                 print(graph);
                 graph->state_count++;
                 if (graph->previous_color == RED)
@@ -300,14 +321,15 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
                     return -1;
                 }
             }
-            else if (graph->context == NONE) {
+            else if (graph->context == NONE)
+            {
                 next_vertex = edge->b;
                 break;
             }
         }
         else if (edge->edge_type == BI_EDGE)
         {
-            pthread_mutex_unlock(&edge->bi_edge_lock);  
+            pthread_mutex_unlock(&edge->bi_edge_lock);
         }
     }
     destroy_stack(edges);
@@ -330,7 +352,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     pthread_mutex_unlock(&graph->lock);
     vertex->is_active = 0;
     pthread_mutex_unlock(&vertex->lock);
-    
+
     int iloop_b = 1;
     if (next_vertex == vertex)
         iloop_b = iloop + 1;

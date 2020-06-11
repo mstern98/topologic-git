@@ -306,9 +306,12 @@ struct request *create_request(enum REQUESTS request,
 
 /**
 @PARAM graph: the graph
+@RETURN 0 if all got processed;
+        -1 if a request failed
+        will set ERRNO to the ENUM 
 Process requests that are queued in the graph
 **/
-void process_requests(struct graph *graph);
+int process_requests(struct graph *graph);
 
 /**
 @PARAM graph: the graph
