@@ -94,7 +94,7 @@ void test_graph_insert_vertex(struct graph* graph){
 	for(i=0; i<TEST_SIZE; i++){
 		//Dummy values
 		int id = i;
-		struct vertex_result*(*f)(void*) = &testFunction;
+		struct vertex_result *(*f)(void*) = testFunction;
 		void* glbl = malloc(32); //32 bytes of just random stuff for now
 		assert(create_vertex(graph, f, id, glbl)!=NULL);
 	}
@@ -104,7 +104,7 @@ void test_graph_insert_vertex(struct graph* graph){
 void test_graph_add_edge(struct graph* graph){
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int (*f)(void*) = &testFuncEdge;
+		int (*f)(void*) = testFuncEdge;
 		void* glbl=malloc(32);
 
 		struct vertex* a = find(graph->vertices, (i));
@@ -127,7 +127,7 @@ void test_graph_add_bi_edge(struct graph* graph){
 
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int (*f)(void*) = &testFuncEdge;
+		int (*f)(void*) = testFuncEdge;
 		void* glbl=malloc(32);
 
 		struct vertex* a = find(graph->vertices, (i));
@@ -156,8 +156,8 @@ void test_graph_modify_vertex(struct graph* graph){
 		struct vertex* v = (struct vertex*)find(graph->vertices, i);
 		assert(v!=NULL);
 		if (v->glbl) {free(v->glbl); v->glbl = NULL;}
-		assert(modify_vertex(v, &testFunction2, NULL)==0);
-		assert(modify_vertex(v, &testFunction, NULL)==0);
+		assert(modify_vertex(v, testFunction2, NULL)==0);
+		assert(modify_vertex(v, testFunction, NULL)==0);
 		assert(modify_vertex(v, NULL, NULL)==0);
 	}
 	fprintf(stderr,"VERTEX MODIFICATION PASSED\n");
@@ -177,8 +177,8 @@ void test_graph_modify_edge(struct graph* graph){
 
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
-		assert(modify_edge(v, v2, &(testFuncEdge2), NULL)==0);
-		assert(modify_edge(v, v2, &testFuncEdge, NULL)==0);
+		assert(modify_edge(v, v2, (testFuncEdge2), NULL)==0);
+		assert(modify_edge(v, v2, testFuncEdge, NULL)==0);
 		assert(modify_edge(NULL,v2, NULL, NULL)<0);
 		assert(modify_edge(v,v2,NULL,NULL)==0);
 	}
@@ -198,8 +198,8 @@ void test_graph_modify_bi_edge(struct graph* graph){
 		assert(v2!=NULL);
 		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
 		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
-		assert(modify_bi_edge(v, v2, &(testFuncEdge2), NULL)==0);
-		assert(modify_bi_edge(v, v2, &testFuncEdge, NULL)==0);
+		assert(modify_bi_edge(v, v2, (testFuncEdge2), NULL)==0);
+		assert(modify_bi_edge(v, v2, testFuncEdge, NULL)==0);
 		assert(modify_bi_edge(NULL,v2, NULL, NULL)<=-1);
 		assert(modify_bi_edge(v,v2,NULL,NULL)==0);
 	}

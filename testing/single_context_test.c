@@ -79,7 +79,7 @@ void init(struct graph** graph){
 	int i = 0;
 	for(i=0;i<MAXIMUM;i++){
 		int id = i;
-		struct vertex_result*(*f)(void*)=&vertexFunction;
+		struct vertex_result *(*f)(void*)= vertexFunction;
 		void* glbl=NULL;
 		struct vertex_request* vert_req = malloc(sizeof(struct vertex_request));
 		vert_req->graph = *graph;

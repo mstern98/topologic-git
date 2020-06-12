@@ -286,7 +286,7 @@ Submits a request to be processed after all active nodes
 complete
 **/
 int submit_request(struct graph*,
-									 struct request *request);
+		   struct request *request);
 
 /**
 @PARAM request: the desired request
