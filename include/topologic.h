@@ -69,7 +69,7 @@ struct graph *graph_init(unsigned int max_state_changes,
                          enum CONTEXT context,
                          enum MEM_OPTION mem_option);
 #define MAX_LOOPS 100
-#define GRAPH_INIT() graph_init(-1, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE)
+#define GRAPH_INIT() graph_init(-1, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SINGLE, CONTINUE)
 
 /**
 @PARAM graph: the graph

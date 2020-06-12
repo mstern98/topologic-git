@@ -33,7 +33,8 @@ void *pop(struct stack *stack)
 
 void *get(struct stack *stack, int index)
 {
-    if (index < 0 || !stack || index > stack->length)
+    if (!stack || stack->length == 0)
+    if (index < 0 || !stack || index >= stack->length)
     {
         return NULL;
     }
