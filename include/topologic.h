@@ -4,7 +4,6 @@
 #ifndef __TOPOLOGIC__
 #define __TOPOLOGIC__
 
-//#define _GNU_SOURCE
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdio.h>
@@ -33,6 +32,11 @@
 #include "./vertex.h"
 #include "./request.h"
 #include "./graph.h"
+
+
+#ifndef SWIG
+#define _GNU_SOURCE
+#endif
 
 struct fireable
 {

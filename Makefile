@@ -28,7 +28,7 @@ TEST_SRC=$(wildcard testing/*.c)  #ADD MORE IF NEED BE
 TEST_OBJ=$(TEST_SRC:.c=.o)
 TEST_DIR=testing
 
-all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C) $(BIN) $(TESTS) SWIG
+all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C) $(BIN) $(TESTS) 
 
 $(FLEX_C):
 	flex $(FLEX)
@@ -44,9 +44,14 @@ $(BIN): $(OBJ) $(INCLUDES) $(BISON_OBJ) $(FLEX_OBJ)
 $(TESTS): $(BIN) $(OBJ) $(TEST_OBJ)
 	$(CC) $(CFLAGS) -o $@ libtopologic.a $(TEST_DIR)/$(@F).o $(LDFLAGS)
 
-SWIG: 
+python: $(OBJ) $(INCLUDES)
 	swig -python $(TOPYLOGIC_I)
 	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python3.6m
+	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
+
+python2: $(OBJ) $(INCLUDES)
+	swig -python $(TOPYLOGIC_I)
+	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python2.7
 	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
 all:$(BIN)
@@ -60,4 +65,5 @@ clean:
 	rm -f $(TOPYLOGIC_WRAP) $(TOPYLOGIC_PY) $(TOPYLOGIC_SO) $(TOPYLOGIC_O)
 	rm -rf topylogic/__pycache__
 	rm -rf topylogic/build
+	-rm -r topylogic/*.pyc
 	rm -f $(TESTS) $(TEST_OBJ)
