@@ -25,3 +25,5 @@ parse/*.h
 *.pyc
 topylogic/__pycache__/*
 topylogic/topylogic.py
+topylogic/_topylogic.so
+topylogic/topylogic_wrap.c

@@ -7,7 +7,7 @@ void setup_non_start_set(struct graph* graph);
 void test_run_single(struct graph*);
 void cleanup(struct graph*);
 
-#define MAXIMUM 100
+#define MAXIMUM 50
 #define DEFAULT_BUFFER 64
 
 int edgeFunction(void* args){
@@ -48,6 +48,18 @@ void cleanup(struct graph* graph){
 	assert(graph!=NULL);
 	int i = 0;
 
+	for(i=0;i<MAXIMUM;i++){
+		struct vertex* v = (struct vertex*)find(graph->vertices, i);
+		struct vertex* v2 = (struct vertex*)find(graph->vertices, ((i+1)>=MAXIMUM ? 0 : i+1)); 
+		assert(v!=NULL);
+		assert(v2!=NULL);
+		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
+		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
+		assert(remove_edge(v, v2)==0);
+	}
+
+
+
 	for(i = 0; i<MAXIMUM; i++){
 		struct vertex* v = (struct vertex*)find(graph->vertices, i);
 		if(v==NULL) continue;
@@ -78,22 +90,38 @@ void init(struct graph** graph){
 		assert(submit_request(*graph, req)==0);
 	}
 	assert(process_requests(*graph)==0);
-	//Now the edges: TODO
-	
 
+
+	struct vertex* verts[MAXIMUM];
+	for(i=0; i<MAXIMUM; i++){
+		verts[i] = (struct vertex*)(find((*graph)->vertices, i));
+		assert(verts[i]!=NULL);
+
+	}
+	for(i=0;i<MAXIMUM;i++){
+		struct edge_request* edge_req = malloc(sizeof(struct edge_request));
+		assert(edge_req!=NULL);
+		edge_req->a = verts[i];
+		edge_req->b = ((i+1)>=MAXIMUM ? verts[0] :verts[i+1]);
+		edge_req->f = &edgeFunction;
+		edge_req->glbl=NULL;
+		struct request* req = create_request(CREAT_EDGE, edge_req, NULL);
+		assert(submit_request(*graph, req)==0);
+	}
+	assert(process_requests(*graph)==0);
 }
 
 void setup_start_set(struct graph* graph){
 	assert(graph!=NULL);
 
+	int ids[1] = {0};
+	assert(start_set(graph, &ids[0], 1)==0);
+	int ids2[5] = {0,1,2,3,4};
+	assert(start_set(graph, &(ids2[0]),5)!=0);
+	fprintf(stderr, "START SET TESTS COMPLETED\n");
+
+
 	/*TODO*/
-}
-
-void setup_non_start_set(struct graph* graph){
-	assert(graph!=NULL);
-
-	/*TODO*/
-
 }
 
 void test_run_single(struct graph* graph){
