@@ -7,6 +7,8 @@ extension = Extension("_topylogic", ["topylogic/_topylogic_module.cc",
 "src/topologic_json.c", 
 "src/topologic.c",
 "src/vertex.c",
+"src/AVL.c",
+"src/stack.c",
 "parse/topologic_parser.tab.c"])
 
 setup(name = "topylogic", ext_modules=[extension])
