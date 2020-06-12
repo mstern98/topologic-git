@@ -1,7 +1,7 @@
 CC=gcc
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
-CFLAGS=-Wall	-Werror	-g	-O2
+CFLAGS=-Wall	-Werror	-g	-O2 -fPIC
 OBJ=$(SRC:.c=.o)
 AR=ar
 
@@ -18,9 +18,10 @@ FLEX_OBJ=$(FLEX_C:.c=.o)
 BISON_OBJ=$(BISON_C:.c=.o)
 
 TOPYLOGIC_I=topylogic/topylogic.i
-TOPYLOGIC_MOD=topylogic/_topylogic_module.cc
-TOPYLOGIC_SETUP=topylogic/setup.py
+TOPYLOGIC_WRAP=topylogic/topylogic_wrap.c
+TOPYLOGIC_SO=topylogic/_topylogic.so
 TOPYLOGIC_PY=topylogic/topylogic.py
+TOPYLOGIC_O=$(wildcard topylogic/*.o)
 
 TESTS=$(TEST_SRC:.c=)#ADD MORE AS THEY GO
 TEST_SRC=$(wildcard testing/*.c)  #ADD MORE IF NEED BE
@@ -32,10 +33,10 @@ all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C) $(BIN) $(TESTS) SWIG
 $(FLEX_C):
 	flex $(FLEX)
 	mv lex.yy.c $(FLEX_C)
-	$(CC) -g -c $(FLEX_C) -o $(FLEX_OBJ)
+	$(CC) -fPIC -g -c $(FLEX_C) -o $(FLEX_OBJ)
 $(BISON_C): $(BISON)
 	bison -d $(BISON) -o $(BISON_C)
-	$(CC) -g -c $(BISON_C) -o $(BISON_OBJ)
+	$(CC) -fPIC -g -c $(BISON_C) -o $(BISON_OBJ)
 
 $(BIN): $(OBJ) $(INCLUDES) $(BISON_OBJ) $(FLEX_OBJ)
 	$(AR) rcs libtopologic.a $(OBJ) $(BISON_OBJ) $(FLEX_OBJ)
@@ -44,9 +45,9 @@ $(TESTS): $(BIN) $(OBJ) $(TEST_OBJ)
 	$(CC) $(CFLAGS) -o $@ libtopologic.a $(TEST_DIR)/$(@F).o $(LDFLAGS)
 
 SWIG: 
-	swig -python -c++ -o $(TOPYLOGIC_MOD) $(TOPYLOGIC_I)
-	python $(TOPYLOGIC_SETUP) build_ext --inplace
-	python3 $(TOPYLOGIC_SETUP) build_ext --inplace
+	swig -python $(TOPYLOGIC_I)
+	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python3.6m
+	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
 all:$(BIN)
 .PHONY : clean
@@ -56,5 +57,7 @@ clean:
 	rm -f $(FLEX_C) $(FLEX_OBJ)
 	rm -f $(BISON_C) $(BISON_OBJ) $(BISON_H)
 	rm -f $(OBJ) $(BIN)
-	rm -f $(TOPYLOGIC_MOD) $(TOPYLOGIC_PY)
+	rm -f $(TOPYLOGIC_WRAP) $(TOPYLOGIC_PY) $(TOPYLOGIC_SO) $(TOPYLOGIC_O)
+	rm -rf topylogic/__pycache__
+	rm -rf topylogic/build
 	rm -f $(TESTS) $(TEST_OBJ)

@@ -338,11 +338,13 @@ Prints the graph with desired output
 **/
 void print_graph(struct graph *graph);
 
+#ifndef SWIG
 /**
 @PARAM file: graph input file
 @RETURN the graph specified in the file
 **/
 struct graph *parse_json(FILE *file);
+#endif
 
 /**
 @PARAM graph: the graph

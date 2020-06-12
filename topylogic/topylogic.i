@@ -1,5 +1,4 @@
 %module topylogic
-
 %{
 #include "../include/topologic.h"
 %}

@@ -22,4 +22,6 @@ parse/*.h
 *.txt
 *.swo
 *.cc
+*.pyc
+topylogic/__pycache__/*
 topylogic/topylogic.py
