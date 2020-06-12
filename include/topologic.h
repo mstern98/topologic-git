@@ -4,7 +4,7 @@
 #ifndef __TOPOLOGIC__
 #define __TOPOLOGIC__
 
-#define _GNU_SOURCE
+//#define _GNU_SOURCE
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdio.h>
