@@ -17,15 +17,7 @@ int edgeFunction(void* args){
 }
 
 struct vertex_result* vertexFunction(void* args){
-	struct vertex_result* res = malloc(sizeof(struct vertex_result));
-	if(res==NULL) return NULL;
-
-	int counter = 0;
-
-	int vertex_args = *(int*)(args+counter); counter+=sizeof(int);
-	memcpy(res->vertex_argv, args+counter, sizeof(void*)*vertex_args); counter+=(sizeof(void*)*vertex_args);
-	int edge_args = *(int*)(args+counter); counter+=sizeof(int);
-	memcpy(res->edge_argv, (args+counter), sizeof(void*)*edge_args);
+	struct vertex_result* res = (struct vertex_result*)args; 
 	return res;	
 }
 
@@ -121,13 +113,35 @@ void setup_start_set(struct graph* graph){
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 
 
-	/*TODO*/
 }
 
 void test_run_single(struct graph* graph){
 	assert(graph!=NULL);
 
-	/*TODO*/
+	void** vertex_args = malloc(sizeof(void*)*MAXIMUM);
+	assert(vertex_args!=NULL);
+
+	int i = 0;
+	for(i=0; i<MAXIMUM; i++){
+		int edge_args[2] = {i, i+4};
+		void* edge = malloc(sizeof(int)*2);
+		memcpy(edge, &edge_args[0], sizeof(int));
+		memcpy(edge+sizeof(int), &edge_args[1], sizeof(int));
+		void* vertex = NULL;
+
+		struct vertex_result* v = malloc(sizeof(struct vertex_result));
+		v->edge_argv = edge;
+		v->vertex_argv = vertex;
+		vertex_args[i] = v;		
+	}
+
+	assert(run(graph, vertex_args)==0);
+	//print_graph(graph);
+	//for(i = 0; i<MAXIMUM;i++){
+	//	free(vertex_args[i]);
+	//}
+	free(vertex_args);
+	fprintf(stderr, "SINGLE RUN FINISHED\n");
 }
 
 
