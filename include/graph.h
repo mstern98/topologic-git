@@ -74,7 +74,7 @@ struct graph
         struct stack *modify;
         struct stack *remove_edges;
         struct stack *remove_vertices;
-        unsigned int max_state_changes;
+        int max_state_changes;
         unsigned int max_loop;
         unsigned int snapshot_timestamp;
         enum VERBOSITY lvl_verbose;

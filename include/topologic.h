@@ -62,7 +62,7 @@ void *fire_pthread(void *vargp);
 @RETURN an empty graph
 Creates a graph structures
 **/
-struct graph *graph_init(unsigned int max_state_changes,
+struct graph *graph_init(int max_state_changes,
                          unsigned int snapshot_timestamp,
                          unsigned int max_loop,
                          enum VERBOSITY lvl_verbose,

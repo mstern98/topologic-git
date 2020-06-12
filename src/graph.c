@@ -3,7 +3,7 @@
 
 #include "../include/topologic.h"
 
-struct graph *graph_init(unsigned int max_state_changes, unsigned int snapshot_timestamp, unsigned int max_loop, enum VERBOSITY lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option)
+struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp, unsigned int max_loop, enum VERBOSITY lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option)
 {
 	struct graph *graph = malloc(sizeof(struct graph));
 	if (!graph)
