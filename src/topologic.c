@@ -3,7 +3,7 @@
 
 #include "../include/topologic.h"
 
-int start_set(struct graph *graph, int *id, int num_vertices)
+int start_set(struct graph *graph, int id[], int num_vertices)
 {
     if (!graph)
         return -1;
@@ -119,7 +119,7 @@ int run_single(struct graph *graph, void **init_vertex_args)
     return ret;
 }
 
-int run(struct graph *graph, void **init_vertex_args)
+int run(struct graph *graph, void *init_vertex_args[])
 {
     if (!graph->start || graph->state == TERMINATE)
     {

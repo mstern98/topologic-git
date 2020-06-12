@@ -274,7 +274,7 @@ int switch_vertex(struct graph *graph,
 Creates multiple contexts that are ran in parallel
 **/
 int start_set(struct graph *graph,
-              int *id,
+              int id[],
               int num_vertices);
 
 /**
