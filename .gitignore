@@ -20,3 +20,6 @@ parse/*.h
 *.swp
 *.swo
 *.txt
+*.swo
+*.cc
+topylogic/topylogic.py

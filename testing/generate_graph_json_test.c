@@ -21,7 +21,7 @@ int main() {
     assert((e = (struct edge *) find(v->edge_tree, 4)) != NULL);
     assert(e->edge_type == BI_EDGE);
 
-    print(graph);
+    print_graph(graph);
     destroy_graph(graph);
     graph = NULL;
     assert(graph == NULL);

@@ -91,7 +91,7 @@ void print_state(struct graph *graph, FILE *out)
     destroy_stack(stack);
 }
 
-void print(struct graph *graph)
+void print_graph(struct graph *graph)
 {
     if (!graph)
         return;

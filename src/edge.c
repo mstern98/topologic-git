@@ -224,7 +224,10 @@ int remove_edge_id(struct vertex *a, int id)
         }
         edge->bi_edge->bi_edge = NULL;
         edge->bi_edge->edge_type = EDGE;
+    } else {
+        free(edge->glbl);
     }
+    edge->glbl = NULL;
     edge->bi_edge = NULL;
 
     free(edge);
@@ -274,6 +277,7 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
     }
     if (glbl)
     {
+        if (edge->glbl) free(edge->glbl);
         edge->glbl = glbl;
     }
     if (a->context != SINGLE)

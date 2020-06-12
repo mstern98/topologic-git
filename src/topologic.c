@@ -86,7 +86,7 @@ int run_single(struct graph *graph, void **init_vertex_args)
             ret = -1;
             break;
         }
-        print(graph);
+        print_graph(graph);
         ++(graph->state_count);
         if (successor == 0)
             graph->state = TERMINATE;
@@ -176,7 +176,7 @@ int run(struct graph *graph, void **init_vertex_args)
         return -1;
     }
 
-    print(graph);
+    print_graph(graph);
 
     pthread_cond_signal(&graph->red_cond);
     while (graph->state != TERMINATE)
@@ -222,7 +222,7 @@ int run(struct graph *graph, void **init_vertex_args)
                     graph->state = TERMINATE;
                     return -1;
                 }
-                print(graph);
+                print_graph(graph);
                 pthread_mutex_lock(&graph->lock);
                 graph->state_count++;
                 if (graph->previous_color == RED)

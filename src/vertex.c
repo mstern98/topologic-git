@@ -31,6 +31,7 @@ struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(voi
 			pthread_mutex_unlock(&graph->lock);
 		return NULL;
 	}
+	vertex->shared->vertex_data = NULL;
 
 	vertex->edge_tree = init_avl();
 	if (!vertex->edge_tree)
@@ -167,8 +168,11 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 	stack = NULL;
 
 	vertex->id = 0;
+	if (vertex->shared->vertex_data) free(vertex->shared->vertex_data);
+	vertex->shared->vertex_data = NULL;
 	free(vertex->shared);
 	vertex->shared = NULL;
+	if(vertex->glbl) free(vertex->glbl);
 	vertex->glbl = NULL;
 
 	if (context != SINGLE)

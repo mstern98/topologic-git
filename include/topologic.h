@@ -336,7 +336,7 @@ int pause_graph(struct graph *graph);
 @PARAM graph: the graph
 Prints the graph with desired output
 **/
-void print(struct graph *graph);
+void print_graph(struct graph *graph);
 
 /**
 @PARAM file: graph input file
