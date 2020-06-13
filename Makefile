@@ -1,7 +1,7 @@
 CC=gcc
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
-CFLAGS=-Wall	-Werror	-g	-O2 -fPIC
+CFLAGS=-Wall	-Werror	-g	-fPIC #-O2
 OBJ=$(SRC:.c=.o)
 AR=ar
 

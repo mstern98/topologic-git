@@ -241,6 +241,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                         pthread_cond_signal(&graph->red_cond);
                 }
             }
+						graph->print_flag=0;
             break;
         default:
             pthread_mutex_unlock(&graph->lock);
