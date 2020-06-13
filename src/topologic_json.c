@@ -103,7 +103,8 @@ void print_graph(struct graph *graph)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
-    if ((graph->snapshot_timestamp == 0 && (graph->state_count != 0 || (graph->red_vertex_count != 0 && graph->black_vertex_count != 0))) ||
+    if ((graph->snapshot_timestamp == START_STOP && ((graph->red_vertex_count != 0 && graph->black_vertex_count != 0) ||
+        (graph->state_count != 0 && graph->state_count != graph->max_state_changes - 1))) ||
         (graph->snapshot_timestamp != 0 && graph->state_count % graph->snapshot_timestamp != 0))
     {
         if (graph->context != SINGLE)

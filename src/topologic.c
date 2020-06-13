@@ -51,6 +51,8 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
     int ret = 0;
     while (graph->state != TERMINATE)
     {
+        vertex->is_active = 1;
+        print_graph(graph);
         preorder(vertex->edge_tree, edges);
         pthread_mutex_lock(&graph->lock);
         while (graph->pause)
@@ -63,6 +65,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
         {
             if (successor == 0 && (int)(edge->f)(args->edge_argv) >= 0)
             {
+                vertex->is_active = 0;
                 vertex = edge->b;
                 successor = 1;
             }
@@ -74,7 +77,6 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             ret = -1;
             break;
         }
-        print_graph(graph);
         ++(graph->state_count);
         if (successor == 0)
             graph->state = TERMINATE;
