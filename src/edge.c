@@ -171,7 +171,6 @@ int remove_edge(struct vertex *a, struct vertex *b)
     edge->f = NULL;
     edge->id = 0;
 
-    edge->glbl = NULL;
 
     if (edge->edge_type == BI_EDGE)
     {
@@ -181,7 +180,10 @@ int remove_edge(struct vertex *a, struct vertex *b)
         }
         edge->bi_edge->bi_edge = NULL;
         edge->bi_edge->edge_type = EDGE;
+    } else {
+        if (edge->glbl) free(edge->glbl);
     }
+    edge->glbl = NULL;
     edge->bi_edge = NULL;
 
     free(edge);
@@ -214,7 +216,6 @@ int remove_edge_id(struct vertex *a, int id)
     edge->b = NULL;
     edge->f = NULL;
     edge->id = 0;
-    edge->glbl = NULL;
 
     if (edge->edge_type == BI_EDGE)
     {

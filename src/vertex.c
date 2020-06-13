@@ -151,6 +151,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 		edge->b = NULL;
 		edge->id = 0;
 		edge->f = NULL;
+		if (edge->edge_type != BI_EDGE && edge->glbl) free(edge->glbl);
 		edge->glbl = NULL;
 		free(edge);
 		edge = NULL;
@@ -202,6 +203,8 @@ int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(void *), voi
 	}
 	if (glbl != NULL)
 	{
+		if (vertex->glbl)
+			free(vertex->glbl);
 		vertex->glbl = glbl;
 	}
 
