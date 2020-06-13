@@ -95,7 +95,7 @@
             temp = NULL;
         $1 = &temp;
     }
-    int run(void **vertex_args) {
+    int run(struct vertex_result *vertex_args[]) {
         return run($self, vertex_args);
     }
 

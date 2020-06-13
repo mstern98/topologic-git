@@ -346,6 +346,20 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         iloop_b = iloop + 1;
     if (graph->context == NONE && next_vertex != NULL)
         return fire(graph, next_vertex, v_res, flip_color, iloop_b);
+    else {
+        if (v_res->edge_argv) {
+            free(v_res->edge_argv);
+            v_res->edge_argv = NULL;
+        }
+        if (v_res->vertex_argv) {
+            free(v_res->vertex_argv);
+            v_res->vertex_argv = NULL;
+        }
+        if (v_res) {
+            free(v_res);
+            v_res = NULL;
+        }
+    }
     return 0;
 }
 

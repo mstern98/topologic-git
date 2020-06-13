@@ -135,7 +135,7 @@ void test_run_single(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	void **vertex_args = malloc(sizeof(void *));
+	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *));
 	assert(vertex_args != NULL);
 
 	int i = 0;
