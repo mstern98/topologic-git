@@ -14,7 +14,9 @@
 struct vertex_result
 {
     void *vertex_argv;
+    size_t vertex_size;
     void *edge_argv;
+    size_t edge_size;
 };
 
 union shared_edge {

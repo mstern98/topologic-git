@@ -69,13 +69,13 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
                 vertex->is_active = 0;
                 if (vertex == edge->b)
                     ++iloop;
-                else 
+                else
                     iloop = 0;
                 vertex = edge->b;
                 successor = 1;
             }
         }
-    
+
         if (process_requests(graph) < 0)
         {
             graph->state = TERMINATE;
@@ -87,7 +87,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             graph->state = TERMINATE;
         else
             successor = 0;
-        if ((graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) || 
+        if ((graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) ||
             (graph->max_loop != -1 && iloop >= graph->max_loop))
         {
             graph->state = TERMINATE;
@@ -322,6 +322,25 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
                         graph->black_vertex_count--;
                     pthread_mutex_unlock(&graph->lock);
                     pthread_mutex_unlock(&vertex->lock);
+                    if (v_res->edge_argv)
+                    {
+                        free(v_res->edge_argv);
+                    }
+                    if (v_res->edge_argv)
+                    {
+                        free(v_res->edge_argv);
+                        v_res->edge_argv = NULL;
+                    }
+                    if (v_res->vertex_argv)
+                    {
+                        free(v_res->vertex_argv);
+                        v_res->vertex_argv = NULL;
+                    }
+                    if (v_res)
+                    {
+                        free(v_res);
+                        v_res = NULL;
+                    }
                     return -1;
                 }
             }
@@ -344,7 +363,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         graph->red_vertex_count--;
     else
         graph->black_vertex_count--;
-
     pthread_mutex_unlock(&graph->lock);
     vertex->is_active = 0;
     pthread_mutex_unlock(&vertex->lock);
@@ -354,16 +372,20 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         iloop_b = iloop + 1;
     if (graph->context == NONE && next_vertex != NULL)
         return fire(graph, next_vertex, v_res, flip_color, iloop_b);
-    else {
-        if (v_res->edge_argv) {
+    else
+    {
+        if (v_res->edge_argv)
+        {
             free(v_res->edge_argv);
             v_res->edge_argv = NULL;
         }
-        if (v_res->vertex_argv) {
+        if (v_res->vertex_argv)
+        {
             free(v_res->vertex_argv);
             v_res->vertex_argv = NULL;
         }
-        if (v_res) {
+        if (v_res)
+        {
             free(v_res);
             v_res = NULL;
         }
@@ -396,9 +418,33 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
     struct fireable *argv = malloc(sizeof(struct fireable));
     if (!argv)
         return -1;
+    argv->args = malloc(sizeof(struct vertex_result));
+    if (!argv->args)
+    {
+        free(argv);
+        return -1;
+    }
+    argv->args->vertex_argv = malloc(sizeof(args->vertex_size));
+    if (!argv->args->vertex_argv)
+    {
+        free(argv->args);
+        free(argv);
+        return -1;
+    }
+    argv->args->edge_argv = malloc(sizeof(args->edge_size));
+    if (!argv->args->vertex_argv)
+    {
+        free(argv->args->vertex_argv);
+        free(argv->args);
+        free(argv);
+        return -1;
+    }
+    memcpy(argv->args->vertex_argv, args->vertex_argv, args->vertex_size);
+    memcpy(argv->args->edge_argv, args->edge_argv, args->edge_size);
+    argv->args->vertex_size = args->vertex_size;
+    argv->args->edge_size = args->edge_size;
     argv->graph = graph;
     argv->vertex = vertex;
-    argv->args = args;
     argv->color = color;
     argv->iloop = iloop;
     pthread_create(&graph->thread, NULL, fire_pthread, argv);
