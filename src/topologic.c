@@ -30,56 +30,44 @@ int start_set(struct graph *graph, int id[], int num_vertices)
     return 0;
 }
 
-int run_single(struct graph *graph, void **init_vertex_args)
+int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
 {
     if (!graph || graph->context != SINGLE || graph->start->length > 1 || graph->start->length == 0)
     {
         return -1;
     }
     int successor = 0;
-    struct stack *edges = init_stack();
-    if (!edges)
-        return -1;
+
     struct vertex *vertex = (struct vertex *)pop(graph->start);
     if (!vertex)
         return -1;
-    struct vertex_result *res = NULL;
-    void *edge_argv = NULL;
     struct edge *edge = NULL;
 
-    void *args = init_vertex_args[0];
-    preorder(vertex->edge_tree, edges);
+    struct vertex_result *args = init_vertex_args[0];
+    struct stack *edges = init_stack();
+    if (!edges)
+        return -1;
 
     int ret = 0;
     while (graph->state != TERMINATE)
     {
+        preorder(vertex->edge_tree, edges);
         pthread_mutex_lock(&graph->lock);
         while (graph->pause)
         {
             pthread_cond_wait(&graph->pause_cond, &graph->lock);
         }
         pthread_mutex_unlock(&graph->lock);
-        res = (struct vertex_result *)(vertex->f)(args);
-        if (res)
-        {
-            edge_argv = res->edge_argv;
-            args = res->vertex_argv;
-        }
+        args = (struct vertex_result *)(vertex->f)(args);
         while ((edge = (struct edge *)pop(edges)) != NULL)
         {
-            if (successor == 0 && (int)(edge->f)(edge_argv) >= 0)
+            if (successor == 0 && (int)(edge->f)(args->edge_argv) >= 0)
             {
                 vertex = edge->b;
                 successor = 1;
             }
         }
-        if (edge_argv)
-            free(edge_argv);
-        edge_argv = NULL;
-        if (res)
-            free(res);
-        res = NULL;
-
+    
         if (process_requests(graph) < 0)
         {
             graph->state = TERMINATE;
@@ -99,27 +87,27 @@ int run_single(struct graph *graph, void **init_vertex_args)
         }
     }
 
-    if (edge_argv)
+    if (args->edge_argv)
     {
-        free(edge_argv);
-        edge_argv = NULL;
+        free(args->edge_argv);
+        args->edge_argv = NULL;
+    }
+    if (args->vertex_argv)
+    {
+        free(args->vertex_argv);
+        args->vertex_argv = NULL;
     }
     if (args)
     {
         free(args);
         args = NULL;
     }
-    if (res)
-    {
-        free(res);
-        res = NULL;
-    }
     destroy_stack(edges);
     edges = NULL;
     return ret;
 }
 
-int run(struct graph *graph, void *init_vertex_args[])
+int run(struct graph *graph, struct vertex_result **init_vertex_args)
 {
     if (!graph->start || graph->state == TERMINATE)
     {
@@ -251,7 +239,7 @@ int run(struct graph *graph, void *init_vertex_args[])
     return 0;
 }
 
-int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES color, int iloop)
+int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
     if (!graph || !vertex)
         return -1;
@@ -294,19 +282,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
         return -1;
     }
 
-    void *edge_argv = NULL, *vertex_argv = NULL;
     struct vertex_result *v_res = (vertex->f)(args);
-    if (v_res)
-    {
-        edge_argv = v_res->edge_argv;
-        vertex_argv = v_res->vertex_argv;
-    }
-
-    if (args)
-    {
-        free(args);
-        args = NULL;
-    }
 
     struct vertex *next_vertex = NULL;
     struct stack *edges = init_stack();
@@ -318,7 +294,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
         {
             pthread_mutex_lock(&edge->bi_edge_lock);
         }
-        if ((int)(edge->f)(edge_argv) >= 0)
+        if ((int)(edge->f)(v_res->edge_argv) >= 0)
         {
             if (edge->edge_type == BI_EDGE)
             {
@@ -329,7 +305,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
                 int iloop_b = 1;
                 if (edge->b == vertex)
                     iloop_b = iloop + 1;
-                if (switch_vertex(graph, edge->b, vertex_argv, flip_color, iloop_b) < 0)
+                if (switch_vertex(graph, edge->b, v_res, flip_color, iloop_b) < 0)
                 {
                     pthread_mutex_lock(&graph->lock);
                     if (color == RED)
@@ -355,14 +331,6 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     destroy_stack(edges);
     edges = NULL;
 
-    if (v_res->edge_argv)
-    {
-        free(v_res->edge_argv);
-        v_res->edge_argv = NULL;
-    }
-    free(v_res);
-    v_res = NULL;
-
     pthread_mutex_lock(&graph->lock);
     if (color == RED)
         graph->red_vertex_count--;
@@ -377,7 +345,7 @@ int fire(struct graph *graph, struct vertex *vertex, void *args, enum STATES col
     if (next_vertex == vertex)
         iloop_b = iloop + 1;
     if (graph->context == NONE && next_vertex != NULL)
-        return fire(graph, next_vertex, vertex_argv, flip_color, iloop_b);
+        return fire(graph, next_vertex, v_res, flip_color, iloop_b);
     return 0;
 }
 
@@ -389,7 +357,7 @@ void *fire_pthread(void *vargp)
 
     struct graph *graph = fireable->graph;
     struct vertex *v = fireable->vertex;
-    void *args = fireable->args;
+    struct vertex_result *args = fireable->args;
     enum STATES color = fireable->color;
     int iloop = fireable->iloop;
 
@@ -398,7 +366,7 @@ void *fire_pthread(void *vargp)
     return (void *)(intptr_t)ret_val;
 }
 
-int switch_vertex(struct graph *graph, struct vertex *vertex, void *args, enum STATES color, int iloop)
+int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
     //HANDLE STUFF LIKE THREADS HERE
     //Check if graph context = single, none, or switch?)

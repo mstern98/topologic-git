@@ -42,7 +42,7 @@ struct fireable
 {
         struct graph *graph;
         struct vertex *vertex;
-        void *args;
+        struct vertex_result *args;
         enum STATES color;
         int iloop;
 };
@@ -243,7 +243,7 @@ call switch and clean itself up
 **/
 int fire(struct graph *graph,
          struct vertex *vertex,
-         void *args,
+         struct vertex_result *args,
          enum STATES color,
          int iloop);
 
@@ -261,7 +261,7 @@ connected to the vertex
 **/
 int switch_vertex(struct graph *graph,
                   struct vertex *vertex,
-                  void *args,
+                  struct vertex_result *args,
                   enum STATES color,
                   int iloop);
 
@@ -318,7 +318,7 @@ int process_requests(struct graph *graph);
 Attempts to run the graph else aborts.
 **/
 int run(struct graph *graph,
-         void **vertex_args);
+        struct vertex_result **vertex_args);
 
 /**
 @PARAM graph: the graph
