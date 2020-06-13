@@ -44,6 +44,8 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
     struct edge *edge = NULL;
 
     struct vertex_result *args = init_vertex_args[0];
+    free(init_vertex_args);
+    init_vertex_args = NULL;
     struct stack *edges = init_stack();
     if (!edges)
         return -1;
@@ -165,12 +167,15 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         for (i = 0; i < v_index; i++)
         {
             free(init_vertex_args[i]);
+            init_vertex_args[i] = NULL;
         }
         pthread_exit(NULL);
 
         //destroy_graph(graph);
         return -1;
     }
+    free(init_vertex_args);
+    init_vertex_args = NULL;
 
     print_graph(graph);
 
