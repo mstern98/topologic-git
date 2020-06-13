@@ -123,6 +123,10 @@
         return remove_vertex($self, vertex);
     }
 
+    int remove_vertex_id(int id) {
+        return remove_vertex_id($self, id);
+    }
+
     int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *) = NULL, PyObject *glbl = NULL) {
         return modify_vertex(vertex, f, glbl);
     }
@@ -250,6 +254,18 @@
         return v;   
     }
     ~destroy_vertex_request() {
+        free($self);
+    }
+};
+
+%extend destroy_vertex_id_request {
+    destroy_vertex_id_request(struct graph *graph, int id) {
+        struct destroy_vertex_id_request *v = malloc(sizeof(struct destroy_vertex_id_request));
+        v->id = id;
+        v->graph = graph;
+        return v;   
+    }
+    ~destroy_vertex_id_request() {
         free($self);
     }
 };

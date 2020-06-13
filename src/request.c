@@ -32,6 +32,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     case MOD_EDGE:
     case MOD_BI_EDGE:
     case DESTROY_EDGE_BY_ID:
+    case DESTROY_VERTEX_BY_ID:
         req->f = NULL;
         break;
     default:
@@ -59,6 +60,7 @@ int submit_request(struct graph* graph, struct request *request)
         retval = push(graph->remove_edges, (void *)request);
         break;
     case DESTROY_VERTEX:
+    case DESTROY_VERTEX_BY_ID:
         retval = push(graph->remove_vertices, (void *)request);
         break;
     default:
@@ -123,6 +125,18 @@ int procces_request(struct request *request)
         {
             //fprintf(stderr, "Failed Destroy Vertex Request (%p)\n", request);
             errno = DESTROY_VERTEX;
+            return -1;
+        }
+        break;
+    }
+    case DESTROY_VERTEX_BY_ID:
+    {
+        struct destroy_vertex_id_request *args = (struct destroy_vertex_id_request *)request->args;
+        int ret = remove_vertex_id(args->graph, args->id);
+        if (ret < 0)
+        {
+            //fprintf(stderr, "Failed Destroy Vertex Request (%p)\n", request);
+            errno = DESTROY_VERTEX_BY_ID;
             return -1;
         }
         break;

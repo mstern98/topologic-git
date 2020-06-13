@@ -189,6 +189,18 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 	return 0;
 }
 
+int remove_vertex_id(struct graph *graph, int id) {
+	if (!graph) return -1;
+	if (graph->context != SINGLE)
+		pthread_mutex_lock(&graph->lock);
+	struct vertex *vertex = find(graph->vertices, id);
+	if (graph->context != SINGLE)
+			pthread_mutex_unlock(&graph->lock);
+	if (!vertex) 
+		return -1;
+	return remove_vertex(graph, vertex);
+}
+
 int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *), void *glbl)
 {
 	if (!vertex)

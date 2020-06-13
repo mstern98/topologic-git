@@ -69,4 +69,10 @@ struct destroy_vertex_request
     struct vertex *vertex;
 };
 
+struct destroy_vertex_id_request
+{
+    struct graph *graph;
+    int id;
+};
+
 #endif

@@ -21,10 +21,11 @@ enum REQUESTS
         MOD_EDGE = 5,
         MOD_BI_EDGE = 6,
         DESTROY_VERTEX = 7,
-        DESTROY_EDGE = 8,
-        DESTROY_BI_EDGE = 9,
-        DESTROY_EDGE_BY_ID = 10,
-        GENERIC = 11
+        DESTROY_VERTEX_BY_ID = 8,
+        DESTROY_EDGE = 9,
+        DESTROY_BI_EDGE = 10,
+        DESTROY_EDGE_BY_ID = 11,
+        GENERIC = 12
 };
 
 /** Request **/

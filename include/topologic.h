@@ -164,6 +164,16 @@ int remove_vertex(struct graph *graph,
                   struct vertex *vertex);
 
 /**
+@PARAM graph: the graph
+@PARAM id: the vertex id
+@RETURN 0 for sucess;
+        -1 for fail
+Removes the vertex and all connected edges
+**/
+int remove_vertex_id(struct graph *graph,
+                     int id);
+
+/**
 @PARAM vertex: a vertex
 @PARAM f: a function
 @PARAM glbl: global variables
