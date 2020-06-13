@@ -143,6 +143,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             if (!argv)
             {
                 success = 0;
+								printf("fireable struct is null\n");
                 break;
             }
             argv->graph = graph;
@@ -155,6 +156,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             ++v_index;
             free(argv);
             argv = NULL;
+						
         }
     }
 
@@ -437,6 +439,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             args = NULL;
         }
     }
+		pthread_join(graph->thread, NULL);
     return 0;
 }
 
