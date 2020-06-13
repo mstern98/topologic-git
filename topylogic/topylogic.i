@@ -172,22 +172,26 @@
 };
 
 %extend vertex_result {
-    vertex_result(PyObject *vertex_argv = NULL, PyObject *edge_argv = NULL) {
+    vertex_result(PyObject *vertex_argv = NULL, PyObject *edge_argv = NULL, int edge_size=0, int vertex_size=0) {
         struct vertex_result *v = malloc(sizeof(struct vertex_result));
         v->vertex_argv = vertex_argv;
         v->edge_argv = edge_argv;
+        v->edge_size = edge_size;
+        v->vertex_size = vertex_size;
         return v;
     }
     ~vertex_result() {
         free($self);
     }
 
-    void set_vertex_args(PyObject *vertex_argv) {
+    void set_vertex_args(PyObject *vertex_argv, int vertex_size=0) {
         $self->vertex_argv = vertex_argv;
+        $self->vertex_size = vertex_size;
     }
 
-    void set_edge_args(PyObject *edge_argv) {
+    void set_edge_args(PyObject *edge_argv, int edge_size=0) {
         $self->edge_argv = edge_argv;
+        $self->edge_size = edge_size;
     }
 
     PyObject *get_vertex_args() {
