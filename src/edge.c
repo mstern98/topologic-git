@@ -37,7 +37,12 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         }
         return NULL;
     }
-    edge->edge_type = EDGE;
+
+		if(a->id==b->id && a->is_active==b->is_active && a->context==b->context){
+			edge->edge_type=SELF_EDGE;
+		}else{
+			edge->edge_type = EDGE;
+		}
     edge->a = a;
     edge->b = b;
     edge->bi_edge = NULL;
@@ -69,6 +74,9 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
 
     if (context != SINGLE)
     {
+				if(edge->edge_type ==SELF_EDGE){
+					pthread_mutex_unlock(&a->lock);
+				}
         pthread_mutex_lock(&b->lock);
     }
     if (insert(b->joining_vertices, a, a->id) < 0)
@@ -83,16 +91,21 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         free(edge);
         edge = NULL;
         if (context != SINGLE)
-        {
-            pthread_mutex_unlock(&b->lock);
-            pthread_mutex_unlock(&a->lock);
+				{
+					pthread_mutex_unlock(&b->lock);
+
+						if(edge->edge_type!=SELF_EDGE){
+							pthread_mutex_unlock(&a->lock);
+						}
         }
     }
 
     if (context != SINGLE)
     {
-        pthread_mutex_unlock(&b->lock);
-        pthread_mutex_unlock(&a->lock);
+			pthread_mutex_unlock(&b->lock);
+			if(edge->edge_type!=SELF_EDGE){
+					pthread_mutex_unlock(&a->lock);
+				}
     }
     return edge;
 }

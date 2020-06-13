@@ -7,7 +7,7 @@ void setup_non_start_set(struct graph *graph);
 void test_run_none(struct graph *);
 void cleanup(struct graph *);
 
-#define MAXIMUM 90
+#define MAXIMUM 1
 #define DEFAULT_BUFFER 64
 
 int edgeFunction(void *args)
