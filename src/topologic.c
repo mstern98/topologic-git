@@ -49,6 +49,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
         return -1;
 
     int ret = 0;
+    int iloop = 0;
     while (graph->state != TERMINATE)
     {
         vertex->is_active = 1;
@@ -66,6 +67,10 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             if (successor == 0 && (int)(edge->f)(args->edge_argv) >= 0)
             {
                 vertex->is_active = 0;
+                if (vertex == edge->b)
+                    ++iloop;
+                else 
+                    iloop = 0;
                 vertex = edge->b;
                 successor = 1;
             }
@@ -82,7 +87,8 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             graph->state = TERMINATE;
         else
             successor = 0;
-        if (graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes)
+        if ((graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) || 
+            (graph->max_loop != -1 && iloop >= graph->max_loop))
         {
             graph->state = TERMINATE;
             break;
