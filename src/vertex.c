@@ -3,7 +3,7 @@
 
 #include "../include/topologic.h"
 
-struct vertex *create_vertex(struct graph *graph, struct vertex_result *(*f)(void *), int id, void *glbl)
+struct vertex *create_vertex(struct graph *graph, void (*f)(struct vertex_result *), int id, void *glbl)
 {
 	if (!graph || !f)
 		return NULL;
@@ -189,7 +189,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 	return 0;
 }
 
-int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(void *), void *glbl)
+int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *), void *glbl)
 {
 	if (!vertex)
 		return -1;

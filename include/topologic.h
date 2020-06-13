@@ -83,7 +83,7 @@ NOTE: NULL glbl will mean no global variables.
       f cannot be NULL.
 **/
 struct vertex *create_vertex(struct graph *graph,
-                             struct vertex_result *(*f)(void *),
+                             void (*f)(struct vertex_result *),
                              int id,
                              void *glbl);
 #define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL)
@@ -173,7 +173,7 @@ NOTE: NULL f, or glbl will mean no change.
 Modifies the vertices function
 **/
 int modify_vertex(struct vertex *vertex,
-                  struct vertex_result *(*f)(void *),
+                  void (*f)(struct vertex_result *),
                   void *glbl);
 #define MODIFY_VERTEX(vertex, f) modify_vertex(vertex, f, NULL)
 #define MODIFY_VERTEX_GLOBALS(vertex, glbl) modify_vertex(vertex, NULL, glbl)

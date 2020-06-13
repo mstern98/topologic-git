@@ -115,7 +115,7 @@
         return print_graph($self);
     }
 
-    struct vertex *create_vertex(struct vertex_result *(*f)(void *), int id, PyObject *glbl = NULL) {
+    struct vertex *create_vertex(void (*f)(struct vertex_result *), int id, PyObject *glbl = NULL) {
         return create_vertex($self, f, id, glbl);
     }
 
@@ -123,7 +123,7 @@
         return remove_vertex($self, vertex);
     }
 
-    int modify_vertex(struct vertex *vertex, struct vertex_result *(*f)(void *) = NULL, PyObject *glbl = NULL) {
+    int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *) = NULL, PyObject *glbl = NULL) {
         return modify_vertex(vertex, f, glbl);
     }
 
@@ -204,7 +204,7 @@
 }
 
 %extend vertex_request {
-    vertex_request(struct graph *graph, int id, struct vertex_result *(*f)(void *)=NULL, PyObject *glbl=NULL) {
+    vertex_request(struct graph *graph, int id, void (*f)(struct vertex_result *)=NULL, PyObject *glbl=NULL) {
         struct vertex_request *v = malloc(sizeof(struct vertex_request));
         v->graph = graph;
         v->id = id;
@@ -218,7 +218,7 @@
 };
 
 %extend mod_vertex_request {
-    mod_vertex_request(struct vertex *vertex, struct vertex_result *(*f)(void *)=NULL, PyObject *glbl=NULL) {
+    mod_vertex_request(struct vertex *vertex, void (*f)(struct vertex_result *)=NULL, PyObject *glbl=NULL) {
         struct mod_vertex_request *v = malloc(sizeof(struct mod_vertex_request));
         v->vertex = vertex;
         v->f = f;

@@ -19,19 +19,15 @@ void test_graph_remove_bi_edge(struct graph*);
 #define TEST_SIZE 100
 #define TEST_ARGC 3
 
-struct vertex_result* testFunction(void* argv){
-	struct vertex_result* res = malloc(sizeof(struct vertex_result));
-	if(!res) return NULL;
-	return res;
+void testFunction(struct vertex_result* argv){
 }
 
-struct vertex_result* testFunction2(void* argv){
-	struct vertex_result* res = malloc(sizeof(struct vertex_result));
+void testFunction2(struct vertex_result* argv){
+	struct vertex_result* res = argv;
 	assert(res!=NULL);
 
 	res->vertex_argv = (argv);
-	res->edge_argv = (argv+4);
-	return res;
+	*(int *) res->edge_argv += 4;
 }
 
 
@@ -94,7 +90,7 @@ void test_graph_insert_vertex(struct graph* graph){
 	for(i=0; i<TEST_SIZE; i++){
 		//Dummy values
 		int id = i;
-		struct vertex_result *(*f)(void*) = testFunction;
+		void (*f)(struct vertex_result *) = testFunction;
 		void* glbl = malloc(32); //32 bytes of just random stuff for now
 		assert(create_vertex(graph, f, id, glbl)!=NULL);
 	}

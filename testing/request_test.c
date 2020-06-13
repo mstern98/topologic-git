@@ -27,19 +27,7 @@ int edgeFunction(void* args){
 
 }
 
-struct vertex_result* vertexFunction(void* args){
-	struct vertex_result* res = malloc(sizeof(struct vertex_result));
-	if(res==NULL) return NULL;
-
-	int counter = 0;
-
-	int vertex_args = *(int*)(args+counter); counter+=sizeof(int);
-	memcpy(res->vertex_argv, args+counter, sizeof(void*)*vertex_args); counter+=(sizeof(void*)*vertex_args);
-	int edge_args = *(int*)(args+counter); counter+=sizeof(int);
-	memcpy(res->edge_argv, (args+counter), sizeof(void*)*edge_args);
-	return res;
-	
-	
+void vertexFunction(struct vertex_result* args){
 }
 
 int main(){
@@ -89,7 +77,7 @@ void test_create_request(struct graph* graph){
 	for(i=0; i<MAX_VERTICES; i++){
 		struct request* request;
 		int id = i;
-		struct vertex_result*(*f)(void*) = vertexFunction;
+		void (*f)(struct vertex_result*) = vertexFunction;
 		void* glbl = NULL;
 		struct vertex_request *v_req = malloc(sizeof(struct vertex_request));
 
@@ -111,7 +99,7 @@ void test_submit_request(struct graph* graph){
 	int i = 0;
 	for(i=0; i<MAX_VERTICES; i++){
 		int id = i;
-		struct vertex_result*(*f)(void*) = &vertexFunction;
+		void (*f)(struct vertex_result*) = vertexFunction;
 		void* glbl = NULL;
 		
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
