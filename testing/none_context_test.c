@@ -156,6 +156,6 @@ void test_run_none(struct graph *graph)
 	//	free(vertex_args[i]);
 	//}
 	//free(vertex_args);
-	free(vertex_args);
+	//free(vertex_args);
 	fprintf(stderr, "\"NONE\" RUN FINISHED\n");
 }
