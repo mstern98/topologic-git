@@ -176,7 +176,7 @@ int destroy_graph(struct graph *graph)
 		return -1;
 	graph->state = TERMINATE;
 
-	if (graph->red_vertex_count > 0)
+	if (graph->red_vertex_count >= 0)
 	{
 		if (graph->context != SINGLE)
 		{
@@ -187,7 +187,7 @@ int destroy_graph(struct graph *graph)
 		}
 	}
 
-	if (graph->black_vertex_count > 0)
+	if (graph->black_vertex_count >= 0)
 	{
 		if (graph->context != SINGLE)
 		{
