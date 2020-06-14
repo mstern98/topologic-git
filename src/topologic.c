@@ -439,7 +439,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             args = NULL;
         }
     }
-		pthread_join(graph->thread, NULL);
+		//pthread_join(graph->thread, NULL);
     return 0;
 }
 

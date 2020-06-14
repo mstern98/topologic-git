@@ -9,6 +9,7 @@ testing/graph_vertex_edge_test
 testing/mem_option_test
 testing/generate_graph_json_test
 testing/single_context_test
+testing/switch_context_test
 testing/request_test
 testing/none_context_test
 testing/*.o
