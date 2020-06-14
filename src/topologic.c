@@ -135,10 +135,11 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
     {
         if (!success)
             success = 1;
-        /** TODO: Handle pthread options **/
+        
         if (graph->context == NONE || graph->context == SWITCH)
         {
-            //TODO Set up arguments in void* buffer
+            
+						
             struct fireable *argv = malloc(sizeof(struct fireable));
             if (!argv)
             {
@@ -154,7 +155,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 
             pthread_create(&graph->thread, NULL, fire_pthread, argv);
             ++v_index;
-            free(argv);
+            //free(argv);
             argv = NULL;
 						
         }
@@ -456,7 +457,9 @@ void *fire_pthread(void *vargp)
     int iloop = fireable->iloop;
 
     int ret_val = fire(graph, v, args, color, iloop);
-    pthread_exit((void *)(intptr_t)ret_val);
+		free(vargp);
+		pthread_join(graph->thread,(void*)(intptr_t)ret_val);
+    //pthread_exit((void *)(intptr_t)ret_val);
     return (void *)(intptr_t)ret_val;
 }
 
