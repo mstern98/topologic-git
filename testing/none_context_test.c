@@ -7,7 +7,7 @@ void setup_non_start_set(struct graph *graph);
 void test_run_none(struct graph *);
 void cleanup(struct graph *);
 
-#define MAXIMUM 1
+#define MAXIMUM 24
 #define DEFAULT_BUFFER 64
 
 int edgeFunction(void *args)
@@ -127,6 +127,10 @@ void setup_start_set(struct graph *graph)
 
 	int ids[1] = {0};
 	assert(start_set(graph, &ids[0], 1) == 0);
+	ids[0] = 3;
+	assert(start_set(graph, &ids[0], 1)==0);
+	ids[0] = 9;
+	assert(start_set(graph, &ids[0], 1)==0);
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 }
 

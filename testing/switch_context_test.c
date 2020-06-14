@@ -127,6 +127,10 @@ void setup_start_set(struct graph *graph)
 
 	int ids[1] = {0};
 	assert(start_set(graph, &ids[0], 1) == 0);
+	ids[0] = 3;
+	assert(start_set(graph, &ids[0], 1)==0);
+	ids[0] = 9;
+	assert(start_set(graph, &ids[0], 1)==0);
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 }
 
