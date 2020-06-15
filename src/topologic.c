@@ -157,91 +157,42 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             argv->iloop = 1;
 
             //Checking result of pthread_create
-            int thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
-            int counter = 0; /*Counter for event of WAIT specified*/
-
+            int thread_result = 0;
+            int thread_attempts = 0;
+        create_start_threads:
+            thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+            ++thread_attempts;
             if (thread_result != 0)
             {
-                if (errno == EAGAIN)
+                if (errno != EAGAIN)
+                {
+                    perror("Creating initial Threads: ");
+                    success = -1;
+                    break;
+                }
+                else
                 {
                     switch (graph->mem_option)
                     {
                     case CONTINUE:
-                        continue;
-                    case WAIT:
-                        while (thread_result != 0)
-                        {
-                            fprintf(stderr, "WARNING: Not enough resources; trying again in three seconds (Attempt %d of 5)...\n", counter + 1);
-                            sleep(3);
-                            thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
-                            counter++;
-                            if (counter > MAX_ATTEMPTS)
-                            {
-                                fprintf(stderr, "ERROR: Maximum number of tries reached: Exiting the program\n");
-                                return -1;
-                            }
-                        }
                         break;
+                    case WAIT:
+                        if (thread_attempts > MAX_ATTEMPTS)
+                        {
+                            success = -1;
+                            fprintf(stderr, "Max Threads Attempts Hit\n");
+                            break;
+                        }
+                        sleep(THREAD_ATTEMPT_SLEEP);
+                        errno = 0;
+                        goto create_start_threads;
                     case ABORT:
-                        destroy_graph(graph);
-                        return -1;
-                    }
-                }
-                else
-                {
-                    switch (errno)
-                    {
-                    case EINVAL:
-                        fprintf(stderr, "ERROR: Invalid arguments have been presented to pthread_create(3)\n");
-                        return -1;
-                    case EPERM:
-                        fprintf(stderr, "ERROR: No permission to set the scheduling policy and parameters were set in the 'attr' parameter\n");
-                        return -1;
+                        success = -1;
+                        fprintf(stderr, "Failed to Create Threads\n");
+                        break;
                     }
                 }
             }
-
-            if (thread_result != 0)
-            {
-                if (errno == EAGAIN)
-                {
-                    switch (graph->mem_option)
-                    {
-                    case CONTINUE:
-                        continue;
-                    case WAIT:
-                        while (thread_result != 0)
-                        {
-                            fprintf(stderr, "WARNING: Not enough resources; trying again in three seconds (Attempt %d of 5)...\n", counter + 1);
-                            sleep(3);
-                            thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
-                            counter++;
-                            if (counter > 4)
-                            {
-                                fprintf(stderr, "ERROR: Maximum number of tries reached: Exiting the program\n");
-                                return -1;
-                            }
-                        }
-                        break;
-                    case ABORT:
-                        destroy_graph(graph);
-                        return -1;
-                    }
-                }
-                else
-                {
-                    switch (errno)
-                    {
-                    case EINVAL:
-                        fprintf(stderr, "ERROR: Invalid arguments have been presented to pthread_create(3)\n");
-                        return -1;
-                    case EPERM:
-                        fprintf(stderr, "ERROR: No permission to set the scheduling policy and parameters were set in the 'attr' parameter\n");
-                        return -1;
-                    }
-                }
-            }
-
             ++v_index;
             //free(argv);
             argv = NULL;
@@ -585,7 +536,43 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
     argv->vertex = vertex;
     argv->color = color;
     argv->iloop = iloop;
-    pthread_create(&graph->thread, NULL, fire_pthread, argv);
+    int thread_result = 0;
+    int thread_attempts = 0;
+create_switch_threads:
+    thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+    ++thread_attempts;
+    if (thread_result != 0)
+    {
+        if (errno != EAGAIN)
+        {
+            perror("Creating initial Threads: ");
+            free(argv);
+            return -1;
+        }
+        else
+        {
+            switch (graph->mem_option)
+            {
+            case CONTINUE:
+                free(argv);
+                return -1;
+            case WAIT:
+                if (thread_attempts > MAX_ATTEMPTS)
+                {
+                    fprintf(stderr, "Max Threads Attempts Hit\n");
+                    free(argv);
+                    return -1;
+                }
+                sleep(THREAD_ATTEMPT_SLEEP);
+                errno = 0;
+                goto create_switch_threads;
+            case ABORT:
+                fprintf(stderr, "Failed to Create Threads\n");
+                free(argv);
+                return -1;
+            }
+        }
+    }
     free(argv);
 
     return 0;

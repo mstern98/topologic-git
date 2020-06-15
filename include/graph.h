@@ -22,6 +22,7 @@ enum MEM_OPTION
 };
 
 #define MAX_ATTEMPTS 4 //Maximum attempts for system to check for pthread if WAIT enum is selected
+#define THREAD_ATTEMPT_SLEEP 3 //Sleep amount before trying to create thread again for WAIT
 
 /**
 Enum for state of global manager -- locking when printing and firing;
