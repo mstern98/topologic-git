@@ -153,7 +153,45 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             argv->vertex = v;
             argv->iloop = 1;
 
-            pthread_create(&graph->thread, NULL, fire_pthread, argv);
+						//Checking result of pthread_create
+            int thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+						int counter = 0; /*Counter for event of WAIT specified*/
+
+
+						if(thread_result!=0){
+							if(errno==EAGAIN){
+								switch(graph->mem_option){
+									case CONTINUE:
+										continue;
+									case WAIT:
+										while(thread_result!=0){
+											fprintf(stderr, "WARNING: Not enough resources; trying again in three seconds (Attempt %d of 5)...\n", counter+1);
+											sleep(3);
+											thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+											counter++;
+											if(counter>4){
+												fprintf(stderr, "ERROR: Maximum number of tries reached: Exiting the program\n");
+												return -1;
+											}
+										}
+										break;
+									case ABORT:
+										destroy_graph(graph);
+										return -1;
+								}
+							}else{
+								switch(errno){
+									case EINVAL:
+										fprintf(stderr, "ERROR: Invalid arguments have been presented to pthread_create(3)\n");
+										return -1;
+									case EPERM:
+										fprintf(stderr, "ERROR: No permission to set the scheduling policy and parameters were set in the 'attr' parameter\n");
+										return -1;
+								}
+							}
+						}
+
+
             ++v_index;
             //free(argv);
             argv = NULL;
@@ -278,7 +316,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         return -1;
     }
     enum STATES flip_color = BLACK;
-    pthread_mutex_lock(&vertex->lock);
+    //pthread_mutex_lock(&vertex->lock);
 
     vertex->is_active = 1;
     if (color == RED)
@@ -298,7 +336,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
     else
     {
-        pthread_mutex_unlock(&vertex->lock);
+        //pthread_mutex_unlock(&vertex->lock);
         if (args->edge_argv)
         {
             free(args->edge_argv);
@@ -316,6 +354,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         }
         return -1;
     }
+		pthread_mutex_lock(&vertex->lock);
 
     if (graph->state == TERMINATE)
     {
