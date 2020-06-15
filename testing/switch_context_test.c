@@ -151,7 +151,9 @@ void test_run_switch(struct graph *graph)
 
 	struct vertex_result *v = malloc(sizeof(struct vertex_result));
 	v->edge_argv = edge;
+	v->edge_size = sizeof(int) * 2;
 	v->vertex_argv = vertex;
+	v->vertex_size = sizeof(int);
 	vertex_args[i] = v;
 
 	assert(run(graph, vertex_args) == 0);

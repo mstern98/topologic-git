@@ -513,23 +513,32 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
         free(argv);
         return -1;
     }
-    argv->args->vertex_argv = malloc(sizeof(args->vertex_size));
-    if (!argv->args->vertex_argv)
+    argv->args->vertex_argv = NULL;
+    if (args->vertex_argv && args->vertex_size > 0)
     {
-        free(argv->args);
-        free(argv);
-        return -1;
+        argv->args->vertex_argv = malloc(sizeof(args->vertex_size));
+        if (!argv->args->vertex_argv)
+        {
+            free(argv->args);
+            free(argv);
+            return -1;
+        }
+        memcpy(argv->args->vertex_argv, args->vertex_argv, args->vertex_size);
     }
-    argv->args->edge_argv = malloc(sizeof(args->edge_size));
-    if (!argv->args->vertex_argv)
+    argv->args->edge_argv = NULL;
+    if (args->edge_argv && args->edge_size > 0)
     {
-        free(argv->args->vertex_argv);
-        free(argv->args);
-        free(argv);
-        return -1;
+        argv->args->edge_argv = malloc(sizeof(args->edge_size));
+        if (!argv->args->vertex_argv)
+        {
+            free(argv->args->vertex_argv);
+            free(argv->args);
+            free(argv);
+            return -1;
+        }
+        memcpy(argv->args->edge_argv, args->edge_argv, args->edge_size);
     }
-    memcpy(argv->args->vertex_argv, args->vertex_argv, args->vertex_size);
-    memcpy(argv->args->edge_argv, args->edge_argv, args->edge_size);
+
     argv->args->vertex_size = args->vertex_size;
     argv->args->edge_size = args->edge_size;
     argv->graph = graph;
@@ -573,7 +582,7 @@ create_switch_threads:
             }
         }
     }
-    free(argv);
+    //free(argv);
 
     return 0;
 }
