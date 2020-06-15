@@ -240,13 +240,11 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         switch (graph->state)
         {
         case RED:
-            pthread_cond_signal(&graph->red_cond);
+            pthread_cond_broadcast(&graph->red_cond);
             if (graph->red_vertex_count == 0)
             {
-                /** TODO: REAP RED **/
                 graph->state = PRINT;
                 graph->previous_color = RED;
-                //pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
                 fprintf(stderr, "WAS RED; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
@@ -356,10 +354,19 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     {
         vertex->is_active = 0;
         pthread_mutex_lock(&graph->lock);
-        if (color == RED)
+        if (color == RED){
             graph->red_vertex_count--;
-        else
+						if(graph->red_vertex_count==0){
+							pthread_cond_broadcast(&graph->red_cond);
+						}
+				}
+        else{
             graph->black_vertex_count--;
+						if(graph->black_vertex_count==0)
+							pthread_cond_broadcast(&graph->black_cond);
+
+
+				}
         pthread_mutex_unlock(&graph->lock);
         pthread_mutex_unlock(&vertex->lock);
         if (args->edge_argv)
