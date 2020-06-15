@@ -82,7 +82,6 @@ struct graph
         unsigned int snapshot_timestamp;
         enum VERBOSITY lvl_verbose;
         int state_count;
-        pthread_t thread;
         pthread_mutex_t lock;
         sig_atomic_t state;          //CURRENT STATE {PRINT, RED, BLACK}
         sig_atomic_t previous_color; //LAST NODE COLOR TO FIRE

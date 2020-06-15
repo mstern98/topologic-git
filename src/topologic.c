@@ -159,8 +159,9 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             //Checking result of pthread_create
             int thread_result = 0;
             int thread_attempts = 0;
+            pthread_t thread;
         create_start_threads:
-            thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+            thread_result = pthread_create(&thread, NULL, fire_pthread, argv);
             ++thread_attempts;
             if (thread_result != 0)
             {
@@ -193,6 +194,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                     }
                 }
             }
+            pthread_detach(thread);
             ++v_index;
             //free(argv);
             argv = NULL;
@@ -490,12 +492,10 @@ void *fire_pthread(void *vargp)
     struct vertex_result *args = fireable->args;
     enum STATES color = fireable->color;
     int iloop = fireable->iloop;
-    pthread_t thread_val = graph->thread;
 
     int ret_val = fire(graph, v, args, color, iloop);
     free(vargp);
-    pthread_join(thread_val, (void *)(intptr_t)ret_val);
-    //pthread_exit((void *)(intptr_t)ret_val);
+    pthread_exit((void *)(intptr_t)ret_val);
     return (void *)(intptr_t)ret_val;
 }
 
@@ -547,8 +547,9 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
     argv->iloop = iloop;
     int thread_result = 0;
     int thread_attempts = 0;
+    pthread_t thread;
 create_switch_threads:
-    thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+    thread_result = pthread_create(&thread, NULL, fire_pthread, argv);
     ++thread_attempts;
     if (thread_result != 0)
     {
@@ -582,6 +583,7 @@ create_switch_threads:
             }
         }
     }
+    pthread_detach(thread);
     //free(argv);
 
     return 0;
