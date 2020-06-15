@@ -21,6 +21,8 @@ enum MEM_OPTION
         CONTINUE = 2
 };
 
+#define MAX_ATTEMPTS 4 //Maximum attempts for system to check for pthread if WAIT enum is selected
+
 /**
 Enum for state of global manager -- locking when printing and firing;
 Ensures proper locking between printing node information and firing information

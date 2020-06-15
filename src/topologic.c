@@ -169,7 +169,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 											sleep(3);
 											thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
 											counter++;
-											if(counter>4){
+											if(counter>MAX_ATTEMPTS){
 												fprintf(stderr, "ERROR: Maximum number of tries reached: Exiting the program\n");
 												return -1;
 											}
