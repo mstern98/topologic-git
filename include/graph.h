@@ -92,6 +92,8 @@ struct graph
         pthread_cond_t black_cond;
         sig_atomic_t pause;
         pthread_cond_t pause_cond;
+				pthread_cond_t red_fire;
+				pthread_cond_t black_fire;
 };
 
 #endif

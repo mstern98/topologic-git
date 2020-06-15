@@ -32,11 +32,26 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 
 	if (context != SINGLE)
 	{
+
+		if(pthread_cond_init(&graph->red_fire, NULL)<0){
+			pthread_mutex_destroy(&graph->lock);
+			pthread_cond_destroy(&graph->pause_cond);
+			return NULL;
+		}
+		if(pthread_cond_init(&graph->black_fire, NULL)<0){
+			pthread_mutex_destroy(&graph->lock);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->pause_cond);
+			return NULL;
+		}
+
+		
 		if (pthread_cond_init(&graph->red_cond, NULL) < 0)
 		{
 			pthread_mutex_destroy(&graph->lock);
 			pthread_cond_destroy(&graph->pause_cond);
-			pthread_cond_destroy(&graph->pause_cond);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
 			free(graph);
 			return NULL;
 		}

@@ -117,7 +117,7 @@ void test_run_none(struct graph *graph)
 	assert(vertex_args != NULL);
 
 	int i = 0;
-	for (i = 0; i < 2; ++i) {
+	for (i = 0; i <3 ; ++i) {
 		int edge_args[2] = {i + 1, i + 4};
 		void *edge = malloc(sizeof(int) * 2);
 		memcpy(edge, &edge_args[0], sizeof(int));
