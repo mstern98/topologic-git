@@ -1,0 +1,6 @@
+*.c linguist-language=C
+*.h linguist-language=C 
+*.json linguist-language=json
+*.y linguist-language=Yacc
+*.lex linguist-language=Lex
+*.i linguist-language=SWIG
