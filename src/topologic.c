@@ -175,6 +175,47 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                             sleep(3);
                             thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
                             counter++;
+                            if (counter > MAX_ATTEMPTS)
+                            {
+                                fprintf(stderr, "ERROR: Maximum number of tries reached: Exiting the program\n");
+                                return -1;
+                            }
+                        }
+                        break;
+                    case ABORT:
+                        destroy_graph(graph);
+                        return -1;
+                    }
+                }
+                else
+                {
+                    switch (errno)
+                    {
+                    case EINVAL:
+                        fprintf(stderr, "ERROR: Invalid arguments have been presented to pthread_create(3)\n");
+                        return -1;
+                    case EPERM:
+                        fprintf(stderr, "ERROR: No permission to set the scheduling policy and parameters were set in the 'attr' parameter\n");
+                        return -1;
+                    }
+                }
+            }
+
+            if (thread_result != 0)
+            {
+                if (errno == EAGAIN)
+                {
+                    switch (graph->mem_option)
+                    {
+                    case CONTINUE:
+                        continue;
+                    case WAIT:
+                        while (thread_result != 0)
+                        {
+                            fprintf(stderr, "WARNING: Not enough resources; trying again in three seconds (Attempt %d of 5)...\n", counter + 1);
+                            sleep(3);
+                            thread_result = pthread_create(&graph->thread, NULL, fire_pthread, argv);
+                            counter++;
                             if (counter > 4)
                             {
                                 fprintf(stderr, "ERROR: Maximum number of tries reached: Exiting the program\n");
@@ -254,8 +295,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 graph->previous_color = RED;
                 //pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
-                        fprintf(stderr, "WAS RED; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
-
+                fprintf(stderr, "WAS RED; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
             break;
         case BLACK:
@@ -267,8 +307,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 graph->previous_color = BLACK;
                 //pthread_cond_signal(&graph->print_cond);
                 graph->print_flag = 1;
-                        fprintf(stderr, "WAS BLACK; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
-
+                fprintf(stderr, "WAS BLACK; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
             break;
         case PRINT:
@@ -326,7 +365,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         pthread_mutex_lock(&graph->lock);
         graph->red_vertex_count++;
         pthread_mutex_unlock(&graph->lock);
-        pthread_cond_wait(&graph->red_cond, &vertex->lock); 
+        pthread_cond_wait(&graph->red_cond, &vertex->lock);
     }
     else if (color == BLACK)
     {
@@ -500,7 +539,7 @@ void *fire_pthread(void *vargp)
     struct vertex_result *args = fireable->args;
     enum STATES color = fireable->color;
     int iloop = fireable->iloop;
-    pthread_t thread_val  = graph->thread;
+    pthread_t thread_val = graph->thread;
 
     int ret_val = fire(graph, v, args, color, iloop);
     free(vargp);
