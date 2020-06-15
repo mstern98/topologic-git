@@ -14,13 +14,14 @@ int edgeFunction(void *args)
 {
 	int x = *(int *)(args);
 	int y = *(int *)(args + sizeof(int));
+	fprintf(stderr, " edge : %d\n", ((x * y) / 2) << 2);
 	return ((x * y) / 2) << 2;
 }
 
 void vertexFunction(struct vertex_result* args)
 {
 	struct vertex_result *res = (struct vertex_result *)args;
-	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->edge_argv);
+	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->vertex_argv);
 	*(int *) res->edge_argv += 1;
 	//return res;
 }
@@ -44,35 +45,6 @@ int main()
 void cleanup(struct graph *graph)
 {
 	assert(graph != NULL);
-	int i = 0;
-
-	for (i = 0; i < MAXIMUM; i++)
-	{
-		struct vertex *v = (struct vertex *)find(graph->vertices, i);
-		struct vertex *v2 = (struct vertex *)find(graph->vertices, ((i + 1) >= MAXIMUM ? 0 : i + 1));
-		assert(v != NULL);
-		assert(v2 != NULL);
-		struct edge *e = (struct edge *)find(v->edge_tree, v2->id);
-		if (e->glbl)
-		{
-			free(e->glbl);
-			e->glbl = NULL;
-		}
-		assert(remove_edge(v, v2) == 0);
-	}
-
-	for (i = 0; i < MAXIMUM; i++)
-	{
-		struct vertex *v = (struct vertex *)find(graph->vertices, i);
-		if (v == NULL)
-			continue;
-		if (v->glbl)
-		{
-			free(v->glbl);
-			v->glbl = NULL;
-		}
-		remove_vertex(graph, v);
-	}
 	destroy_graph(graph);
 	graph = NULL;
 }
@@ -125,12 +97,12 @@ void setup_start_set(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	int ids[1] = {0};
+	int ids[2] = {0, 4};
 	assert(start_set(graph, &ids[0], 1) == 0);
 	ids[0] = 3;
 	assert(start_set(graph, &ids[0], 1)==0);
 	ids[0] = 9;
-	assert(start_set(graph, &ids[0], 1)==0);
+	assert(start_set(graph, ids, 2)==0);
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 }
 
@@ -138,21 +110,22 @@ void test_run_none(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *));
+	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *) * 2);
 	assert(vertex_args != NULL);
 
 	int i = 0;
-	int edge_args[2] = {i + 1, i + 4};
-	void *edge = malloc(sizeof(int) * 2);
-	memcpy(edge, &edge_args[0], sizeof(int));
-	memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
-	void *vertex = malloc(sizeof(int));
-	*(int *)vertex = 10;
-
-	struct vertex_result *v = malloc(sizeof(struct vertex_result));
-	v->edge_argv = edge;
-	v->vertex_argv = vertex;
-	vertex_args[i] = v;
+	for (i = 0; i < 2; ++i) {
+		int edge_args[2] = {i + 1, i + 4};
+		void *edge = malloc(sizeof(int) * 2);
+		memcpy(edge, &edge_args[0], sizeof(int));
+		memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
+		void *vertex = malloc(sizeof(int));
+		*(int *)vertex = i;
+		struct vertex_result *v = malloc(sizeof(struct vertex_result));
+		v->edge_argv = edge;
+		v->vertex_argv = vertex;
+		vertex_args[i] = v;
+	}
 
 	assert(run(graph, vertex_args) == 0);
 	//print_graph(graph);

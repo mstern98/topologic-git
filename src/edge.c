@@ -38,11 +38,10 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         return NULL;
     }
 
-		if(a->id==b->id && a->is_active==b->is_active && a->context==b->context){
-			edge->edge_type=SELF_EDGE;
-		}else{
-			edge->edge_type = EDGE;
-		}
+    if (a == b)
+        edge->edge_type = SELF_EDGE;
+    else
+        edge->edge_type = EDGE;
     edge->a = a;
     edge->b = b;
     edge->bi_edge = NULL;
@@ -74,9 +73,10 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
 
     if (context != SINGLE)
     {
-				if(edge->edge_type ==SELF_EDGE){
-					pthread_mutex_unlock(&a->lock);
-				}
+        if (edge->edge_type == SELF_EDGE)
+        {
+            pthread_mutex_unlock(&a->lock);
+        }
         pthread_mutex_lock(&b->lock);
     }
     if (insert(b->joining_vertices, a, a->id) < 0)
@@ -91,21 +91,23 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         free(edge);
         edge = NULL;
         if (context != SINGLE)
-				{
-					pthread_mutex_unlock(&b->lock);
+        {
+            pthread_mutex_unlock(&b->lock);
 
-						if(edge->edge_type!=SELF_EDGE){
-							pthread_mutex_unlock(&a->lock);
-						}
+            if (edge->edge_type != SELF_EDGE)
+            {
+                pthread_mutex_unlock(&a->lock);
+            }
         }
     }
 
     if (context != SINGLE)
     {
-			pthread_mutex_unlock(&b->lock);
-			if(edge->edge_type!=SELF_EDGE){
-					pthread_mutex_unlock(&a->lock);
-				}
+        pthread_mutex_unlock(&b->lock);
+        if (edge->edge_type != SELF_EDGE)
+        {
+            pthread_mutex_unlock(&a->lock);
+        }
     }
     return edge;
 }
@@ -184,7 +186,6 @@ int remove_edge(struct vertex *a, struct vertex *b)
     edge->f = NULL;
     edge->id = 0;
 
-
     if (edge->edge_type == BI_EDGE)
     {
         if (a->context != SINGLE)
@@ -193,8 +194,11 @@ int remove_edge(struct vertex *a, struct vertex *b)
         }
         edge->bi_edge->bi_edge = NULL;
         edge->bi_edge->edge_type = EDGE;
-    } else {
-        if (edge->glbl) free(edge->glbl);
+    }
+    else
+    {
+        if (edge->glbl)
+            free(edge->glbl);
     }
     edge->glbl = NULL;
     edge->bi_edge = NULL;
@@ -238,7 +242,9 @@ int remove_edge_id(struct vertex *a, int id)
         }
         edge->bi_edge->bi_edge = NULL;
         edge->bi_edge->edge_type = EDGE;
-    } else {
+    }
+    else
+    {
         free(edge->glbl);
     }
     edge->glbl = NULL;
@@ -291,7 +297,8 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
     }
     if (glbl)
     {
-        if (edge->glbl) free(edge->glbl);
+        if (edge->glbl)
+            free(edge->glbl);
         edge->glbl = glbl;
     }
     if (a->context != SINGLE)

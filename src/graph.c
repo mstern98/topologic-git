@@ -180,10 +180,10 @@ int destroy_graph(struct graph *graph)
 	{
 		if (graph->context != SINGLE)
 		{
-			pthread_cond_signal(&graph->red_cond);
-		}
-		while (graph->red_vertex_count > 0)
-		{
+			while (graph->red_vertex_count > 0)
+			{
+				pthread_cond_signal(&graph->red_cond);
+			}
 		}
 	}
 
@@ -191,10 +191,10 @@ int destroy_graph(struct graph *graph)
 	{
 		if (graph->context != SINGLE)
 		{
-			pthread_cond_signal(&graph->black_cond);
-		}
-		while (graph->black_vertex_count > 0)
-		{
+			while (graph->black_vertex_count > 0)
+			{
+				pthread_cond_signal(&graph->black_cond);
+			}
 		}
 	}
 

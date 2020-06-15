@@ -89,12 +89,6 @@
         destroy_graph($self);
     }
 
-    %typemap (in) void** (void *temp)
-    {
-        if ((SWIG_ConvertPtr($input, (void **) &temp, $*1_descriptor, SWIG_POINTER_DISOWN)) == -1)
-            temp = NULL;
-        $1 = &temp;
-    }
     int run(struct vertex_result *vertex_args[]) {
         return run($self, vertex_args);
     }
@@ -138,6 +132,7 @@
     struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), PyObject *glbl = NULL) {
         return create_edge(a, b, f, glbl);
     }
+
     int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), PyObject *glbl, struct edge **edge_a_to_b = NULL, struct edge **edge_b_to_a = NULL) {
         return create_bi_edge(a, b, f, glbl, edge_a_to_b, edge_b_to_a);
     }

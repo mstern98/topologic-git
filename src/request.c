@@ -44,7 +44,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     return req;
 }
 
-int submit_request(struct graph* graph, struct request *request)
+int submit_request(struct graph *graph, struct request *request)
 {
     if (!request)
         return -1;
@@ -257,7 +257,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(req) < 0) 
+        if (procces_request(req) < 0)
             return -1;
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
