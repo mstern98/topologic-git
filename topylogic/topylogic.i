@@ -6,7 +6,7 @@
 PyObject *callback(struct topylogic_function *tf, PyObject *args) {
     if(!tf) return NULL;
     PyObject *arglist;
-    arglist = Py_BuildValue("(l)", args);
+    arglist = Py_BuildValue("(O)", args);
     PyObject *result = PyEval_CallObject (tf->f, arglist);
 
     Py_DECREF(arglist);
@@ -120,8 +120,8 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         return print_graph($self);
     }
 
-    struct vertex *create_vertex(void (*f)(struct vertex_result *), int id, PyObject *glbl = NULL) {
-        return create_vertex($self, f, id, glbl);
+    struct vertex *create_vertex(PyObject *f, int id, PyObject *glbl = NULL) {
+        return create_vertex($self, (void *) f, id, glbl);
     }
 
     int remove_vertex(struct vertex *vertex) {
@@ -178,6 +178,14 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
 
     int process_requests() {
         return process_requests($self);
+    }
+
+    struct vertex *find_vertex(int id) {
+        return find($self->vertices, id);
+    }
+
+    struct edge *find_edge(struct vertex *v, int id) {
+        return find(v->edge_tree, id);
     }
 };
 
@@ -346,6 +354,15 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         PyObject *result = callback($self, args);
         if (!result) return 0;
         ret = (int) PyFloat_AsDouble(result);
+        Py_DECREF(result);
+        return ret;
+    }
+
+    void *callback_object(PyObject *args) {
+        void *ret = NULL;
+        PyObject *result = callback($self, args);
+        if (!result) return NULL;
+        ret = PyLong_AsVoidPtr(result);
         Py_DECREF(result);
         return ret;
     }
