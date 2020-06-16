@@ -20,7 +20,7 @@ int edgeFunction(void *args)
 	return ((x * y) / 2) << 2;
 }
 
-void vertexFunction(struct vertex_result *args)
+void vertexFunction(struct graph *graph, struct vertex_result *args)
 {
 	struct vertex_result *res = (struct vertex_result *)args;
 	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->edge_argv);
@@ -90,7 +90,7 @@ void init(struct graph **graph)
 	for (i = 0; i < MAXIMUM; i++)
 	{
 		int id = i;
-		void (*f)(struct vertex_result *) = vertexFunction;
+		void (*f)(struct graph *, struct vertex_result *) = vertexFunction;
 		void *glbl = NULL;
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
 		vert_req->graph = *graph;

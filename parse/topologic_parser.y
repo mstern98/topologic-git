@@ -1,6 +1,6 @@
 %{
 #include "../include/topologic.h"
-void f(struct vertex_result *args) {}
+void f(struct graph *graph, struct vertex_result *args) {}
 int edge_f(void *args) {return 0;}
 int yylex();
 void yyerror(struct graph** graph, const char *s);

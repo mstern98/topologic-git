@@ -41,7 +41,7 @@ void print_state(struct graph *graph, FILE *out)
     int vertex_id = 0;
     void *glbl = NULL;
     union shared_edge *edge_shared = NULL;
-    void (*f)(struct vertex_result *) = NULL;
+    void (*f)(struct graph *, struct vertex_result *) = NULL;
     struct vertex *v = NULL;
     struct stack *stack = init_stack();
 

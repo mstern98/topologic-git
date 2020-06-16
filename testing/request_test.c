@@ -27,7 +27,7 @@ int edgeFunction(void* args){
 
 }
 
-void vertexFunction(struct vertex_result* args){
+void vertexFunction(struct graph *graph, struct vertex_result* args){
 }
 
 int main(){
@@ -77,7 +77,7 @@ void test_create_request(struct graph* graph){
 	for(i=0; i<MAX_VERTICES; i++){
 		struct request* request;
 		int id = i;
-		void (*f)(struct vertex_result*) = vertexFunction;
+		void (*f)(struct graph *, struct vertex_result*) = vertexFunction;
 		void* glbl = NULL;
 		struct vertex_request *v_req = malloc(sizeof(struct vertex_request));
 
@@ -99,7 +99,7 @@ void test_submit_request(struct graph* graph){
 	int i = 0;
 	for(i=0; i<MAX_VERTICES; i++){
 		int id = i;
-		void (*f)(struct vertex_result*) = vertexFunction;
+		void (*f)(struct graph *, struct vertex_result*) = vertexFunction;
 		void* glbl = NULL;
 		
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));

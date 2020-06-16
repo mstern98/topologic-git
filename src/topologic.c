@@ -67,7 +67,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             pthread_cond_wait(&graph->pause_cond, &graph->lock);
         }
         pthread_mutex_unlock(&graph->lock);
-        (vertex->f)(args);
+        (vertex->f)(graph, args);
         while ((edge = (struct edge *)pop(edges)) != NULL)
         {
             if (successor == 0 && (edge->f)(args->edge_argv))
@@ -413,7 +413,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         return -1;
     }
 
-    (vertex->f)(args);
+    (vertex->f)(graph, args);
 
     struct vertex *next_vertex = NULL;
     struct stack *edges = init_stack();

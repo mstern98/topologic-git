@@ -13,6 +13,10 @@ void cleanup(struct graph *);
 #define MAXIMUM 90
 #define DEFAULT_BUFFER 64
 
+void request_nil() {
+	printf("RQST\n");
+}
+
 int edgeFunction(void *args)
 {
 	int x = *(int *)(args);
@@ -20,12 +24,15 @@ int edgeFunction(void *args)
 	return ((x * y) / 2) << 2;
 }
 
-void vertexFunction(struct vertex_result* args)
+void vertexFunction(struct graph *graph, struct vertex_result* args)
 {
 	struct vertex_result *res = (struct vertex_result *)args;
 	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->edge_argv);
 	*(int *) res->edge_argv += 1;
 	//return res;
+	struct request *request = create_request(GENERIC, NULL, request_nil);
+	submit_request(graph, request);
+	
 }
 
 int main()
@@ -91,7 +98,7 @@ void init(struct graph **graph)
 	for (i = 0; i < MAXIMUM; i++)
 	{
 		int id = i;
-		void (*f)(struct vertex_result*) = vertexFunction;
+		void (*f)(struct graph *, struct vertex_result*) = vertexFunction;
 		//struct vertex_result *(*f)(void *) = vertexFunction;
 		void *glbl = NULL;
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
