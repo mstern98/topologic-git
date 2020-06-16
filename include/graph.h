@@ -83,6 +83,7 @@ struct graph
         enum VERBOSITY lvl_verbose;
         int state_count;
         pthread_mutex_t lock;
+				pthread_mutex_t secondLock;
         sig_atomic_t state;          //CURRENT STATE {PRINT, RED, BLACK}
         sig_atomic_t previous_color; //LAST NODE COLOR TO FIRE
         sig_atomic_t print_flag;     //0 DID NOT PRINT; 1 FINISHED PRINT
