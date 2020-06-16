@@ -100,12 +100,19 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         destroy_graph($self);
     }
 
-    int run(struct vertex_result *vertex_args[]) {
+    int run(struct vertex_result **vertex_args) {
         return run($self, vertex_args);
     }
 
-    int set_start_set(int *id, int num_vertices) {
-        return start_set($self, id, num_vertices);
+    int set_start_set(PyObject *id, int num_vertices) {
+        if (!PyList_Check(id)) return -1;
+        int size = PyList_Size(id);
+        int ids[size];
+        int i = 0;
+        for (i = 0; i < size; i++) 
+            ids[i] = (int) PyFloat_AsDouble(PyList_GetItem(id, i));
+
+        return start_set($self, ids, num_vertices);
     }
 
     int pause_graph() {
@@ -132,20 +139,20 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         return remove_vertex_id($self, id);
     }
 
-    int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *), PyObject *glbl = NULL) {
-        return modify_vertex(vertex, f, glbl);
+    int modify_vertex(struct vertex *vertex, PyObject *f, PyObject *glbl = NULL) {
+        return modify_vertex(vertex, (void *) f, glbl);
     }
 
     int modify_shared_edge_vars(struct vertex *vertex, PyObject *edge_vars) {
         return modify_shared_edge_vars(vertex, edge_vars);
     }
  
-    struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), PyObject *glbl = NULL) {
-        return create_edge(a, b, f, glbl);
+    struct edge *create_edge(struct vertex *a, struct vertex *b, PyObject *f, PyObject *glbl = NULL) {
+        return create_edge(a, b, (void *) f, glbl);
     }
 
-    int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), PyObject *glbl, struct edge **edge_a_to_b = NULL, struct edge **edge_b_to_a = NULL) {
-        return create_bi_edge(a, b, f, glbl, edge_a_to_b, edge_b_to_a);
+    int create_bi_edge(struct vertex *a, struct vertex *b, PyObject *f, PyObject *glbl, struct edge **edge_a_to_b = NULL, struct edge **edge_b_to_a = NULL) {
+        return create_bi_edge(a, b, (void *) f, glbl, edge_a_to_b, edge_b_to_a);
     }
 
     int remove_edge(struct vertex *a, struct vertex *b) {
@@ -160,12 +167,12 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         return remove_bi_edge(a, b);
     }
 
-    int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *) = NULL, PyObject *glbl = NULL) {
-        return modify_edge(a, b, f, glbl);
+    int modify_edge(struct vertex *a, struct vertex *b, PyObject *f = NULL, PyObject *glbl = NULL) {
+        return modify_edge(a, b, (void *) f, glbl);
     }
 
-    int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *) = NULL, PyObject *glbl = NULL) {
-        return modify_bi_edge(a, b, f, glbl);
+    int modify_bi_edge(struct vertex *a, struct vertex *b, PyObject *f = NULL, PyObject *glbl = NULL) {
+        return modify_bi_edge(a, b, (void *) f, glbl);
     }
 
     struct request *create_request(enum REQUESTS request, PyObject *args, void (*f)(void *) = NULL) {
