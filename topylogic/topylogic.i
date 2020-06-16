@@ -1,8 +1,19 @@
 %module topylogic
 %{
 #include "../include/topologic.h"
-%}
+#include "../include/topylogic.h"
 
+PyObject *callback(struct topylogic_function *tf, PyObject *args) {
+    if(!tf) return NULL;
+    PyObject *arglist;
+    arglist = Py_BuildValue("(l)", args);
+    PyObject *result = PyEval_CallObject (tf->f, arglist);
+
+    Py_DECREF(arglist);
+    if (!result) return NULL;
+    return result;
+}
+%}
 
 %include "../include/stack.h"
 %extend stack{
@@ -121,7 +132,7 @@
         return remove_vertex_id($self, id);
     }
 
-    int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *) = NULL, PyObject *glbl = NULL) {
+    int modify_vertex(struct vertex *vertex, void (*f)(struct vertex_result *), PyObject *glbl = NULL) {
         return modify_vertex(vertex, f, glbl);
     }
 
@@ -300,5 +311,42 @@
     }
     ~destroy_edge_id_request() {
         free($self);
+    }
+};
+
+%include "../include/topylogic.h"
+%extend topylogic_function {
+    topylogic_function(PyObject *f) {
+        if(!PyCallable_Check(f)) 
+        {
+            PyErr_SetString(PyExc_TypeError, "Vertex Function Must Be Callable");
+            return NULL;
+        }
+        struct topylogic_function *v = malloc(sizeof(struct topylogic_function));
+        if(!v) return NULL;
+        Py_XINCREF(f);
+        v->f = f; 
+        Py_INCREF(Py_None);
+        return v;
+    }
+
+    ~vertex_function() {
+        Py_XDECREF($self->f);
+        free($self);
+    }
+
+    void callback_void(PyObject *args) {
+        PyObject *result = callback($self, args);
+        if (!result) return;
+        Py_DECREF(result);
+    }
+
+    int callback_int(PyObject *args) {
+        int ret = 0;
+        PyObject *result = callback($self, args);
+        if (!result) return 0;
+        ret = (int) PyFloat_AsDouble(result);
+        Py_DECREF(result);
+        return ret;
     }
 };
