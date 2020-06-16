@@ -22,10 +22,16 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 		free(graph);
 		return NULL;
 	}
+	if(pthread_mutex_init(&graph->secondLock, NULL)<0){
+		pthread_mutex_destroy(&graph->lock);
+		free(graph);
+		return NULL;
+	}
 
 	if (pthread_cond_init(&graph->pause_cond, NULL) < 0)
 	{
 		pthread_mutex_destroy(&graph->lock);
+		pthread_mutex_destroy(&graph->secondLock);
 		free(graph);
 		return NULL;
 	}
@@ -35,12 +41,14 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 
 		if(pthread_cond_init(&graph->red_fire, NULL)<0){
 			pthread_mutex_destroy(&graph->lock);
+			pthread_mutex_destroy(&graph->secondLock);
 			pthread_cond_destroy(&graph->pause_cond);
 			return NULL;
 		}
 		if(pthread_cond_init(&graph->black_fire, NULL)<0){
 			pthread_mutex_destroy(&graph->lock);
 			pthread_cond_destroy(&graph->red_fire);
+			pthread_mutex_destroy(&graph->secondLock);
 			pthread_cond_destroy(&graph->pause_cond);
 			return NULL;
 		}
@@ -50,6 +58,7 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 		{
 			pthread_mutex_destroy(&graph->lock);
 			pthread_cond_destroy(&graph->pause_cond);
+			pthread_mutex_destroy(&graph->secondLock);
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 			free(graph);
@@ -61,6 +70,10 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 			pthread_mutex_destroy(&graph->lock);
 			pthread_cond_destroy(&graph->pause_cond);
 			pthread_cond_destroy(&graph->red_cond);
+			pthread_mutex_destroy(&graph->secondLock);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
+
 			free(graph);
 			return NULL;
 		}
@@ -70,11 +83,15 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 	if (!graph->vertices)
 	{
 		pthread_mutex_destroy(&graph->lock);
+		pthread_mutex_destroy(&graph->lock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
 			pthread_cond_destroy(&graph->red_cond);
 			pthread_cond_destroy(&graph->black_cond);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
+
 		}
 		free(graph);
 		return NULL;
@@ -85,11 +102,15 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 	{
 		destroy_avl(graph->vertices);
 		pthread_mutex_destroy(&graph->lock);
+		pthread_mutex_destroy(&graph->secondLock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
 			pthread_cond_destroy(&graph->red_cond);
 			pthread_cond_destroy(&graph->black_cond);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
+
 		}
 		free(graph);
 		return NULL;
@@ -100,11 +121,15 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 		destroy_avl(graph->vertices);
 		destroy_stack(graph->modify);
 		pthread_mutex_destroy(&graph->lock);
+		pthread_mutex_destroy(&graph->secondLock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
 			pthread_cond_destroy(&graph->red_cond);
 			pthread_cond_destroy(&graph->black_cond);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
+;;;
 		}
 		free(graph);
 		return NULL;
@@ -116,11 +141,14 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 		destroy_stack(graph->modify);
 		destroy_stack(graph->remove_edges);
 		pthread_mutex_destroy(&graph->lock);
+		pthread_mutex_destroy(&graph->secondLock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
 			pthread_cond_destroy(&graph->red_cond);
 			pthread_cond_destroy(&graph->black_cond);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
 		return NULL;
@@ -133,11 +161,14 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 		destroy_stack(graph->remove_edges);
 		destroy_stack(graph->remove_vertices);
 		pthread_mutex_destroy(&graph->lock);
+		pthread_mutex_destroy(&graph->secondLock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
 			pthread_cond_destroy(&graph->red_cond);
 			pthread_cond_destroy(&graph->black_cond);
+			pthread_cond_destroy(&graph->red_fire);
+			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
 		return NULL;

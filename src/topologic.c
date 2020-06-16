@@ -61,12 +61,12 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
         vertex->is_active = 1;
         print_graph(graph);
         preorder(vertex->edge_tree, edges);
-       /* pthread_mutex_lock(&graph->lock);
+        pthread_mutex_lock(&graph->lock);
         while (graph->pause)
         {
             pthread_cond_wait(&graph->pause_cond, &graph->lock);
         }
-        pthread_mutex_unlock(&graph->lock);*/
+        pthread_mutex_unlock(&graph->lock);
         (vertex->f)(args);
         while ((edge = (struct edge *)pop(edges)) != NULL)
         {
@@ -241,7 +241,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         case RED:
             pthread_cond_broadcast(&graph->red_cond);
             //P(GRAPH_RED not red_cond)
-						pthread_cond_wait(&graph->red_fire, &graph->lock);
+						pthread_cond_wait(&graph->red_fire, &graph->secondLock);
             if (graph->red_vertex_count == 0)
             {
                 graph->state = PRINT;
@@ -249,12 +249,15 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 graph->print_flag = 1;
                 fprintf(stderr, "WAS RED; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
-						pthread_cond_signal(&graph->red_fire);
+						
+						//while(pthread_cond_signal(&graph->red_fire)!=0){}
+						pthread_mutex_unlock(&graph->secondLock);
+					
             //V()
             break;
         case BLACK:
             pthread_cond_broadcast(&graph->black_cond);
-						pthread_cond_wait(&graph->black_fire, &graph->lock);
+						pthread_cond_wait(&graph->black_fire, &graph->secondLock);
             //P(GRAPH_BLACK not black_cond)
             if (graph->black_vertex_count == 0)
             {
@@ -265,7 +268,9 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 graph->print_flag = 1;
                 fprintf(stderr, "WAS BLACK; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
-						pthread_cond_signal(&graph->black_fire);
+						//while(pthread_cond_signal(&graph->black_fire)!=0){}
+						pthread_mutex_unlock(&graph->secondLock);
+						
             //V()
             break;
         case PRINT:
