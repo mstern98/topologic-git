@@ -18,6 +18,7 @@ struct graph *graph_init(int max_state_changes, unsigned int snapshot_timestamp,
 	graph->pause = 0;
 	graph->red_locked = 1;
 	graph->black_locked = 1;
+	graph->num_vertices = 0;
 
 	if (pthread_mutex_init(&graph->lock, NULL) < 0)
 	{

@@ -92,6 +92,7 @@ struct graph
         sig_atomic_t pause;
         sig_atomic_t red_locked;
         sig_atomic_t black_locked;
+        sig_atomic_t num_vertices;
         pthread_cond_t pause_cond;
         pthread_cond_t red_fire;
         pthread_cond_t black_fire;
