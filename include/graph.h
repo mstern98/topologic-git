@@ -21,7 +21,7 @@ enum MEM_OPTION
         CONTINUE = 2
 };
 
-#define MAX_ATTEMPTS 4 //Maximum attempts for system to check for pthread if WAIT enum is selected
+#define MAX_ATTEMPTS 4         //Maximum attempts for system to check for pthread if WAIT enum is selected
 #define THREAD_ATTEMPT_SLEEP 3 //Sleep amount before trying to create thread again for WAIT
 
 /**
@@ -71,7 +71,7 @@ enum VERBOSITY
 struct graph
 {
         enum CONTEXT context;
-	enum MEM_OPTION mem_option;
+        enum MEM_OPTION mem_option;
         struct AVLTree *vertices;
         struct stack *start;
         struct stack *modify;
@@ -83,18 +83,18 @@ struct graph
         enum VERBOSITY lvl_verbose;
         int state_count;
         pthread_mutex_t lock;
-				pthread_mutex_t secondLock;
-        sig_atomic_t state;          //CURRENT STATE {PRINT, RED, BLACK}
-        sig_atomic_t previous_color; //LAST NODE COLOR TO FIRE
-        sig_atomic_t print_flag;     //0 DID NOT PRINT; 1 FINISHED PRINT
+        pthread_mutex_t color_lock;
+        sig_atomic_t state;            //CURRENT STATE {PRINT, RED, BLACK}
+        sig_atomic_t previous_color;   //LAST NODE COLOR TO FIRE
+        sig_atomic_t print_flag;       //0 DID NOT PRINT; 1 FINISHED PRINT
         sig_atomic_t red_vertex_count; //Number of RED nodes not reaped
-        pthread_cond_t red_cond;
         sig_atomic_t black_vertex_count; //Number of BLACK nodes not reaped
-        pthread_cond_t black_cond;
         sig_atomic_t pause;
+        sig_atomic_t red_locked;
+        sig_atomic_t black_locked;
         pthread_cond_t pause_cond;
-				pthread_cond_t red_fire;
-				pthread_cond_t black_fire;
+        pthread_cond_t red_fire;
+        pthread_cond_t black_fire;
 };
 
 #endif
