@@ -180,10 +180,7 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
     //     $1 = $input;
     // }
 
-    struct vertex *create_vertex(void (*f)(struct vertex_result *), int id, PyObject *glbl = NULL) {
-        printf("%d\n", id);
-        struct vertex_result *v = malloc(sizeof(struct vertex_result));
-       (f)(v);
+    struct vertex *create_vertex(void (*f)(struct graph *, struct vertex_result *), int id, PyObject *glbl = NULL) {
         return create_vertex($self, f, id, glbl);
     }
 
@@ -285,7 +282,7 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
 }
 
 %extend vertex_request {
-    vertex_request(struct graph *graph, int id, void (*f)(struct vertex_result *)=NULL, PyObject *glbl=NULL) {
+    vertex_request(struct graph *graph, int id, void (*f)(struct graph *, struct vertex_result *)=NULL, PyObject *glbl=NULL) {
         struct vertex_request *v = malloc(sizeof(struct vertex_request));
         v->graph = graph;
         v->id = id;
@@ -299,7 +296,7 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
 };
 
 %extend mod_vertex_request {
-    mod_vertex_request(struct vertex *vertex, void (*f)(struct vertex_result *)=NULL, PyObject *glbl=NULL) {
+    mod_vertex_request(struct vertex *vertex, void (*f)(struct graph *, struct vertex_result *)=NULL, PyObject *glbl=NULL) {
         struct mod_vertex_request *v = malloc(sizeof(struct mod_vertex_request));
         v->vertex = vertex;
         v->f = f;
