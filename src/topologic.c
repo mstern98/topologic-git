@@ -9,7 +9,7 @@ int start_set(struct graph *graph, int id[], int num_vertices)
         return -1;
     if (!id)
         return -1;
-    if (num_vertices < 0 || (graph->context == SINGLE && num_vertices > 1))
+    if (num_vertices <= 0 || (graph->context == SINGLE && num_vertices > 1))
         return -1;
 
     while (pop(graph->start) != NULL)

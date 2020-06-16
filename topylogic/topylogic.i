@@ -26,9 +26,10 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
     }
 
     PyObject *get(int index) {
-        PyObject *ret = get($self, index);
-        if (!ret) return Py_None;
-        return ret;
+        printf("GOT %p\n",  (void *) get($self, index));
+        //PyObject *ret = get($self, index);
+        //if (!ret) return Py_None;
+        return Py_None;
     }
 
     PyObject *pop() {
@@ -100,19 +101,63 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         destroy_graph($self);
     }
 
+    %typemap(in) struct vertex_result **{
+        $1 = NULL;
+        if (!PyList_Check($input)) {
+            PyErr_SetString(PyExc_TypeError, "Not A List");
+            return NULL;
+        }
+        int size = PyList_Size($input);
+        int i = 0;
+        $1 = (struct vertex_result **) malloc(sizeof(struct vertex_result *) * (size + 1));
+        for (i = 0; i < size; i++) {
+            PyObject *o = PyList_GetItem($input, i);
+            void *argp = NULL;
+            const int ret = SWIG_ConvertPtr(o, &argp, $*1_descriptor, 0);
+            if (!SWIG_IsOK(ret)) {
+                free($1);
+                SWIG_exception_fail(SWIG_ArgError(ret), "in method '" "$symname" "', argument " "$argnum"" of type '" "$1_type""'");
+            }
+            $1[i] = (struct vertex_result *) (argp);
+        }
+        $1[size] = NULL;
+    }
+
+    %typemap(freearg) struct vertex_result **{
+        free($1);
+    }
+    
     int run(struct vertex_result **vertex_args) {
+        printf("%p\n", vertex_args[0]);
         return run($self, vertex_args);
     }
 
-    int set_start_set(PyObject *id, int num_vertices) {
-        if (!PyList_Check(id)) return -1;
-        int size = PyList_Size(id);
-        int ids[size];
+    %typemap(in) int *id{
+        $1 = NULL;
+        if (!PyList_Check($input)) {
+            PyErr_SetString(PyExc_TypeError, "Not A List");
+            return NULL;
+        }
+        int size = PyList_Size($input);
         int i = 0;
-        for (i = 0; i < size; i++) 
-            ids[i] = (int) PyFloat_AsDouble(PyList_GetItem(id, i));
+        $1 = (int *) malloc(sizeof(int) * (size));
+        for (i = 0; i < size; i++) {
+            PyObject *o = PyList_GetItem($input, i);
+            if (!PyInt_Check(o)) {
+                free($1);
+                PyErr_SetString(PyExc_TypeError,"list must contain ints");
+            	return NULL;
+            }
+            $1[i] = PyInt_AsLong(o);
+        }
+    }
 
-        return start_set($self, ids, num_vertices);
+    %typemap(freearg) int *id{
+        free($1);
+    }
+
+    int set_start_set(int *id, int num_vertices) {
+        return start_set($self, id, num_vertices);
     }
 
     int pause_graph() {
@@ -127,8 +172,19 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         return print_graph($self);
     }
 
-    struct vertex *create_vertex(PyObject *f, int id, PyObject *glbl = NULL) {
-        return create_vertex($self, (void *) f, id, glbl);
+    // %typemap(in) void (*)(struct vertex_result *) {
+    //     $1 = NULL;
+    //     int ret = 0;
+    //     if (!(ret = PyCallable_Check($input)))
+    //         SWIG_exception_fail(SWIG_ArgError(ret), "in method '" "$symname" "', argument " "$argnum"" of type '" "$1_type""'");
+    //     $1 = $input;
+    // }
+
+    struct vertex *create_vertex(void (*f)(struct vertex_result *), int id, PyObject *glbl = NULL) {
+        printf("%d\n", id);
+        struct vertex_result *v = malloc(sizeof(struct vertex_result));
+       (f)(v);
+        return create_vertex($self, f, id, glbl);
     }
 
     int remove_vertex(struct vertex *vertex) {
@@ -345,12 +401,13 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
         return v;
     }
 
-    ~vertex_function() {
+    ~topylogic_function() {
         Py_XDECREF($self->f);
         free($self);
     }
 
     void callback_void(PyObject *args) {
+        printf("CALL?\n");
         PyObject *result = callback($self, args);
         if (!result) return;
         Py_DECREF(result);
