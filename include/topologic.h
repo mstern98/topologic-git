@@ -34,7 +34,7 @@
 #include "./graph.h"
 
 
-#ifndef SWIG
+#ifndef SWIGPYTHON
 #define _GNU_SOURCE
 #endif
 

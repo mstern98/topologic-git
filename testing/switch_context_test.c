@@ -135,12 +135,12 @@ void setup_start_set(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	int ids[1] = {0};
+	int ids[3] = {4,6,5};
 	assert(start_set(graph, &ids[0], 1) == 0);
-	/*ids[0] = 3;
+	ids[0] = 3;
 	assert(start_set(graph, &ids[0], 1)==0);
 	ids[0] = 9;
-	assert(start_set(graph, &ids[0], 1)==0);*/
+	assert(start_set(graph, ids, 3)==0);
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 }
 
@@ -148,23 +148,25 @@ void test_run_switch(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *));
+	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *)*3);
 	assert(vertex_args != NULL);
 
 	int i = 0;
-	int edge_args[2] = {i + 1, i + 4};
-	void *edge = malloc(sizeof(int) * 2);
-	memcpy(edge, &edge_args[0], sizeof(int));
-	memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
-	void *vertex = malloc(sizeof(int));
-	*(int *)vertex = 10;
+	for(i=0; i<3; i++){
+		int edge_args[2] = {i + 1, i + 4};
+		void *edge = malloc(sizeof(int) * 2);
+		memcpy(edge, &edge_args[0], sizeof(int));
+		memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
+		void *vertex = malloc(sizeof(int));
+		*(int *)vertex = 10;
 
-	struct vertex_result *v = malloc(sizeof(struct vertex_result));
-	v->edge_argv = edge;
-	v->edge_size = sizeof(int) * 2;
-	v->vertex_argv = vertex;
-	v->vertex_size = sizeof(int);
-	vertex_args[i] = v;
+		struct vertex_result *v = malloc(sizeof(struct vertex_result));
+		v->edge_argv = edge;
+		v->edge_size = sizeof(int) * 2;
+		v->vertex_argv = vertex;
+		v->vertex_size = sizeof(int);
+		vertex_args[i] = v;
+	}
 
 	assert(run(graph, vertex_args) == 0);
 	//print_graph(graph);
