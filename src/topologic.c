@@ -59,6 +59,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
     while (graph->state != TERMINATE)
     {
         vertex->is_active = 1;
+        graph->num_vertices = 1;
         print_graph(graph);
         preorder(vertex->edge_tree, edges);
         pthread_mutex_lock(&graph->lock);
@@ -89,14 +90,19 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             break;
         }
         ++(graph->state_count);
-        if (successor == 0)
+        if (successor == 0) {
             graph->state = TERMINATE;
+            graph->num_vertices = 0;
+            print_graph(graph);
+        }
         else
             successor = 0;
         if ((graph->max_state_changes != -1 && graph->state_count >= graph->max_state_changes) ||
             (graph->max_loop != -1 && iloop >= graph->max_loop))
         {
             graph->state = TERMINATE;
+            graph->num_vertices = 0;
+            print_graph(graph);
             break;
         }
     }
