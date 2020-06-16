@@ -140,65 +140,62 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         if (!success)
             success = 1;
 
-        if (graph->context == NONE || graph->context == SWITCH)
+        struct fireable *argv = malloc(sizeof(struct fireable));
+        if (!argv)
         {
+            success = 0;
+            printf("fireable struct is null\n");
+            break;
+        }
+        argv->graph = graph;
+        argv->args = init_vertex_args[v_index];
+        argv->color = RED;
+        argv->vertex = v;
+        argv->iloop = 1;
 
-            struct fireable *argv = malloc(sizeof(struct fireable));
-            if (!argv)
+        //Checking result of pthread_create
+        int thread_result = 0;
+        int thread_attempts = 0;
+        pthread_t thread;
+    create_start_threads:
+        thread_result = pthread_create(&thread, NULL, fire_pthread, argv);
+        ++thread_attempts;
+        if (thread_result != 0)
+        {
+            if (errno != EAGAIN)
             {
-                success = 0;
-                printf("fireable struct is null\n");
+                perror("Creating initial Threads: ");
+                success = -1;
                 break;
             }
-            argv->graph = graph;
-            argv->args = init_vertex_args[v_index];
-            argv->color = RED;
-            argv->vertex = v;
-            argv->iloop = 1;
-
-            //Checking result of pthread_create
-            int thread_result = 0;
-            int thread_attempts = 0;
-            pthread_t thread;
-        create_start_threads:
-            thread_result = pthread_create(&thread, NULL, fire_pthread, argv);
-            ++thread_attempts;
-            if (thread_result != 0)
+            else
             {
-                if (errno != EAGAIN)
+                switch (graph->mem_option)
                 {
-                    perror("Creating initial Threads: ");
-                    success = -1;
+                case CONTINUE:
                     break;
-                }
-                else
-                {
-                    switch (graph->mem_option)
+                case WAIT:
+                    if (thread_attempts > MAX_ATTEMPTS)
                     {
-                    case CONTINUE:
-                        break;
-                    case WAIT:
-                        if (thread_attempts > MAX_ATTEMPTS)
-                        {
-                            success = -1;
-                            fprintf(stderr, "Max Threads Attempts Hit\n");
-                            break;
-                        }
-                        sleep(THREAD_ATTEMPT_SLEEP);
-                        errno = 0;
-                        goto create_start_threads;
-                    case ABORT:
                         success = -1;
-                        fprintf(stderr, "Failed to Create Threads\n");
+                        fprintf(stderr, "Max Threads Attempts Hit\n");
                         break;
                     }
+                    sleep(THREAD_ATTEMPT_SLEEP);
+                    errno = 0;
+                    goto create_start_threads;
+                case ABORT:
+                    success = -1;
+                    fprintf(stderr, "Failed to Create Threads\n");
+                    break;
                 }
             }
-            pthread_detach(thread);
-            ++v_index;
-
-            argv = NULL;
         }
+        pthread_detach(thread);
+        v->is_active = 1;
+        ++v_index;
+
+        argv = NULL;
     }
 
     if (!success)
@@ -286,12 +283,16 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                     return -1;
                 }
                 print_graph(graph);
-                //pthread_mutex_lock(&graph->lock);
+                pthread_mutex_lock(&graph->lock);
                 graph->state_count++;
                 if (graph->previous_color == RED)
                     graph->state = BLACK;
                 else
                     graph->state = RED;
+                if (graph->red_vertex_count == 0 && graph->black_vertex_count == 0)
+                    graph->state = TERMINATE;
+                pthread_mutex_unlock(&graph->lock);
+        
             }
             graph->print_flag = 0;
             break;
@@ -332,7 +333,9 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         pthread_mutex_lock(&graph->lock);
         graph->red_vertex_count++;
         pthread_mutex_unlock(&graph->lock);
-        while (graph->red_locked) {}
+        while (graph->red_locked)
+        {
+        }
         pthread_mutex_lock(&vertex->lock);
     }
     else if (color == BLACK)
@@ -341,7 +344,9 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         graph->black_vertex_count++;
         pthread_mutex_unlock(&graph->lock);
         flip_color = RED;
-        while (graph->black_locked) {}
+        while (graph->black_locked)
+        {
+        }
         pthread_mutex_lock(&vertex->lock);
     }
     else
@@ -366,8 +371,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
     //NEED TO LOCK RED OR BLACK IN GRAPH
     //pthread_mutex_lock(&vertex->lock);
-
-    vertex->is_active = 1;
 
     if (graph->state == TERMINATE)
     {
@@ -464,6 +467,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
                     }
                     return -1;
                 }
+                edge->b->is_active = 1;
             }
             else if (graph->context == NONE)
             {
@@ -502,8 +506,10 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     int iloop_b = 1;
     if (next_vertex == vertex)
         iloop_b = iloop + 1;
-    if (graph->context == NONE && next_vertex != NULL)
+    if (graph->context == NONE && next_vertex != NULL) {
+        next_vertex->is_active = 1;
         return fire(graph, next_vertex, args, flip_color, iloop_b);
+    }
     else
     {
         if (args->edge_argv)
