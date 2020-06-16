@@ -117,7 +117,7 @@ void test_run_none(struct graph *graph)
 	assert(vertex_args != NULL);
 
 	int i = 0;
-	for (i = 0; i <3 ; ++i) {
+	for (i = 0; i < 2; ++i) {
 		int edge_args[2] = {i + 1, i + 4};
 		void *edge = malloc(sizeof(int) * 2);
 		memcpy(edge, &edge_args[0], sizeof(int));
@@ -126,7 +126,9 @@ void test_run_none(struct graph *graph)
 		*(int *)vertex = i;
 		struct vertex_result *v = malloc(sizeof(struct vertex_result));
 		v->edge_argv = edge;
+		v->edge_size = 0;
 		v->vertex_argv = vertex;
+		v->vertex_size = 0;
 		vertex_args[i] = v;
 	}
 

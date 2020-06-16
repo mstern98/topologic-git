@@ -124,14 +124,9 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
 int run(struct graph *graph, struct vertex_result **init_vertex_args)
 {
     if (!graph->start || graph->state == TERMINATE)
-    {
-        //destroy_graph(graph);
         return -1;
-    }
     if (graph->context == SINGLE)
-    {
         return run_single(graph, init_vertex_args);
-    }
 
     int success = 0, v_index = 0;
     struct vertex *v = NULL;
@@ -290,10 +285,14 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 else
                     graph->state = RED;
                 if (graph->num_vertices == 0)
+                {
                     graph->state = TERMINATE;
-                if (graph->state == TERMINATE) printf("KILLING TIME\n");
+                    graph->red_locked = 0;
+                    graph->black_locked = 0;
+                }
+                if (graph->state == TERMINATE)
+                    printf("KILLING TIME\n");
                 pthread_mutex_unlock(&graph->lock);
-        
             }
             graph->print_flag = 0;
             break;
@@ -324,8 +323,28 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             free(args);
             args = NULL;
         }
+        if (graph)
+        {
+            printf("?\n");
+            pthread_mutex_lock(&graph->lock);
+            if (color == RED)
+            {
+                --(graph->num_vertices);
+                if (graph->red_vertex_count <= 0)
+                    pthread_cond_signal(&graph->red_fire);
+            }
+            else if (color == BLACK)
+            {
+                --(graph->num_vertices);
+                if (graph->black_vertex_count <= 0)
+                    pthread_cond_signal(&graph->black_fire);
+            }
+            pthread_mutex_unlock(&graph->lock);
+        }
+        if (graph && vertex) return 0;
         return -1;
     }
+
     enum STATES flip_color = BLACK;
     //pthread_mutex_lock(&vertex->lock);
 
@@ -343,7 +362,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     {
         pthread_mutex_lock(&graph->lock);
         graph->black_vertex_count++;
-
         pthread_mutex_unlock(&graph->lock);
         flip_color = RED;
         while (graph->black_locked)
@@ -515,7 +533,8 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     int iloop_b = 1;
     if (next_vertex == vertex)
         iloop_b = iloop + 1;
-    if (graph->context == NONE && next_vertex != NULL) {
+    if (graph->context == NONE && next_vertex != NULL)
+    {
         next_vertex->is_active = 1;
         ++(graph->num_vertices);
         return fire(graph, next_vertex, args, flip_color, iloop_b);
@@ -554,8 +573,8 @@ void *fire_pthread(void *vargp)
     enum STATES color = fireable->color;
     int iloop = fireable->iloop;
 
-    int ret_val = fire(graph, v, args, color, iloop);
     free(vargp);
+    int ret_val = fire(graph, v, args, color, iloop);
     pthread_exit((void *)(intptr_t)ret_val);
     return (void *)(intptr_t)ret_val;
 }
