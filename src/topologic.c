@@ -306,7 +306,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 
 int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
-    if (!graph || !vertex || (graph->max_loop != -1 && iloop >= graph->max_loop))
+    if (!graph || !vertex)
     {
         if (args->edge_argv)
         {
@@ -323,25 +323,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             free(args);
             args = NULL;
         }
-        if (graph)
-        {
-            printf("?\n");
-            pthread_mutex_lock(&graph->lock);
-            if (color == RED)
-            {
-                --(graph->num_vertices);
-                if (graph->red_vertex_count <= 0)
-                    pthread_cond_signal(&graph->red_fire);
-            }
-            else if (color == BLACK)
-            {
-                --(graph->num_vertices);
-                if (graph->black_vertex_count <= 0)
-                    pthread_cond_signal(&graph->black_fire);
-            }
-            pthread_mutex_unlock(&graph->lock);
-        }
-        if (graph && vertex) return 0;
         return -1;
     }
 
@@ -371,7 +352,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
     else
     {
-        //pthread_mutex_unlock(&vertex->lock);
         if (args->edge_argv)
         {
             free(args->edge_argv);
@@ -388,6 +368,43 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             args = NULL;
         }
         return -1;
+    }
+
+    if (graph->max_loop != -1 && iloop >= graph->max_loop)
+    {
+        if (args->edge_argv)
+        {
+            free(args->edge_argv);
+            args->edge_argv = NULL;
+        }
+        if (args->vertex_argv)
+        {
+            free(args->vertex_argv);
+            args->vertex_argv = NULL;
+        }
+        if (args)
+        {
+            free(args);
+            args = NULL;
+        }
+        pthread_mutex_lock(&graph->lock);
+        if (color == RED)
+        {
+            --(graph->red_vertex_count);
+            --(graph->num_vertices);
+            if (graph->red_vertex_count <= 0)
+                pthread_cond_signal(&graph->red_fire);
+        }
+        else if (color == BLACK)
+        {
+            --(graph->black_vertex_count);
+            --(graph->num_vertices);
+            if (graph->black_vertex_count <= 0)
+                pthread_cond_signal(&graph->black_fire);
+        }
+        pthread_mutex_unlock(&graph->lock);
+        pthread_mutex_unlock(&vertex->lock);
+        return 0;
     }
     //NEED TO LOCK RED OR BLACK IN GRAPH
     //pthread_mutex_lock(&vertex->lock);

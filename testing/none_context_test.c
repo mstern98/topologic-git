@@ -54,7 +54,7 @@ void cleanup(struct graph *graph)
 
 void init(struct graph **graph)
 {
-	*graph = graph_init(100, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
+	*graph = graph_init(100, START_STOP, 1, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
 	assert(*graph != NULL);
 
 	//Setting up graphs and whatnot
