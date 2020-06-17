@@ -130,6 +130,9 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 	{
 		if (context != SINGLE)
 		{
+			if(edge->edge_type==SELF_EDGE){
+				pthread_mutex_unlock(&vertex->lock);
+			}
 			pthread_mutex_lock(&(edge->b->lock));
 		}
 		remove_ID(edge->b->joining_vertices, vertex->id);
