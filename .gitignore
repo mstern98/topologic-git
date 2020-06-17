@@ -12,6 +12,7 @@ testing/single_context_test
 testing/switch_context_test
 testing/request_test
 testing/none_context_test
+testing/multi-edge
 testing/*.o
 parse/topologic_parser.tab.c
 parse/topologic_parser.yy.c

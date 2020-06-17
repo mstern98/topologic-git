@@ -10,7 +10,7 @@ void setup_non_start_set(struct graph *graph);
 void test_run_switch(struct graph *);
 void cleanup(struct graph *);
 
-#define MAXIMUM 90
+#define MAXIMUM 40
 #define DEFAULT_BUFFER 64
 
 void request_nil() {
@@ -89,7 +89,7 @@ void cleanup(struct graph *graph)
 
 void init(struct graph **graph)
 {
-	*graph = graph_init(100, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE);
+	*graph = graph_init(10, START_STOP, 10, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE);
 	assert(*graph != NULL);
 
 	//Setting up graphs and whatnot
@@ -125,7 +125,7 @@ void init(struct graph **graph)
 		edge_req->b = ((i + 1) >= MAXIMUM ? verts[0] : verts[i + 1]);
 		edge_req->f = &edgeFunction;
 		edge_req->glbl = NULL;
-		struct request *req = create_request(CREAT_EDGE, edge_req, NULL);
+		struct request *req = create_request(CREAT_BI_EDGE, edge_req, NULL);
 		assert(submit_request(*graph, req) == 0);
 	}
 	assert(process_requests(*graph) == 0);
@@ -135,11 +135,11 @@ void setup_start_set(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	int ids[3] = {4,6,5};
+	int ids[3] = {1,2,3};
 	assert(start_set(graph, &ids[0], 1) == 0);
 	ids[0] = 3;
 	assert(start_set(graph, &ids[0], 1)==0);
-	ids[0] = 9;
+	ids[0] = 0;
 	assert(start_set(graph, ids, 3)==0);
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 }
