@@ -138,13 +138,13 @@ void runTest(struct graph* graph){
 	memcpy(edge, &edge_args[0], sizeof(int));
 	memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
 	void *vertex = malloc(sizeof(int));
-	*(int *)vertex = i;
+	*(int *)vertex = 10;
 	
 	struct vertex_result *v = malloc(sizeof(struct vertex_result));
 	v->edge_argv = edge;
-	v->edge_size = 0;
+	v->edge_size = sizeof(int)*2;
 	v->vertex_argv = vertex;
-	v->vertex_size = 0;
+	v->vertex_size = sizeof(int);
 	v_args[i] = v;
 	
 	

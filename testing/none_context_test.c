@@ -54,7 +54,7 @@ void cleanup(struct graph *graph)
 
 void init(struct graph **graph)
 {
-	*graph = graph_init(100, START_STOP, 3, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
+	*graph = graph_init(100, START_STOP, 1, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
 	assert(*graph != NULL);
 
 	//Setting up graphs and whatnot
@@ -123,7 +123,7 @@ void test_run_none(struct graph *graph)
 		memcpy(edge, &edge_args[0], sizeof(int));
 		memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
 		void *vertex = malloc(sizeof(int));
-		*(int *)vertex = i;
+		*(int *)vertex = 10;
 		struct vertex_result *v = malloc(sizeof(struct vertex_result));
 		v->edge_argv = edge;
 		v->edge_size = 0;
