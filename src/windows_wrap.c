@@ -2,7 +2,6 @@
  * SRC: https://nachtimwald.com/2019/04/05/cross-platform-thread-wrapper/
 **/
 
-
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
 #include "../include/windows_wrap.h"

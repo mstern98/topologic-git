@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT WITH bison-exception
+# Copyright © 2020 Matthew Stern, Benjamin Michalowicz
+
 CC=gcc
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
