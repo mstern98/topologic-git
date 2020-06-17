@@ -333,10 +333,10 @@ void print_graph(struct graph *graph);
 
 #ifndef SWIG
 /**
-@PARAM file: graph input file
+@PARAM path: path to graph input file
 @RETURN the graph specified in the file
 **/
-struct graph *parse_json(FILE *file);
+struct graph *parse_json(const char *path);
 #endif
 
 /**

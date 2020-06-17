@@ -5,14 +5,8 @@
 #include <assert.h>
 
 int main() {
-    fprintf(stderr, "PARSE JSON\n");
-    FILE *f = fopen("./testing/graph_test.json", "r");
-    if (!f) {
-        fprintf(stderr, "FILE NOT FOUND\n");
-        return -1;
-    }
-    struct graph *graph = parse_json(f);
-    fclose(f);
+    fprintf(stderr, "PARSE JSON\n");    
+    struct graph *graph = parse_json("./testing/graph_test.json");
 
     assert(graph != NULL);
     struct vertex *v = NULL;

@@ -98,11 +98,16 @@ void yyerror(struct graph** graph, const char *s) {
     *graph = NULL;
 }
 
-struct graph *parse_json(FILE *file) {
-    if (!file) return NULL;
+struct graph *parse_json(const char *path) {
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        fprintf(stderr, "FILE NOT FOUND\n");
+        return NULL;
+    }
     yyin = file;
     struct graph *graph = NULL;
     yyparse(&graph);
     yyin = NULL;
+    fclose(file);
     return graph;
 }
