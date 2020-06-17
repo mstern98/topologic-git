@@ -112,11 +112,20 @@ void print_graph(struct graph *graph)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
+
+    char buffer[256];
+    sprintf(buffer, "state_%d.json", graph->state_count);
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    FILE *out = fopen(buffer, "w+");
+    if (!out) 
+    {
+        fprintf(stderr, "FAILED OUT\n");
+        return;
+    }
+    #else
     int dirfd = open("./", O_DIRECTORY | O_RDONLY);
     if (dirfd == -1)
         return;
-    char buffer[256];
-    sprintf(buffer, "state_%d.json", graph->state_count);
     int fd = openat(dirfd, buffer, O_TRUNC | O_CREAT | O_WRONLY, S_IRWXU);
     if (fd == -1)
     {
@@ -125,7 +134,6 @@ void print_graph(struct graph *graph)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
-
     FILE *out = fdopen(fd, "w");
     if (!out)
     {
@@ -137,6 +145,7 @@ void print_graph(struct graph *graph)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
+    #endif
 
     /**TODO: Print enums**/
     fprintf(out, "{\n");
@@ -151,8 +160,12 @@ void print_graph(struct graph *graph)
     fprintf(out, " }\n");
     fprintf(out, "}\n");
 
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    fclose(out);
+    #else
     fclose(out);
     close(dirfd);
+    #endif
     if (graph->context != SINGLE)
         pthread_mutex_unlock(&graph->lock);
 }
