@@ -125,7 +125,7 @@ void init(struct graph **graph)
 		edge_req->b = ((i + 1) >= MAXIMUM ? verts[0] : verts[i + 1]);
 		edge_req->f = &edgeFunction;
 		edge_req->glbl = NULL;
-		struct request *req = create_request(CREAT_BI_EDGE, edge_req, NULL);
+		struct request *req = create_request(CREAT_EDGE, edge_req, NULL);
 		assert(submit_request(*graph, req) == 0);
 	}
 	assert(process_requests(*graph) == 0);
