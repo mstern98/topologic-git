@@ -13,6 +13,10 @@
 #include <signal.h>
 #include "./context.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** 
 Enum for memory handling when forking -- if mem amount is exceeded 
 ABORT: Kill the program and clean
@@ -102,5 +106,9 @@ struct graph
         pthread_cond_t red_fire;
         pthread_cond_t black_fire;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -4,6 +4,10 @@
 #ifndef __TOPOLOGIC_REQUEST__
 #define __TOPOLOGIC_REQUEST__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
 Enum for submiting a request to be handles
 MODIFY: Modify values in existing edges or vertices
@@ -35,5 +39,9 @@ struct request
         void (*f)(void *);
         void *args;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

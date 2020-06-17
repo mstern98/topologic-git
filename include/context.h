@@ -4,6 +4,10 @@
 #ifndef __TOPOLOGIC_CONSTANT__
 #define __TOPOLOGIC_CONSTANT__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** 
 Enum for how the graph handles context switches,
 or not at all
@@ -21,5 +25,9 @@ enum CONTEXT
         SINGLE = 1,
         SWITCH = 2
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

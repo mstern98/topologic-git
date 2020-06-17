@@ -7,6 +7,10 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void pthread_mutexattr_t;
 typedef void pthread_condattr_t;
 typedef void pthread_attr_t;
@@ -27,5 +31,9 @@ int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *attr);
 int pthread_cond_destroy(pthread_cond_t *cond);
 int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 int pthread_cond_signal(pthread_cond_t *cond);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

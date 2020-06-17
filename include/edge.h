@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include "./vertex.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum edge_type
 {
     EDGE = 0,
@@ -50,5 +54,9 @@ struct destroy_edge_id_request
     struct vertex *a;
     int id;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

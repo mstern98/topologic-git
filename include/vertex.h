@@ -11,6 +11,10 @@
 #include "./context.h"
 #include "./graph.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**vertex_result**/
 struct vertex_result
 {
@@ -75,5 +79,9 @@ struct destroy_vertex_id_request
     struct graph *graph;
     int id;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

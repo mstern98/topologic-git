@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct stack_node
 {
     void *data;
@@ -24,5 +28,9 @@ void *get(struct stack *stack, int index);
 void *pop(struct stack *stack);
 int push(struct stack *stack, void *data);
 void destroy_stack(struct stack *stack);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

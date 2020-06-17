@@ -17,6 +17,10 @@
 #define _GNU_SOURCE
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct fireable
 {
         struct graph *graph;
@@ -354,5 +358,9 @@ int destroy_graph(struct graph *graph);
 Destroys and frees a request
 **/
 int destroy_request(struct request *request);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
