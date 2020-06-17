@@ -24,6 +24,11 @@ int pthread_detach(phtread_t thread)
     CloseHandle(thread);
 }
 
+int pthread_exit(void *retval)
+{
+    ExitThread(retval);
+}
+
 int pthread_mutex_init(pthread_mutex_t *mutex, pthread_mutexattr_t *attr)
 {
     (void)attr;
