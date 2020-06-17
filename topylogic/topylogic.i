@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT WITH bison-exception WITH swig-exception
+// Copyright © 2020 Matthew Stern, Benjamin Michalowicz
+
 %module topylogic
 %{
 #include "../include/topologic.h"
