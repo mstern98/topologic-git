@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT WITH bison-exception
+# SPDX-License-Identifier: MIT WITH bison-exception WITH swig-exception
 # Copyright © 2020 Matthew Stern, Benjamin Michalowicz
 
 CC=gcc
