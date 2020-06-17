@@ -87,9 +87,9 @@ struct graph
         struct stack *remove_edges;
         struct stack *remove_vertices;
         int max_state_changes;
-        unsigned int max_loop;
-        unsigned int snapshot_timestamp;
-        enum VERBOSITY lvl_verbose;
+        int max_loop;
+        int snapshot_timestamp;
+        unsigned int lvl_verbose;
         int state_count;
         pthread_mutex_t lock;
         pthread_mutex_t color_lock;

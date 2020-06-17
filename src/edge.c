@@ -28,7 +28,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         return NULL;
     }
 
-    struct edge *edge = malloc(sizeof(struct edge));
+    struct edge *edge = (struct edge*) malloc(sizeof(struct edge));
     if (!edge)
     {
         if (context != SINGLE)

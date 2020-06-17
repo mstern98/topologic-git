@@ -2,6 +2,7 @@
 # Copyright © 2020 Matthew Stern, Benjamin Michalowicz
 
 CC=gcc
+CXX=g++
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
 CFLAGS=-Wall	-Werror	-g	-fPIC #-O2
@@ -19,6 +20,14 @@ BISON_C=$(BISON:.y=.tab.c)
 BISON_H=$(BISON:.y=.tab.h)
 FLEX_OBJ=$(FLEX_C:.c=.o)
 BISON_OBJ=$(BISON_C:.c=.o)
+
+FLEXPP=parse/topologic_parser_cpp.lex
+BISONPP=parse/topologic_parser_cpp.ypp
+FLEX_CPP=$(FLEXPP:.lex=.yy.cpp)
+BISON_CPP=$(BISONPP:.ypp=.tab.cpp)
+BISON_HPP=$(BISONPP:.ypp=.tab.hpp)
+FLEX_OBJ_PP=$(FLEX_CPP:.cpp=.o)
+BISON_OBJ_PP=$(BISON_CPP:.cpp=.o)
 
 TOPYLOGIC_I=topylogic/topylogic.i
 TOPYLOGIC_WRAP=topylogic/topylogic_wrap.c
@@ -57,13 +66,26 @@ python2: $(OBJ) $(INCLUDES)
 	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python2.7
 	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
+cpp: $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP) $(FLEX_CPP) $(FLEX_OBJ_PP) $(OBJ) $(INCLUDES) 
+	$(AR) rcs libtopologic.a $(OBJ) $(BISON_OBJ_PP) $(FLEX_OBJ_PP)
+
+$(FLEX_CPP):
+	flex $(FLEXPP)
+	mv lex.yy.cc $(FLEX_CPP)
+	$(CXX) -fPIC -g -c $(FLEX_CPP) -o $(FLEX_OBJ_PP)
+$(BISON_CPP): $(BISONPP)
+	bison -d $(BISONPP) -o $(BISON_CPP)
+	$(CXX) -fPIC -g -c $(BISON_CPP) -o $(BISON_OBJ_PP)
+
 all:$(BIN)
-.PHONY : clean
+.PHONY : clean cpp python pyton2 
 
 clean:
 	rm -f libtopologic.a
 	rm -f $(FLEX_C) $(FLEX_OBJ)
 	rm -f $(BISON_C) $(BISON_OBJ) $(BISON_H)
+	rm -f $(FLEX_CPP) $(FLEX_OBJ_PP)
+	rm -f $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP)
 	rm -f $(OBJ) $(BIN)
 	rm -f $(TOPYLOGIC_WRAP) $(TOPYLOGIC_PY) $(TOPYLOGIC_SO) $(TOPYLOGIC_O)
 	rm -rf topylogic/__pycache__

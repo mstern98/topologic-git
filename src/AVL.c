@@ -2,7 +2,7 @@
 
 struct AVLTree *init_avl()
 {
-    struct AVLTree *tree = malloc(sizeof(struct AVLTree));
+    struct AVLTree *tree = (struct AVLTree*) malloc(sizeof(struct AVLTree));
     if (!tree)
         return NULL;
 
@@ -68,7 +68,7 @@ struct AVLNode *left_rotate(struct AVLNode *node)
 
 struct AVLNode *create_node(void *data, int id)
 {
-    struct AVLNode *node = malloc(sizeof(struct AVLNode));
+    struct AVLNode *node = (struct AVLNode*) malloc(sizeof(struct AVLNode));
     if (!node)
         return NULL;
     node->left = NULL;

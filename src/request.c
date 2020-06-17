@@ -5,7 +5,7 @@
 
 struct request *create_request(enum REQUESTS request, void *args, void (*f)(void *))
 {
-    struct request *req = malloc(sizeof(struct request));
+    struct request *req = (struct request*) malloc(sizeof(struct request));
     if (!req)
         return NULL;
     req->args = args;
@@ -284,7 +284,7 @@ int destroy_request(struct request *request)
 
     free(request->args);
     request->args = NULL;
-    request->request = 0;
+    request->request = (enum REQUESTS) 0;
     request->f = NULL;
     free(request);
     request = NULL;

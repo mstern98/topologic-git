@@ -11,7 +11,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 	if (context != SINGLE)
 		pthread_mutex_lock(&graph->lock);
 
-	struct vertex *vertex = malloc(sizeof(struct vertex));
+	struct vertex *vertex = (struct vertex*) malloc(sizeof(struct vertex));
 	if (!vertex)
 	{
 		if (context != SINGLE)
@@ -22,7 +22,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 	}
 	vertex->context = context;
 
-	vertex->shared = malloc(sizeof(union shared_edge));
+	vertex->shared = (union shared_edge*) malloc(sizeof(union shared_edge));
 	if (!vertex->shared)
 	{
 		free(vertex);
@@ -193,7 +193,7 @@ int remove_vertex_id(struct graph *graph, int id) {
 	if (!graph) return -1;
 	if (graph->context != SINGLE)
 		pthread_mutex_lock(&graph->lock);
-	struct vertex *vertex = find(graph->vertices, id);
+	struct vertex *vertex = (struct vertex *) find(graph->vertices, id);
 	if (graph->context != SINGLE)
 			pthread_mutex_unlock(&graph->lock);
 	if (!vertex) 

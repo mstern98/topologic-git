@@ -19,7 +19,7 @@ int start_set(struct graph *graph, int id[], int num_vertices)
     int i = 0;
     for (; i < num_vertices; i++)
     {
-        struct vertex *v = find(graph->vertices, id[i]);
+        struct vertex *v = (struct vertex*) find(graph->vertices, id[i]);
         if (!v || push(graph->start, v) < 0)
         {
             /** Handle errors **/
@@ -142,7 +142,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         if (!success)
             success = 1;
 
-        struct fireable *argv = malloc(sizeof(struct fireable));
+        struct fireable *argv = (struct fireable*) malloc(sizeof(struct fireable));
         if (!argv)
         {
             success = 0;
@@ -618,10 +618,10 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
     //HANDLE STUFF LIKE THREADS HERE
     //Check if graph context = single, none, or switch?)
 
-    struct fireable *argv = malloc(sizeof(struct fireable));
+    struct fireable *argv = (struct fireable*) malloc(sizeof(struct fireable));
     if (!argv)
         return -1;
-    argv->args = malloc(sizeof(struct vertex_result));
+    argv->args = (struct vertex_result *) malloc(sizeof(struct vertex_result));
     if (!argv->args)
     {
         free(argv);

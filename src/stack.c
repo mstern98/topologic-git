@@ -2,7 +2,7 @@
 
 struct stack *init_stack()
 {
-    struct stack *stack = malloc(sizeof(struct stack));
+    struct stack *stack = (struct stack*) malloc(sizeof(struct stack));
     if (!stack)
     {
         return NULL;
@@ -56,7 +56,7 @@ int push(struct stack *stack, void *data)
         return -1;
     }
 
-    struct stack_node *node = malloc(sizeof(struct stack_node));
+    struct stack_node *node = (struct stack_node*) malloc(sizeof(struct stack_node));
     if (!node)
     {
         return -1;
