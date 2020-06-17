@@ -103,7 +103,8 @@ void print_graph(struct graph *graph)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
-    if ((graph->snapshot_timestamp == START_STOP && (graph->num_vertices == 0 ||
+
+    if ((graph->snapshot_timestamp == START_STOP && (graph->num_vertices != 0 ||
         (graph->state_count != 0 && graph->state_count != graph->max_state_changes - 1))) ||
         (graph->snapshot_timestamp != 0 && graph->state_count % graph->snapshot_timestamp != 0))
     {
@@ -111,7 +112,6 @@ void print_graph(struct graph *graph)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
-
     int dirfd = open("./", O_DIRECTORY | O_RDONLY);
     if (dirfd == -1)
         return;
