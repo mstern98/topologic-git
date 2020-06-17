@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT WITH bison-exception
 // Copyright © 2020 Matthew Stern, Benjamin Michalowicz
 
-#include"../include/topologic.h"
+#include "../include/topologic.h"
+#include "../include/test.h"
 
 void test_graph_insert_vertex(struct graph*);
 //void test_run_single_enum(struct graph*);

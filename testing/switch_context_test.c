@@ -70,7 +70,7 @@ void cleanup(struct graph *graph)
 		}
 		assert(remove_edge(v, v2) == 0);
 	}
-
+	
 	for (i = 0; i < MAXIMUM; i++)
 	{
 		struct vertex *v = (struct vertex *)find(graph->vertices, i);

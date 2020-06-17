@@ -4,7 +4,12 @@
 #ifndef __TOPOLOGIC_GRAPH__
 #define __TOPOLOGIC_GRAPH__
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include "./windows_wrap.h"
+#else
 #include <pthread.h>
+#endif
+
 #include <signal.h>
 #include "./context.h"
 
