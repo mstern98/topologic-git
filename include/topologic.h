@@ -20,13 +20,14 @@
 #endif
 
 #ifdef DEBUG
+#include <time.h>
 #define TOPOLOGIC_DEBUG 1
 #else
 #define TOPOLOGIC_DEBUG 0
 #endif
 
-#define topologic_debug(fmt, ...) do {if (TOPOLOGIC_DEBUG) fprintf(stderr, "%s:%d:%s(): " fmt "\n", __FILE__, \
-                                                                   __LINE__, __func__, __VA_ARGS__); } while (0)
+#define topologic_debug(fmt, ...) do {if (TOPOLOGIC_DEBUG) fprintf(stderr, "%s:%s:%s:%d:%s(): " fmt "\n", __DATE__, __TIME__, \
+                                                                   __FILE__,  __LINE__, __func__, __VA_ARGS__); } while (0)
 
 #ifdef __cplusplus
 extern "C" {
