@@ -5,12 +5,22 @@
 
 int start_set(struct graph *graph, int id[], int num_vertices)
 {
+    topologic_debug("%s;id: %p;num_vertices: %d", "start_set", id, num_vertices);
     if (!graph)
+    {
+        topologic_debug("%s;%s;%d", "start_set", "invalid graph", -1);
         return -1;
+    }
     if (!id)
+    {
+        topologic_debug("%s;%s;%d", "start_set", "no id", -1);
         return -1;
+    }
     if (num_vertices <= 0 || (graph->context == SINGLE && num_vertices > 1))
+    {
+        topologic_debug("%s;%s;%d", "start_set", "invalid number of vertices", -1);
         return -1;
+    }
 
     while (pop(graph->start) != NULL)
     {
@@ -19,9 +29,13 @@ int start_set(struct graph *graph, int id[], int num_vertices)
     int i = 0;
     for (; i < num_vertices; i++)
     {
-        struct vertex *v = (struct vertex*) find(graph->vertices, id[i]);
+        struct vertex *v = (struct vertex *)find(graph->vertices, id[i]);
         if (!v || push(graph->start, v) < 0)
         {
+            if (v)
+                topologic_debug("%s;%s_%p_%s_%d;%d", "start_set", "could not push vertex", v, "id: ", v->id, -1);
+            else
+                topologic_debug("%s;%s;%d", "start_set", "vertex invalid", -1);
             /** Handle errors **/
             /**Given vertx failed, so at this point, free the vertices and leave**/
             while (pop(graph->start) != NULL)
@@ -31,20 +45,27 @@ int start_set(struct graph *graph, int id[], int num_vertices)
             return -1;
         }
     }
+    topologic_debug("%s;%s;%d", "start_set", "succeeded", 0);
     return 0;
 }
 
 int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
 {
+    topologic_debug("%s;graph: %p;init_vertex_args: %p", "run_single", graph, init_vertex_args);
     if (!graph || graph->context != SINGLE || graph->start->length > 1 || graph->start->length == 0)
     {
+        topologic_debug("%s;%s;%d", "run_single", "failed to run", -1);
         return -1;
     }
     int successor = 0;
 
     struct vertex *vertex = (struct vertex *)pop(graph->start);
     if (!vertex)
+    {
+        topologic_debug("%s;%s;%d", "run_single", "no vertex", -1);
         return -1;
+    }
+    topologic_debug("%s;%s;%p", "run_single", "initial vertex", vertex);
     struct edge *edge = NULL;
 
     struct vertex_result *args = init_vertex_args[0];
@@ -52,7 +73,10 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
     init_vertex_args = NULL;
     struct stack *edges = init_stack();
     if (!edges)
+    {
+        topologic_debug("%s;%s;%d", "run_single", "no edge", -1);
         return -1;
+    }
 
     int ret = 0;
     int iloop = 0;
@@ -73,6 +97,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
         {
             if (successor == 0 && (edge->f)(args->edge_argv))
             {
+                topologic_debug("%s;%s;%p", "run_single", "next vertex", edge->b);
                 vertex->is_active = 0;
                 if (vertex == edge->b)
                     ++iloop;
@@ -85,6 +110,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
 
         if (process_requests(graph) < 0)
         {
+            topologic_debug("%s;%s;%d", "run_single", "process_request failed", -1);
             graph->state = TERMINATE;
             ret = -1;
             break;
@@ -92,6 +118,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
         ++(graph->state_count);
         if (successor == 0)
         {
+            topologic_debug("%s;%s;%d", "run_single", "no successor", 0);
             graph->state = TERMINATE;
             graph->num_vertices = 0;
             print_graph(graph);
@@ -125,13 +152,18 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
     }
     destroy_stack(edges);
     edges = NULL;
+    topologic_debug("%s;%s;%d", "run_single", "finished", ret);
     return ret;
 }
 
 int run(struct graph *graph, struct vertex_result **init_vertex_args)
 {
-    if (!graph->start || graph->state == TERMINATE)
+    topologic_debug("%s;graph %p;init_vertex_args %p", "run", graph, init_vertex_args);
+    if (!graph || !graph->start || graph->state == TERMINATE)
+    {
+        topologic_debug("%s;%s;%d", "run", "invalid graph", -1);
         return -1;
+    }
     if (graph->context == SINGLE)
         return run_single(graph, init_vertex_args);
 
@@ -142,11 +174,11 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         if (!success)
             success = 1;
 
-        struct fireable *argv = (struct fireable*) malloc(sizeof(struct fireable));
+        struct fireable *argv = (struct fireable *)malloc(sizeof(struct fireable));
         if (!argv)
         {
             success = 0;
-            printf("fireable struct is null\n");
+            fprintf(stderr, "fireable struct is null\n");
             break;
         }
         argv->graph = graph;
@@ -214,6 +246,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         pthread_exit(NULL);
 
         //destroy_graph(graph);
+        topologic_debug("%s;%s;%d", "run", "success == 0", -1);
         return -1;
     }
     free(init_vertex_args);
@@ -239,6 +272,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         switch (graph->state)
         {
         case RED:
+            topologic_debug("%s;%s;", "run", "RED");
             pthread_mutex_lock(&graph->lock);
             graph->red_locked = 0;
             graph->black_locked = 1;
@@ -256,6 +290,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             pthread_mutex_unlock(&graph->color_lock);
             break;
         case BLACK:
+            topologic_debug("%s;%s;", "run", "BLACK");
             pthread_mutex_lock(&graph->lock);
             graph->red_locked = 1;
             graph->black_locked = 0;
@@ -274,6 +309,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             pthread_mutex_unlock(&graph->color_lock);
             break;
         case PRINT:
+            topologic_debug("%s;%s;", "run", "PRINT");
             pthread_mutex_lock(&graph->lock);
             graph->red_locked = 1;
             graph->black_locked = 1;
@@ -283,6 +319,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 if (process_requests(graph) < 0)
                 {
                     graph->state = TERMINATE;
+                    topologic_debug("%s;%s;%d", "run", "process_request failed", -1);
                     return -1;
                 }
                 print_graph(graph);
@@ -294,21 +331,22 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                     graph->state = RED;
                 if (graph->num_vertices == 0)
                 {
+                    topologic_debug("%s;%s;", "run", "no more vertices");
                     graph->state = TERMINATE;
                     graph->red_locked = 0;
                     graph->black_locked = 0;
                 }
-                if (graph->state == TERMINATE)
-                    printf("KILLING TIME\n");
                 pthread_mutex_unlock(&graph->lock);
             }
             graph->print_flag = 0;
             break;
         default:
+            topologic_debug("%s;%s;%d", "run", "INVALID STATE", -1);
             pthread_exit(NULL);
             return -1;
         }
     }
+    topologic_debug("%s;%s;%d", "run", "finished", 0);
     return 0;
 }
 
@@ -335,13 +373,9 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
 
     enum STATES flip_color = BLACK;
-    //pthread_mutex_lock(&vertex->lock);
 
     if (color == RED)
     {
-        // pthread_mutex_lock(&graph->lock);
-        // graph->red_vertex_count++;
-        // pthread_mutex_unlock(&graph->lock);
         while (graph->red_locked)
         {
         }
@@ -349,9 +383,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
     else if (color == BLACK)
     {
-        // pthread_mutex_lock(&graph->lock);
-        // graph->black_vertex_count++;
-        // pthread_mutex_unlock(&graph->lock);
         flip_color = RED;
         while (graph->black_locked)
         {
@@ -414,8 +445,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         pthread_mutex_unlock(&vertex->lock);
         return 0;
     }
-    //NEED TO LOCK RED OR BLACK IN GRAPH
-    //pthread_mutex_lock(&vertex->lock);
 
     if (graph->state == TERMINATE)
     {
@@ -496,7 +525,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
                         if (graph->black_vertex_count == 0)
                             pthread_cond_signal(&graph->black_fire);
                     }
-                    //NEED TO SIGNAL P in RUN
                     pthread_mutex_unlock(&graph->lock);
                     pthread_mutex_unlock(&vertex->lock);
                     if (args->edge_argv)
@@ -615,13 +643,10 @@ void *fire_pthread(void *vargp)
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
-    //HANDLE STUFF LIKE THREADS HERE
-    //Check if graph context = single, none, or switch?)
-
-    struct fireable *argv = (struct fireable*) malloc(sizeof(struct fireable));
+    struct fireable *argv = (struct fireable *)malloc(sizeof(struct fireable));
     if (!argv)
         return -1;
-    argv->args = (struct vertex_result *) malloc(sizeof(struct vertex_result));
+    argv->args = (struct vertex_result *)malloc(sizeof(struct vertex_result));
     if (!argv->args)
     {
         free(argv);
@@ -698,34 +723,50 @@ create_switch_threads:
         }
     }
     pthread_detach(thread);
-    //free(argv);
 
     return 0;
 }
 
 int pause_graph(struct graph *graph)
 {
+    topologic_debug("%s;graph %p;", "pause_graph", graph);
     if (!graph)
+    {
+        topologic_debug("%s;%s;%d", "pause_graph", "invalid graph", -1);
         return -1;
+    }
     if (graph->pause == 1)
+    {
+        topologic_debug("%s;%s;%d", "pause_graph", "graph already paused", -1);
         return -1;
+    }
 
     pthread_mutex_lock(&graph->lock);
     graph->pause = 0;
     pthread_cond_signal(&graph->pause_cond);
     pthread_mutex_unlock(&graph->lock);
+    topologic_debug("%s;%s;%d", "pause_graph", "succeeded", 0);
     return 0;
 }
 
 int resume_graph(struct graph *graph)
 {
+    topologic_debug("%s;graph %p;", "resume_graph", graph);
+
     if (!graph)
+    {
+        topologic_debug("%s;%s;%d", "resume_graph", "invalid graph", -1);
         return -1;
+    }
     if (graph->pause == 0)
+    {
+        topologic_debug("%s;%s;%d", "resume_graph", "graph already running", -1);
         return -1;
+    }
 
     pthread_mutex_lock(&graph->lock);
     graph->pause = 1;
     pthread_mutex_unlock(&graph->lock);
+    topologic_debug("%s;%s;%d", "resume_graph", "succeeded", 0);
     return 0;
 }
