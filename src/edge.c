@@ -5,12 +5,15 @@
 
 struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl)
 {
+    topologic_debug("%s;a %p;b %p;f %p;glbl %p", "create_edge", a, b, f, glbl);
     if (!a || !b)
     {
+        topologic_debug("%s;%s;%p", "create_edge", "invalid vertices", NULL);
         return NULL;
     }
     if (!f)
     {
+        topologic_debug("%s;%s;%p", "create_edge", "invalid function", NULL);
         return NULL;
     }
 
@@ -25,16 +28,18 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         {
             pthread_mutex_unlock(&a->lock);
         }
+        topologic_debug("%s;%s;%p", "create_edge", "edge exists", NULL);
         return NULL;
     }
 
-    struct edge *edge = (struct edge*) malloc(sizeof(struct edge));
+    struct edge *edge = (struct edge *)malloc(sizeof(struct edge));
     if (!edge)
     {
         if (context != SINGLE)
         {
             pthread_mutex_unlock(&a->lock);
         }
+        topologic_debug("%s;%s;%p", "create_edge", "failed to create edge", NULL);
         return NULL;
     }
 
@@ -68,6 +73,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         {
             pthread_mutex_unlock(&a->lock);
         }
+        topologic_debug("%s;%s;%p", "create_edge", "failed to insert edge", NULL);
         return NULL;
     }
 
@@ -109,19 +115,25 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
             pthread_mutex_unlock(&a->lock);
         }
     }
+    topologic_debug("%s;%s;%p", "create_edge", "success", edge);
     return edge;
 }
 
 int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl, struct edge **edge_a_to_b, struct edge **edge_b_to_a)
 {
+    topologic_debug("%s;a %p;b %p;f %p;glbl %p", "create_edge", a, b, f, glbl);
     if (!a || !b || !f || a == b)
+    {
+        topologic_debug("%s;%s;%d", "create_bi_edge", "invalid args", -1);
         return -1;
+    }
     struct edge *a_to_b, *b_to_a;
     enum CONTEXT context = a->context;
 
     a_to_b = create_edge(a, b, f, glbl);
     if (!a_to_b)
     {
+        topologic_debug("%s;%s;%d", "create_bi_edge", "could not create edge a to b", -1);
         return -1;
     }
     a_to_b->edge_type = BI_EDGE;
@@ -132,6 +144,7 @@ int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
         {
             remove_edge(a, b);
             a_to_b = NULL;
+            topologic_debug("%s;%s;%d", "create_bi_edge", "could not create bi_edge lock", -1);
             return -1;
         }
     }
@@ -142,6 +155,7 @@ int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
         remove_edge(a, b);
         free(a_to_b);
         a_to_b = NULL;
+        topologic_debug("%s;%s;%d", "create_bi_edge", "could not create edge b to a", -1);
         return -1;
     }
     b_to_a->edge_type = BI_EDGE;
@@ -155,13 +169,18 @@ int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
         *edge_a_to_b = a_to_b;
     if (edge_b_to_a)
         *edge_b_to_a = b_to_a;
+    topologic_debug("%s;%s;%d", "create_bi_edge", "success", 0);
     return 0;
 }
 
 int remove_edge(struct vertex *a, struct vertex *b)
 {
+    topologic_debug("%s;a %p;b %p", "remove_edge", a, b);
     if (!a || !b)
+    {
+        topologic_debug("%s;%s;%d", "remove_edge", "invalid args", -1);
         return -1;
+    }
 
     remove_ID(b->joining_vertices, a->id);
 
@@ -176,6 +195,7 @@ int remove_edge(struct vertex *a, struct vertex *b)
         {
             pthread_mutex_unlock(&a->lock);
         }
+        topologic_debug("%s;%s;%d", "remove_edge", "invalid edge", -1);
         return -1;
     }
 
@@ -209,13 +229,18 @@ int remove_edge(struct vertex *a, struct vertex *b)
     {
         pthread_mutex_unlock(&a->lock);
     }
+    topologic_debug("%s;%s;%d", "create_bi_edge", "removed", 0);
     return 0;
 }
 
 int remove_edge_id(struct vertex *a, int id)
 {
+    topologic_debug("%s;a %p;id %d", "remove_edge_id", a, id);
     if (!a)
+    {
+        topologic_debug("%s;%s;%d", "remove_edge_id", "invalid vertex", -1);
         return -1;
+    }
 
     if (a->context != SINGLE)
     {
@@ -223,7 +248,10 @@ int remove_edge_id(struct vertex *a, int id)
     }
     void *data = remove_ID(a->edge_tree, id);
     if (!data)
+    {
+        topologic_debug("%s;%s;%d", "remove_edge_id", "invalid edge", -1);
         return -1;
+    }
     struct edge *edge = (struct edge *)data;
 
     remove_ID(edge->b->joining_vertices, a->id);
@@ -256,13 +284,18 @@ int remove_edge_id(struct vertex *a, int id)
     {
         pthread_mutex_unlock(&a->lock);
     }
+    topologic_debug("%s;%s;%d", "remove_edge_id", "removed edge", 0);
     return 0;
 }
 
 int remove_bi_edge(struct vertex *a, struct vertex *b)
 {
+    topologic_debug("%s;a %p;b %p", "remove_bi_edge", a, b);
     if (!a || !b || a == b)
+    {
+        topologic_debug("%s;%s;%d", "remove_bi_edge", "invalid args", -1);
         return -1;
+    }
     int ret = 0, a_ret = 0, b_ret = 0;
     if ((a_ret = remove_edge(a, b)) < 0)
         ret = -2;
@@ -271,13 +304,18 @@ int remove_bi_edge(struct vertex *a, struct vertex *b)
     if (b_ret < 0 && a_ret == 0)
         ret = -3;
 
+    topologic_debug("%s;%s;%d", "remove_bi_edge", "finished", ret);
     return ret;
 }
 
 int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl)
 {
+    topologic_debug("%s;a %p;b %p;f %p;glbl %p", "modify_edge", a, b, f, glbl);
     if (!a || !b)
+    {
+        topologic_debug("%s;%s;%d", "modify_edge", "invalid args", -1);
         return -1;
+    }
     if (a->context != SINGLE)
     {
         pthread_mutex_lock(&a->lock);
@@ -289,6 +327,7 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
         {
             pthread_mutex_unlock(&a->lock);
         }
+        topologic_debug("%s;%s;%d", "modify_edge", "invalid edge", -1);
         return -1;
     }
     if (f)
@@ -305,13 +344,18 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl
     {
         pthread_mutex_unlock(&a->lock);
     }
+    topologic_debug("%s;%s;%d", "modify_edge", "success", 0);
     return 0;
 }
 
 int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *glbl)
 {
+    topologic_debug("%s;a %p;b %p;f %p;glbl %p", "modify_bi_edge", a, b, f, glbl);
     if (!a || !b || a == b)
+    {
+        topologic_debug("%s;%s;%d", "modify_edge", "invalid args", -1);
         return -1;
+    }
     int ret = 0, a_ret = 0, b_ret = 0;
     if ((a_ret = modify_edge(a, b, f, glbl)) < 0)
         ret = -2;
@@ -319,6 +363,6 @@ int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *), void *g
         ret = -1;
     if (b_ret < 0 && a_ret == 0)
         ret = -3;
-
+    topologic_debug("%s;%s;%d", "modif_bi_edge", "success", 0);
     return ret;
 }

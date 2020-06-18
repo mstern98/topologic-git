@@ -5,9 +5,13 @@
 
 struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_loop, unsigned int lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option)
 {
-	struct graph *graph = (struct graph*) malloc(sizeof(struct graph));
+	topologic_debug("%s;max_state_chages %d;snapshot_timestamp %d;max_loop %d;lvl_verbose %d;context %d;mem_option %d", "graph_init", max_state_changes, snapshot_timestamp, max_loop, lvl_verbose, context, mem_option);
+	struct graph *graph = (struct graph *)malloc(sizeof(struct graph));
 	if (!graph)
+	{
+		topologic_debug("%s;%s;%p", "graph_init", "failed to malloc", NULL);
 		return NULL;
+	}
 	graph->max_state_changes = max_state_changes;
 	graph->max_loop = max_loop;
 	graph->snapshot_timestamp = snapshot_timestamp;
@@ -23,30 +27,35 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 	if (pthread_mutex_init(&graph->lock, NULL) < 0)
 	{
 		free(graph);
-		return NULL;
-	}
-	if (pthread_mutex_init(&graph->color_lock, NULL) < 0)
-	{
-		pthread_mutex_destroy(&graph->lock);
-		free(graph);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create lock", NULL);
 		return NULL;
 	}
 
 	if (pthread_cond_init(&graph->pause_cond, NULL) < 0)
 	{
 		pthread_mutex_destroy(&graph->lock);
-		pthread_mutex_destroy(&graph->color_lock);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create pause cond", NULL);
 		free(graph);
 		return NULL;
 	}
 
 	if (context != SINGLE)
 	{
+		if (pthread_mutex_init(&graph->color_lock, NULL) < 0)
+		{
+			pthread_mutex_destroy(&graph->lock);
+			pthread_cond_destroy(&graph->pause_cond);
+			topologic_debug("%s;%s;%p", "graph_init", "failed to create color lock", NULL);
+			free(graph);
+			return NULL;
+		}
 		if (pthread_cond_init(&graph->red_fire, NULL) < 0)
 		{
 			pthread_mutex_destroy(&graph->lock);
 			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->pause_cond);
+			topologic_debug("%s;%s;%p", "graph_init", "failed to create red fire cond", NULL);
+			free(graph);
 			return NULL;
 		}
 		if (pthread_cond_init(&graph->black_fire, NULL) < 0)
@@ -55,6 +64,8 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->pause_cond);
+			topologic_debug("%s;%s;%p", "graph_init", "failed to create black fire cond", NULL);
+			free(graph);
 			return NULL;
 		}
 	}
@@ -63,14 +74,15 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 	if (!graph->vertices)
 	{
 		pthread_mutex_destroy(&graph->lock);
-		pthread_mutex_destroy(&graph->lock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
+			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create avl", NULL);
 		return NULL;
 	}
 
@@ -79,14 +91,15 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 	{
 		destroy_avl(graph->vertices);
 		pthread_mutex_destroy(&graph->lock);
-		pthread_mutex_destroy(&graph->color_lock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
+			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
 		return NULL;
 	}
 	graph->remove_edges = init_stack();
@@ -95,14 +108,15 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 		destroy_avl(graph->vertices);
 		destroy_stack(graph->modify);
 		pthread_mutex_destroy(&graph->lock);
-		pthread_mutex_destroy(&graph->color_lock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
+			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
 		return NULL;
 	}
 	graph->remove_vertices = init_stack();
@@ -112,13 +126,14 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 		destroy_stack(graph->modify);
 		destroy_stack(graph->remove_edges);
 		pthread_mutex_destroy(&graph->lock);
-		pthread_mutex_destroy(&graph->color_lock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
+			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 		}
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
 		free(graph);
 		return NULL;
 	}
@@ -130,14 +145,15 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 		destroy_stack(graph->remove_edges);
 		destroy_stack(graph->remove_vertices);
 		pthread_mutex_destroy(&graph->lock);
-		pthread_mutex_destroy(&graph->color_lock);
 		pthread_cond_destroy(&graph->pause_cond);
 		if (context != SINGLE)
 		{
+			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
 		return NULL;
 	}
 
@@ -146,7 +162,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 	graph->red_vertex_count = 0;
 	graph->black_vertex_count = 0;
 	graph->print_flag = 0;
-
+	topologic_debug("%s;%s;%p", "graph_init", "success", graph);
 	return graph;
 }
 
@@ -185,8 +201,12 @@ void destroy_graph_avl(struct graph *graph, struct AVLTree *tree)
 
 int destroy_graph(struct graph *graph)
 {
+	topologic_debug("%s;graph %p", "destroy_graph", graph);
 	if (!graph)
+	{
+		topologic_debug("%s;%s;%d", "destroy_graph", "invalid args", -1);
 		return -1;
+	}
 	graph->state = TERMINATE;
 
 	if (graph->red_vertex_count >= 0)
@@ -229,6 +249,6 @@ int destroy_graph(struct graph *graph)
 
 	free(graph);
 	graph = NULL;
-	/** TODO: Fix Graph Thread Ending pthread_exit(NULL); **/
+	topologic_debug("%s;%s;%d", "destroy_graph", "finished", 0);
 	return 0;
 }

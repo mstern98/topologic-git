@@ -5,9 +5,13 @@
 
 struct request *create_request(enum REQUESTS request, void *args, void (*f)(void *))
 {
-    struct request *req = (struct request*) malloc(sizeof(struct request));
+    topologic_debug("%s;request %d;args %p;f %p", "create_request", request, args, f);
+    struct request *req = (struct request *)malloc(sizeof(struct request));
     if (!req)
+    {
+        topologic_debug("%s;%s;%p", "create_request", "failed to malloc request", NULL);
         return NULL;
+    }
     req->args = args;
 
     switch (request)
@@ -17,6 +21,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
         {
             free(req);
             req = NULL;
+            topologic_debug("%s;%s;%p", "create_request", "NULL function", NULL);
             return NULL;
         }
         req->f = f;
@@ -36,18 +41,24 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
         req->f = NULL;
         break;
     default:
+        topologic_debug("%s;%s;%p", "create_request", "invalid request", NULL);
         free(req);
         req = NULL;
         return NULL;
     }
     req->request = request;
+    topologic_debug("%s;%s;%p", "create_request", "success", req);
     return req;
 }
 
 int submit_request(struct graph *graph, struct request *request)
 {
-    if (!request)
+    topologic_debug("%s;graph %p;request %p", "submit_request", graph, request);
+    if (!request || !graph)
+    {
+        topologic_debug("%s;%s;%d", "submit_request", "invalid args", -1);
         return -1;
+    }
     int retval = 0;
     enum CONTEXT context = graph->context;
     if (context != SINGLE)
@@ -69,11 +80,18 @@ int submit_request(struct graph *graph, struct request *request)
     }
     if (context != SINGLE)
         pthread_mutex_unlock(&graph->lock);
+    topologic_debug("%s;%s;%d", "submit_request", "finished", retval);
     return retval;
 }
 
 int procces_request(struct request *request)
 {
+    topologic_debug("%s;request %p", "process_request", request);
+    if (!request)
+    {
+        topologic_debug("%s;%s;%d", "process_request", "invalid args", -1);
+        return -1;
+    }
     switch (request->request)
     {
     case GENERIC:
@@ -85,6 +103,7 @@ int procces_request(struct request *request)
     {
         struct destroy_edge_id_request *args = (struct destroy_edge_id_request *)request->args;
         int ret = remove_edge_id(args->a, args->id);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Edge Id Request (%p)\n", request);
@@ -97,6 +116,7 @@ int procces_request(struct request *request)
     {
         struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
         int ret = remove_edge(args->a, args->b);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Edge Request (%p)\n", request);
@@ -109,6 +129,7 @@ int procces_request(struct request *request)
     {
         struct destroy_edge_request *args = (struct destroy_edge_request *)request->args;
         int ret = remove_bi_edge(args->a, args->b);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Bi Edge Request (%p)\n", request);
@@ -121,6 +142,7 @@ int procces_request(struct request *request)
     {
         struct destroy_vertex_request *args = (struct destroy_vertex_request *)request->args;
         int ret = remove_vertex(args->graph, args->vertex);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Vertex Request (%p)\n", request);
@@ -133,6 +155,7 @@ int procces_request(struct request *request)
     {
         struct destroy_vertex_id_request *args = (struct destroy_vertex_id_request *)request->args;
         int ret = remove_vertex_id(args->graph, args->id);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Vertex Request (%p)\n", request);
@@ -145,6 +168,7 @@ int procces_request(struct request *request)
     {
         struct vertex_request *args = (struct vertex_request *)request->args;
         struct vertex *ret = create_vertex(args->graph, args->f, args->id, args->glbl);
+        topologic_debug("%s;request %d;%p", "process_request", request->request, ret);
         if (!ret)
         {
             //fprintf(stderr, "Failed Create Vertex Request (%p)\n", request);
@@ -157,6 +181,7 @@ int procces_request(struct request *request)
     {
         struct edge_request *args = (struct edge_request *)request->args;
         struct edge *ret = create_edge(args->a, args->b, args->f, args->glbl);
+        topologic_debug("%s;request %d;%p", "process_request", request->request, ret);
         if (!ret)
         {
             //fprintf(stderr, "Failed Create Edge Request (%p)\n", request);
@@ -169,6 +194,7 @@ int procces_request(struct request *request)
     {
         struct edge_request *args = (struct edge_request *)request->args;
         int ret = create_bi_edge(args->a, args->b, args->f, args->glbl, NULL, NULL);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Destroy Edge Id Request: %d (%p)\n", ret, request);
@@ -181,6 +207,7 @@ int procces_request(struct request *request)
     {
         struct mod_vertex_request *args = (struct mod_vertex_request *)request->args;
         int ret = modify_vertex(args->vertex, args->f, args->glbl);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Modify Vertex Request (%p)\n", request);
@@ -193,6 +220,7 @@ int procces_request(struct request *request)
     {
         struct mod_edge_vars_request *args = (struct mod_edge_vars_request *)request->args;
         int ret = modify_shared_edge_vars(args->vertex, args->edge_vars);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Modify Edge Vars Request (%p)\n", request);
@@ -205,6 +233,7 @@ int procces_request(struct request *request)
     {
         struct edge_request *args = (struct edge_request *)request->args;
         int ret = modify_edge(args->a, args->b, args->f, args->glbl);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Modify Edge Request (%p)\n", request);
@@ -217,6 +246,7 @@ int procces_request(struct request *request)
     {
         struct edge_request *args = (struct edge_request *)request->args;
         int ret = modify_bi_edge(args->a, args->b, args->f, args->glbl);
+        topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
             //fprintf(stderr, "Failed Modify Bi Edge Request: %d (%p)\n", ret, request);
@@ -237,8 +267,12 @@ int procces_request(struct request *request)
 
 int process_requests(struct graph *graph)
 {
+    topologic_debug("%s;graph %p", "process_requests", graph);
     if (!graph)
+    {
+        topologic_debug("%s;%s;%d", "process_requests", "invalid args", -1);
         return -1;
+    }
 
     if (graph->context != SINGLE)
         pthread_mutex_lock(&graph->lock);
@@ -249,7 +283,10 @@ int process_requests(struct graph *graph)
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
         if (procces_request(req) < 0)
+        {
+            topologic_debug("%s;%s;%d", "process_requests", "failed to process general requests", -1);
             return -1;
+        }
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
     }
@@ -258,7 +295,10 @@ int process_requests(struct graph *graph)
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
         if (procces_request(req) < 0)
+        {
+            topologic_debug("%s;%s;%d", "process_requests", "failed to remove edges", -1);
             return -1;
+        }
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
     }
@@ -267,20 +307,28 @@ int process_requests(struct graph *graph)
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
         if (procces_request(req) < 0)
+        {
+            topologic_debug("%s;%s;%d", "process_requests", "failed to remove vertices", -1);
             return -1;
+        }
         if (graph->context != SINGLE)
             pthread_mutex_lock(&graph->lock);
     }
 
     if (graph->context != SINGLE)
         pthread_mutex_unlock(&graph->lock);
+    topologic_debug("%s;%s;%d", "process_requests", "success", 0);
     return 0;
 }
 
 int destroy_request(struct request *request)
 {
+    topologic_debug("%s;request %p", "destroy_request", request);
     if (!request)
+    {
+        topologic_debug("%s;%s;%d", "destroy_request", "invalid args", -1);
         return -1;
+    }
 
     free(request->args);
     request->args = NULL;
@@ -288,5 +336,6 @@ int destroy_request(struct request *request)
     request->f = NULL;
     free(request);
     request = NULL;
+    topologic_debug("%s;%s;%d", "destroy_request", "success", 0);
     return 0;
 }

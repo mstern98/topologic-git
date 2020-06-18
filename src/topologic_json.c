@@ -5,6 +5,7 @@
 
 void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent, FILE *out)
 {
+    topologic_debug("%s;%p", "print_edges", graph);
     struct stack *stack = init_stack();
     struct edge *edge = NULL;
     preorder(edges, stack);
@@ -33,10 +34,12 @@ void print_edges(struct graph *graph, struct AVLTree *edges, const char *indent,
     }
     fprintf(out, "%s}", indent);
     destroy_stack(stack);
+    topologic_debug("%s;%s", "print_edges", "finished");
 }
 
 void print_state(struct graph *graph, FILE *out)
 {
+    topologic_debug("%s;%p", "print_state", graph);
     /*Called by print and does a pre-order traversal of all the data in each vertex*/
     int vertex_id = 0;
     void *glbl = NULL;
@@ -89,10 +92,12 @@ void print_state(struct graph *graph, FILE *out)
     }
     fprintf(out, "\t}\n");
     destroy_stack(stack);
+    topologic_debug("%s;%s", "print_state", "finished");
 }
 
 void print_graph(struct graph *graph)
 {
+    topologic_debug("%s;%p", "print_graph", graph);
     if (!graph)
         return;
     if (graph->context != SINGLE)
@@ -101,6 +106,7 @@ void print_graph(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
+        topologic_debug("%s;%s", "print_graph", "no print");
         return;
     }
 
@@ -110,6 +116,7 @@ void print_graph(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
+        topologic_debug("%s;%s", "print_graph", "no print");
         return;
     }
 
@@ -168,4 +175,5 @@ void print_graph(struct graph *graph)
     #endif
     if (graph->context != SINGLE)
         pthread_mutex_unlock(&graph->lock);
+    topologic_debug("%s;%s", "print_graph", "finished");
 }
