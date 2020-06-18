@@ -28,7 +28,7 @@ extern FILE *yyin;
 %token COMMA
 %token MAX_STATE
 %token LVL_VERBOSE
-%token CONTEXT
+%token LEX_CONTEXT
 %token MEM_OPT
 %token MAX_LOOP
 %token <val> VALUE
@@ -47,11 +47,11 @@ content: params g
 params: verb COMMA params
         | state COMMA params
         | mem_opt COMMA params
-        | context COMMA params
+        | lex_context COMMA params
         | max_loop COMMA params
         | verb
         | mem_opt
-        | context
+        | lex_context
         | state
         | max_loop
         |
@@ -60,7 +60,7 @@ state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
      ;
 verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = (enum VERBOSITY) $3;}
     ;
-context: CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
+lex_context: CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
        ;
 mem_opt: MEM_OPT COLON VALUE {(*graph)->mem_option = (enum MEM_OPTION) $3;}
        ;

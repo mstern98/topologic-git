@@ -6,6 +6,9 @@
 #define __TOPILOGIC_WINDOWS__
 
 #include <windows.h>
+#include <process.h>
+#include <stdbool.h>
+
 
 #ifdef __cplusplus
 extern "C" {
