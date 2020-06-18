@@ -93,3 +93,4 @@ clean:
 	-rm -f state_*
 	-rm -f topylogic/state_*
 	rm -f $(TESTS) $(TEST_OBJ)
+	-rm -f testing/*.exe

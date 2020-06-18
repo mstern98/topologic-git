@@ -60,7 +60,7 @@ state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
      ;
 verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = (enum VERBOSITY) $3;}
     ;
-lex_context: CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
+lex_context: LEX_CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
        ;
 mem_opt: MEM_OPT COLON VALUE {(*graph)->mem_option = (enum MEM_OPTION) $3;}
        ;
