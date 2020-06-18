@@ -350,8 +350,10 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 
 int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
+    topologic_debug("%s;graph %p;vertex %p;args %p;color %d;iloop %d", "fire", graph, vertex, args, color, iloop);
     if (!graph || !vertex)
     {
+        topologic_debug("%s;%s;%d", "fire", "invalid args", -1);
         if (args->edge_argv)
         {
             free(args->edge_argv);
@@ -389,6 +391,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
     else
     {
+        topologic_debug("%s;%s;%d", "fire", "invalid state", -1);
         if (args->edge_argv)
         {
             free(args->edge_argv);
@@ -409,6 +412,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
 
     if (graph->max_loop != -1 && iloop >= graph->max_loop)
     {
+        topologic_debug("%s;%s;%d", "fire", "max loop hit", 0);
         if (args->edge_argv)
         {
             free(args->edge_argv);
@@ -446,6 +450,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
 
     if (graph->state == TERMINATE)
     {
+        topologic_debug("%s;%s;%d", "fire", "terminate", -1);
         vertex->is_active = 0;
         pthread_mutex_lock(&graph->lock);
 
@@ -508,6 +513,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
                     iloop_b = iloop + 1;
                 if (switch_vertex(graph, edge->b, args, flip_color, iloop_b) < 0)
                 {
+                    topologic_debug("%s;%s;%d", "fire", "failed to switch", -1);
                     pthread_mutex_lock(&graph->lock);
                     if (color == RED)
                     {
@@ -597,6 +603,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         else if (flip_color == BLACK)
             ++(graph->black_vertex_count);
         pthread_mutex_unlock(&graph->lock);
+        topologic_debug("%s;%s;%p", "fire", "firing next vertex", next_vertex);
         return fire(graph, next_vertex, args, flip_color, iloop_b);
     }
     else
@@ -617,14 +624,18 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             args = NULL;
         }
     }
-    //pthread_join(graph->thread, NULL);
+    topologic_debug("%s;%s;%d", "fire", "finished", 0);
     return 0;
 }
 
 void *fire_pthread(void *vargp)
 {
+    topologic_debug("%s;%p", "fire_pthread", vargp);
     if (!vargp)
+    {
+        topologic_debug("%s;%s;%d", "fire", "invalid args", -1);
         return (void *)(intptr_t)-1;
+    }
     struct fireable *fireable = (struct fireable *)vargp;
 
     struct graph *graph = fireable->graph;
@@ -635,18 +646,24 @@ void *fire_pthread(void *vargp)
 
     free(vargp);
     int ret_val = fire(graph, v, args, color, iloop);
+    topologic_debug("%s;%s;%d", "fire_pthread", "finished", ret_val);
     pthread_exit((void *)(intptr_t)ret_val);
     return (void *)(intptr_t)ret_val;
 }
 
 int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
+    topologic_debug("%s;graph %p;vertex %p;args %p;color %d;iloop %d", "switch_vertex", graph, vertex, args, color, iloop);
     struct fireable *argv = (struct fireable *)malloc(sizeof(struct fireable));
     if (!argv)
+    {
+        topologic_debug("%s;%s;%d", "switch_vertex", "invalid args", -1);
         return -1;
+    }
     argv->args = (struct vertex_result *)malloc(sizeof(struct vertex_result));
     if (!argv->args)
     {
+        topologic_debug("%s;%s;%d", "switch_vertex", "failed to malloc args", -1);
         free(argv);
         return -1;
     }
@@ -658,6 +675,7 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
         {
             free(argv->args);
             free(argv);
+            topologic_debug("%s;%s;%d", "switch_vertex", "failed to malloc edge_args", -1);
             return -1;
         }
         memcpy(argv->args->vertex_argv, args->vertex_argv, args->vertex_size);
@@ -671,6 +689,7 @@ int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_resu
             free(argv->args->vertex_argv);
             free(argv->args);
             free(argv);
+            topologic_debug("%s;%s;%d", "switch_vertex", "failed to malloc vertex_args", -1);
             return -1;
         }
         memcpy(argv->args->edge_argv, args->edge_argv, args->edge_size);
@@ -723,7 +742,7 @@ create_switch_threads:
         }
     }
     pthread_detach(thread);
-
+    topologic_debug("%s;%s;%d", "switch_vertex", "finished", 0);
     return 0;
 }
 
