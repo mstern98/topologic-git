@@ -20,7 +20,6 @@
 #endif
 
 #ifdef DEBUG
-#include <time.h>
 #define TOPOLOGIC_DEBUG 1
 #else
 #define TOPOLOGIC_DEBUG 0
