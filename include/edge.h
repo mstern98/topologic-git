@@ -15,7 +15,7 @@ enum edge_type
 {
     EDGE = 0,
     BI_EDGE = 1,
-		SELF_EDGE = 2
+	SELF_EDGE = 2
 };
 
 /** Edge **/

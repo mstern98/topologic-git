@@ -90,6 +90,6 @@ clean:
 	rm -f $(TOPYLOGIC_WRAP) $(TOPYLOGIC_PY) $(TOPYLOGIC_SO) $(TOPYLOGIC_O)
 	rm -rf topylogic/__pycache__
 	rm -rf topylogic/build
-	#rm -r topylogic/*.pyc
 	-rm -f state_*
+	-rm -f topylogic/state_*
 	rm -f $(TESTS) $(TEST_OBJ)
