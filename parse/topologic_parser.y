@@ -102,9 +102,10 @@ void yyerror(struct graph** graph, const char *s) {
 }
 
 struct graph *parse_json(const char *path) {
+    topologic_debug("%s;%s", "parse_json", path);
     FILE *file = fopen(path, "r");
     if (!file) {
-        fprintf(stderr, "FILE NOT FOUND\n");
+        topologic_debug("%s;%s;%p", "parse_json", "invalid file", (void *) NULL);
         return NULL;
     }
     yyin = file;
@@ -112,5 +113,6 @@ struct graph *parse_json(const char *path) {
     yyparse(&graph);
     yyin = NULL;
     fclose(file);
+    topologic_debug("%s;%s;%p", "parse_json", "success", graph);
     return graph;
 }

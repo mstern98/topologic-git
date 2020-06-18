@@ -99,7 +99,10 @@ void print_graph(struct graph *graph)
 {
     topologic_debug("%s;%p", "print_graph", graph);
     if (!graph)
+    {
+        topologic_debug("%s;%s", "print_graph", "invalid graph");
         return;
+    }
     if (graph->context != SINGLE)
         pthread_mutex_lock(&graph->lock);
     if (graph->lvl_verbose == NO_VERB || graph->snapshot_timestamp == -1)
@@ -111,7 +114,7 @@ void print_graph(struct graph *graph)
     }
 
     if ((graph->snapshot_timestamp == START_STOP && (graph->num_vertices != 0 ||
-        (graph->state_count != 0 && graph->state_count != graph->max_state_changes - 1))) ||
+                                                     (graph->state_count != 0 && graph->state_count != graph->max_state_changes - 1))) ||
         (graph->snapshot_timestamp != 0 && graph->state_count % graph->snapshot_timestamp != 0))
     {
         if (graph->context != SINGLE)
@@ -122,37 +125,41 @@ void print_graph(struct graph *graph)
 
     char buffer[256];
     sprintf(buffer, "state_%d.json", graph->state_count);
-    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     FILE *out = fopen(buffer, "w+");
-    if (!out) 
+    if (!out)
     {
-        fprintf(stderr, "FAILED OUT\n");
+        topologic_debug("%s;%s", "print_graph", "Failed to open file");
         return;
     }
-    #else
+#else
     int dirfd = open("./", O_DIRECTORY | O_RDONLY);
     if (dirfd == -1)
+    {
+        topologic_debug("%s;%s", "print_graph", "Failed to open file");
         return;
+    }
     int fd = openat(dirfd, buffer, O_TRUNC | O_CREAT | O_WRONLY, S_IRWXU);
     if (fd == -1)
     {
         close(dirfd);
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
+        topologic_debug("%s;%s", "print_graph", "Failed to open file");
         return;
     }
     FILE *out = fdopen(fd, "w");
     if (!out)
     {
         perror("");
-        fprintf(stderr, "FAILED OUT\n");
+        topologic_debug("%s;%s", "print_graph", "Failed to open file");
         close(fd);
         close(dirfd);
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
         return;
     }
-    #endif
+#endif
 
     /**TODO: Print enums**/
     fprintf(out, "{\n");
@@ -167,12 +174,12 @@ void print_graph(struct graph *graph)
     fprintf(out, " }\n");
     fprintf(out, "}\n");
 
-    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     fclose(out);
-    #else
+#else
     fclose(out);
     close(dirfd);
-    #endif
+#endif
     if (graph->context != SINGLE)
         pthread_mutex_unlock(&graph->lock);
     topologic_debug("%s;%s", "print_graph", "finished");

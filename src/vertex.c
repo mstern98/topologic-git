@@ -8,7 +8,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 	topologic_debug("%s;graph %p;f %p;id %d; glbl %p", "create_vertex", graph, f, id, glbl);
 	if (!graph || !f)
 	{
-		topologic_debug("%s;%s;%p", "create_vertex", "invalid", NULL);
+		topologic_debug("%s;%s;%p", "create_vertex", "invalid", (void *) NULL);
 		return NULL;
 	}
 	enum CONTEXT context = graph->context;
@@ -22,7 +22,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 		{
 			pthread_mutex_unlock(&graph->lock);
 		}
-		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", NULL);
+		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
 		return NULL;
 	}
 	vertex->context = context;
@@ -34,7 +34,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 		vertex = NULL;
 		if (context != SINGLE)
 			pthread_mutex_unlock(&graph->lock);
-		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", NULL);
+		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
 		return NULL;
 	}
 	vertex->shared->vertex_data = NULL;
@@ -48,7 +48,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 		vertex = NULL;
 		if (context != SINGLE)
 			pthread_mutex_unlock(&graph->lock);
-		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", NULL);
+		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
 		return NULL;
 	}
 
@@ -63,7 +63,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 		vertex = NULL;
 		if (context != SINGLE)
 			pthread_mutex_unlock(&graph->lock);
-		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", NULL);
+		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
 		return NULL;
 	}
 
@@ -79,7 +79,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 		vertex = NULL;
 		if (context != SINGLE)
 			pthread_mutex_unlock(&graph->lock);
-		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", NULL);
+		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
 		return NULL;
 	}
 
@@ -96,7 +96,7 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 			free(vertex);
 			vertex = NULL;
 			pthread_mutex_unlock(&graph->lock);
-			topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", NULL);
+			topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
 			return NULL;
 		}
 	}

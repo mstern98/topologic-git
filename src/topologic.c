@@ -178,7 +178,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         if (!argv)
         {
             success = 0;
-            fprintf(stderr, "fireable struct is null\n");
+            topologic_debug("%s;%s;%d", "run", "Fireable failed to malloc", -1);
             break;
         }
         argv->graph = graph;
@@ -199,6 +199,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             if (errno != EAGAIN)
             {
                 perror("Creating initial Threads: ");
+                topologic_debug("%s;%s", "switch_vertex", "Couldn't create intial threads");
                 success = -1;
                 break;
             }
@@ -207,12 +208,13 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 switch (graph->mem_option)
                 {
                 case CONTINUE:
+                    topologic_debug("%s;%s", "switch_vertex", "Continue");
                     break;
                 case WAIT:
                     if (thread_attempts > MAX_ATTEMPTS)
                     {
                         success = -1;
-                        fprintf(stderr, "Max Threads Attempts Hit\n");
+                        topologic_debug("%s;%s", "run", "Max Thread Attempts Hit");
                         break;
                     }
                     sleep(THREAD_ATTEMPT_SLEEP);
@@ -220,7 +222,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                     goto create_start_threads;
                 case ABORT:
                     success = -1;
-                    fprintf(stderr, "Failed to Create Threads\n");
+                    topologic_debug("%s;%s", "run", "Failed to create threads");
                     break;
                 }
             }
@@ -236,7 +238,7 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 
     if (!success)
     {
-        fprintf(stderr, "Failure in run: success = %d\n", success);
+        topologic_debug("%s;%s;%d", "run", "Failed to create threads", -1);
         int i = 0;
         for (i = 0; i < v_index; i++)
         {
@@ -246,7 +248,6 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
         pthread_exit(NULL);
 
         //destroy_graph(graph);
-        topologic_debug("%s;%s;%d", "run", "success == 0", -1);
         return -1;
     }
     free(init_vertex_args);
@@ -284,7 +285,6 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
                 graph->state = PRINT;
                 graph->previous_color = RED;
                 graph->print_flag = 1;
-                //fprintf(stderr, "WAS RED; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
             pthread_mutex_unlock(&graph->lock);
             pthread_mutex_unlock(&graph->color_lock);
@@ -299,11 +299,9 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
             pthread_mutex_lock(&graph->lock);
             if (graph->black_vertex_count == 0)
             {
-                /** TODO: REAP BLACK **/
                 graph->state = PRINT;
                 graph->previous_color = BLACK;
                 graph->print_flag = 1;
-                //fprintf(stderr, "WAS BLACK; RED: %d, BLACK: %d, STATE: %d, #: %d\n", graph->red_vertex_count, graph->black_vertex_count, graph->state, graph->state_count);
             }
             pthread_mutex_unlock(&graph->lock);
             pthread_mutex_unlock(&graph->color_lock);
@@ -695,6 +693,7 @@ create_switch_threads:
         if (errno != EAGAIN)
         {
             perror("Creating initial Threads: ");
+            topologic_debug("%s;%s;%d", "switch_vertex", "Couldn't create threads", -1);
             free(argv);
             return -1;
         }
@@ -703,12 +702,13 @@ create_switch_threads:
             switch (graph->mem_option)
             {
             case CONTINUE:
+                topologic_debug("%s;%s;%d", "switch_vertex", "Continue", -1);
                 free(argv);
                 return -1;
             case WAIT:
                 if (thread_attempts > MAX_ATTEMPTS)
                 {
-                    fprintf(stderr, "Max Threads Attempts Hit\n");
+                    topologic_debug("%s;%s;%d", "switch_vertex", "Max Thread Attempts Hit", -1);
                     free(argv);
                     return -1;
                 }
@@ -716,7 +716,7 @@ create_switch_threads:
                 errno = 0;
                 goto create_switch_threads;
             case ABORT:
-                fprintf(stderr, "Failed to Create Threads\n");
+                topologic_debug("%s;%s;%d", "switch_vertex", "Failed to Create Thread", -1);
                 free(argv);
                 return -1;
             }

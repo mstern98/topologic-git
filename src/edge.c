@@ -8,12 +8,12 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
     topologic_debug("%s;a %p;b %p;f %p;glbl %p", "create_edge", a, b, f, glbl);
     if (!a || !b)
     {
-        topologic_debug("%s;%s;%p", "create_edge", "invalid vertices", NULL);
+        topologic_debug("%s;%s;%p", "create_edge", "invalid vertices", (void *) NULL);
         return NULL;
     }
     if (!f)
     {
-        topologic_debug("%s;%s;%p", "create_edge", "invalid function", NULL);
+        topologic_debug("%s;%s;%p", "create_edge", "invalid function", (void *) NULL);
         return NULL;
     }
 
@@ -28,7 +28,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         {
             pthread_mutex_unlock(&a->lock);
         }
-        topologic_debug("%s;%s;%p", "create_edge", "edge exists", NULL);
+        topologic_debug("%s;%s;%p", "create_edge", "edge exists", (void *) NULL);
         return NULL;
     }
 
@@ -39,7 +39,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         {
             pthread_mutex_unlock(&a->lock);
         }
-        topologic_debug("%s;%s;%p", "create_edge", "failed to create edge", NULL);
+        topologic_debug("%s;%s;%p", "create_edge", "failed to create edge", (void *) NULL);
         return NULL;
     }
 
@@ -73,7 +73,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *), v
         {
             pthread_mutex_unlock(&a->lock);
         }
-        topologic_debug("%s;%s;%p", "create_edge", "failed to insert edge", NULL);
+        topologic_debug("%s;%s;%p", "create_edge", "failed to insert edge", (void *) NULL);
         return NULL;
     }
 

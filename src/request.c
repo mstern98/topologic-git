@@ -9,7 +9,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
     struct request *req = (struct request *)malloc(sizeof(struct request));
     if (!req)
     {
-        topologic_debug("%s;%s;%p", "create_request", "failed to malloc request", NULL);
+        topologic_debug("%s;%s;%p", "create_request", "failed to malloc request", (void *) NULL);
         return NULL;
     }
     req->args = args;
@@ -21,7 +21,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
         {
             free(req);
             req = NULL;
-            topologic_debug("%s;%s;%p", "create_request", "NULL function", NULL);
+            topologic_debug("%s;%s;%p", "create_request", "NULL function", (void *) NULL);
             return NULL;
         }
         req->f = f;
@@ -41,7 +41,7 @@ struct request *create_request(enum REQUESTS request, void *args, void (*f)(void
         req->f = NULL;
         break;
     default:
-        topologic_debug("%s;%s;%p", "create_request", "invalid request", NULL);
+        topologic_debug("%s;%s;%p", "create_request", "invalid request", (void *) NULL);
         free(req);
         req = NULL;
         return NULL;
@@ -106,7 +106,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Destroy Edge Id Request (%p)\n", request);
             errno = DESTROY_EDGE_BY_ID;
             return -1;
         }
@@ -119,7 +118,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Destroy Edge Request (%p)\n", request);
             errno = DESTROY_EDGE;
             return -1;
         }
@@ -132,7 +130,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Destroy Bi Edge Request (%p)\n", request);
             errno = DESTROY_BI_EDGE;
             return -1;
         }
@@ -145,7 +142,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Destroy Vertex Request (%p)\n", request);
             errno = DESTROY_VERTEX;
             return -1;
         }
@@ -158,7 +154,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Destroy Vertex Request (%p)\n", request);
             errno = DESTROY_VERTEX_BY_ID;
             return -1;
         }
@@ -171,7 +166,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%p", "process_request", request->request, ret);
         if (!ret)
         {
-            //fprintf(stderr, "Failed Create Vertex Request (%p)\n", request);
             errno = CREAT_VERTEX;
             return -1;
         }
@@ -184,7 +178,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%p", "process_request", request->request, ret);
         if (!ret)
         {
-            //fprintf(stderr, "Failed Create Edge Request (%p)\n", request);
             errno = CREAT_EDGE;
             return -1;
         }
@@ -197,7 +190,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Destroy Edge Id Request: %d (%p)\n", ret, request);
             errno = CREAT_BI_EDGE;
             return -1;
         }
@@ -210,7 +202,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Modify Vertex Request (%p)\n", request);
             errno = MOD_VERTEX;
             return -1;
         }
@@ -223,7 +214,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Modify Edge Vars Request (%p)\n", request);
             errno = MOD_EDGE_VARS;
             return -1;
         }
@@ -236,7 +226,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Modify Edge Request (%p)\n", request);
             errno = MOD_EDGE;
             return -1;
         }
@@ -249,7 +238,6 @@ int procces_request(struct request *request)
         topologic_debug("%s;request %d;%d", "process_request", request->request, ret);
         if (ret < 0)
         {
-            //fprintf(stderr, "Failed Modify Bi Edge Request: %d (%p)\n", ret, request);
             errno = MOD_BI_EDGE;
             return -1;
         }

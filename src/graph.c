@@ -9,7 +9,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 	struct graph *graph = (struct graph *)malloc(sizeof(struct graph));
 	if (!graph)
 	{
-		topologic_debug("%s;%s;%p", "graph_init", "failed to malloc", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to malloc", (void *) NULL);
 		return NULL;
 	}
 	graph->max_state_changes = max_state_changes;
@@ -27,14 +27,14 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 	if (pthread_mutex_init(&graph->lock, NULL) < 0)
 	{
 		free(graph);
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create lock", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create lock", (void *) NULL);
 		return NULL;
 	}
 
 	if (pthread_cond_init(&graph->pause_cond, NULL) < 0)
 	{
 		pthread_mutex_destroy(&graph->lock);
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create pause cond", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create pause cond", (void *) NULL);
 		free(graph);
 		return NULL;
 	}
@@ -45,7 +45,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 		{
 			pthread_mutex_destroy(&graph->lock);
 			pthread_cond_destroy(&graph->pause_cond);
-			topologic_debug("%s;%s;%p", "graph_init", "failed to create color lock", NULL);
+			topologic_debug("%s;%s;%p", "graph_init", "failed to create color lock", (void *) NULL);
 			free(graph);
 			return NULL;
 		}
@@ -54,7 +54,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_mutex_destroy(&graph->lock);
 			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->pause_cond);
-			topologic_debug("%s;%s;%p", "graph_init", "failed to create red fire cond", NULL);
+			topologic_debug("%s;%s;%p", "graph_init", "failed to create red fire cond", (void *) NULL);
 			free(graph);
 			return NULL;
 		}
@@ -64,7 +64,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_mutex_destroy(&graph->color_lock);
 			pthread_cond_destroy(&graph->pause_cond);
-			topologic_debug("%s;%s;%p", "graph_init", "failed to create black fire cond", NULL);
+			topologic_debug("%s;%s;%p", "graph_init", "failed to create black fire cond", (void *) NULL);
 			free(graph);
 			return NULL;
 		}
@@ -82,7 +82,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create avl", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create avl", (void *) NULL);
 		return NULL;
 	}
 
@@ -99,7 +99,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", (void *) NULL);
 		return NULL;
 	}
 	graph->remove_edges = init_stack();
@@ -116,7 +116,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", (void *) NULL);
 		return NULL;
 	}
 	graph->remove_vertices = init_stack();
@@ -133,7 +133,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->red_fire);
 			pthread_cond_destroy(&graph->black_fire);
 		}
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", (void *) NULL);
 		free(graph);
 		return NULL;
 	}
@@ -153,7 +153,7 @@ struct graph *graph_init(int max_state_changes, int snapshot_timestamp, int max_
 			pthread_cond_destroy(&graph->black_fire);
 		}
 		free(graph);
-		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", NULL);
+		topologic_debug("%s;%s;%p", "graph_init", "failed to create stack", (void *) NULL);
 		return NULL;
 	}
 
