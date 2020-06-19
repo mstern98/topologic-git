@@ -92,10 +92,10 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             pthread_cond_wait(&graph->pause_cond, &graph->lock);
         }
         pthread_mutex_unlock(&graph->lock);
-        (vertex->f)(graph, args);
+        (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
         while ((edge = (struct edge *)pop(edges)) != NULL)
         {
-            if (successor == 0 && (edge->f)(args->edge_argv))
+            if (successor == 0 && (edge->f)(args->edge_argv, edge->glbl, edge->a_vars))
             {
                 topologic_debug("%s;%s;%p", "run_single", "next vertex", edge->b);
                 vertex->is_active = 0;
@@ -488,7 +488,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         return -1;
     }
 
-    (vertex->f)(graph, args);
+    (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
 
     struct vertex *next_vertex = NULL;
     struct stack *edges = init_stack();
@@ -500,7 +500,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         {
             pthread_mutex_lock(&edge->bi_edge_lock);
         }
-        if ((edge->f)(args->edge_argv))
+        if ((edge->f)(args->edge_argv, edge->glbl, edge->a_vars))
         {
             if (edge->edge_type == BI_EDGE)
             {
