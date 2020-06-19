@@ -50,7 +50,7 @@ int main(){
 
 void init(struct graph** graph){
 
-	*graph = graph_init(100, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE);
+	*graph = graph_init(100, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SINGLE, CONTINUE);
 	assert(*graph != NULL);
 
 
@@ -91,7 +91,7 @@ void setEdge(struct graph* graph, struct vertex* a, struct vertex* b){
 	edge_req->b = b;
 	edge_req->f = &edgeFunction;
 	edge_req->glbl = NULL;
-	struct request *req = create_request(CREAT_EDGE, edge_req, NULL);
+	struct request *req = create_request(CREAT_BI_EDGE, edge_req, NULL);
 	assert(submit_request(graph, req) == 0);
 
 	fprintf(stderr, "Created edge between vertices %d and %d\n", a->id, b->id);

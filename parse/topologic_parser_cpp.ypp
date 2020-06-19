@@ -47,11 +47,11 @@ content: params g
 params: verb COMMA params
         | state COMMA params
         | mem_opt COMMA params
-        | lex_context COMMA params
+        | context COMMA params
         | max_loop COMMA params
         | verb
         | mem_opt
-        | lex_context
+        | context
         | state
         | max_loop
         |
@@ -60,7 +60,7 @@ state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
      ;
 verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = (enum VERBOSITY) $3;}
     ;
-lex_context: LEX_CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
+context: LEX_CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
        ;
 mem_opt: MEM_OPT COLON VALUE {(*graph)->mem_option = (enum MEM_OPTION) $3;}
        ;

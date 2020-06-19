@@ -17,6 +17,9 @@ testing/self_edge
 testing/*.o
 parse/topologic_parser.tab.c
 parse/topologic_parser.yy.c
+parse/topologic_parser_cpp.tab.cpp
+parse/topologic_parser_cpp.tab.hpp
+parse/topologic_parser_cpp.yy.cpp
 src/*.o
 state_*.json
 parse/*.c
