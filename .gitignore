@@ -34,3 +34,7 @@ topylogic/__pycache__/*
 topylogic/topylogic.py
 topylogic/_topylogic.so
 topylogic/topylogic_wrap.c
+
+#rustopologic/RustWrap/Cargo.toml
+rustopologic/RustWrap/Cargo.lock
+rustopologic/RustWrap/target/*
