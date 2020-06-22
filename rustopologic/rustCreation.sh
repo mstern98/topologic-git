@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 set -ex
-cd rustopologic/RustWrap/src
+cd rustopologic/RustTopologic/src
 cp ../../../src/*.c .
 mkdir -p ../include
 cp  ../../../include/* ../include
