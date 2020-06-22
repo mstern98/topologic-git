@@ -39,5 +39,6 @@ topylogic/topylogic_wrap.c
 rustopologic/RustWrap/Cargo.lock
 rustopologic/RustWrap/target/*
 rustopologic/RustWrap/src/*.c
+rustopologic/RustWrap/src/bindings.rs
 rustopologic/RustWrap/include/*
 

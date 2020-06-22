@@ -2,7 +2,7 @@
 set -ex
 cd rustopologic/RustWrap/src
 cp ../../../src/*.c .
-mkdir ../include
+mkdir -p ../include
 cp  ../../../include/* ../include
 bindgen ../../../include/topologic.h -o bindings.rs
 cd ..
