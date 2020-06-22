@@ -69,6 +69,9 @@ python2: $(OBJ) $(INCLUDES)
 cpp: $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP) $(FLEX_CPP) $(FLEX_OBJ_PP) $(OBJ) $(INCLUDES) 
 	$(AR) rcs libtopologic.a $(OBJ) $(BISON_OBJ_PP) $(FLEX_OBJ_PP)
 
+rust: 
+	@bash ./rustCreation.sh
+
 $(FLEX_CPP):
 	flex $(FLEXPP)
 	mv lex.yy.cc $(FLEX_CPP)
@@ -94,3 +97,6 @@ clean:
 	-rm -f topylogic/state_*
 	rm -f $(TESTS) $(TEST_OBJ)
 	-rm -f testing/*.exe
+	rm -f rustopologic/RustWrap/src/bindings.rs
+	rm -f rustopologic/RustWrap/src/*.c
+	cd rustopologic/RustWrap/ && cargo clean && rm -rf include/

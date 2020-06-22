@@ -1,19 +1,23 @@
 fn main(){
-    pkg_config::Config::new()
-        .atleast_version("1.0")
-        .probe("z")
-        .unwrap();
+    
 
     let src=[
-        "../../../src/*.c"
+        "src/AVL.c",
+        "src/edge.c",
+        "src/graph.c",
+        "src/request.c",
+        "src/topologic.c",
+        "src/topologic_json.c",
+        "src/vertex.c",
+        "src/windows_wrap.c"
     ];
-    let include=[
-        "../../../include/*.h"
+    let _include=[
+        "../../../include"
     ];
     let mut builder = cc::Build::new();
     let build = builder
         .files(src.iter())
-        .include("../../../include/*")
+        .include(_include[0])
         .flag("-Wall")
         .flag("-Werror")
         .flag("-g")
