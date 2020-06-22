@@ -97,7 +97,7 @@ clean:
 	-rm -f topylogic/state_*
 	rm -f $(TESTS) $(TEST_OBJ)
 	-rm -f testing/*.exe
-	rm -f rustopologic/RustWrap/src/bindings.rs
-	rm -f rustopologic/RustWrap/src/*.c
-	rm -f rustopologic/RustWrap/Cargo.lock
+	rm -f rustopologic/RustTopologic/src/bindings.rs
+	rm -f rustopologic/RustTopologic/src/*.c
+	rm -f rustopologic/RustTopologic/Cargo.lock
 	cd rustopologic/RustTopologic/ && cargo clean && rm -rf include/
