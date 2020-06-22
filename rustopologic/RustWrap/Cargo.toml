@@ -1,8 +1,8 @@
 [package]
-name = "RustWrap"
-version = "0.1.0"
+name = "RustTopologic"
+version = "1.0.0"
 links = "libtopologic.a"
-authors = ["BTMichalowicz <benjaminmichalowicz98@gmail.com>"]
+authors = ["BTMichalowicz <benjaminmichalowicz98@gmail.com>", "Matthew Stern <msstern98@gmail.com>"]
 edition = "2018"
 build = "src/build.rs"
 

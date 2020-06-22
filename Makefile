@@ -99,4 +99,5 @@ clean:
 	-rm -f testing/*.exe
 	rm -f rustopologic/RustWrap/src/bindings.rs
 	rm -f rustopologic/RustWrap/src/*.c
+	rm -f rustopologic/RustWrap/Cargo.lock
 	cd rustopologic/RustWrap/ && cargo clean && rm -rf include/
