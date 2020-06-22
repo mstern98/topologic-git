@@ -5,6 +5,9 @@ The library provides a way for the client to define what information is saved lo
 
 This library can be used to create AI, ML, and simulations (such as of stock options, electron-electron interaction, etc.).
 
+[link text]("https://github.com/mstern98/Topologic/archive/v1.0.0.zip" "Download Zip")
+[link text]("https://github.com/mstern98/Topologic/archive/v1.0.0.tar.gz" "Download tar.gz")
+
 ## Installation
 Build C Library
 >make
