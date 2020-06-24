@@ -1,5 +1,5 @@
 [package]
-name = "RusTopologic"
+name = "RustTopologic"
 version = "0.1.0"
 links = "libtopologic.a"
 authors = ["BTMichalowicz <benjaminmichalowicz98@gmail.com>", "mstern98 <mstern98@gmail.com>"]

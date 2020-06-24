@@ -1,5 +1,5 @@
 fn main(){
-    
+    //println!("cargo:rustc-link-search=lib");    
 
     let src=[
         "src/AVL.c",
@@ -26,5 +26,5 @@ fn main(){
         .flag("-L. -ltopologic -lfl -fPIC")
         .define("USE_ZLIB", None);
 
-    build.compile("rustopologic");
+    build.compile("rustTopologic");
 }

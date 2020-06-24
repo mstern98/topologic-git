@@ -41,4 +41,5 @@ rustopologic/RustTopologic/target/*
 rustopologic/RustTopologic/src/*.c
 rustopologic/RustTopologic/src/bindings.rs
 rustopologic/RustTopologic/include/*
+rustopologic/RustTopologic/*.a
 

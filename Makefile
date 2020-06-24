@@ -100,4 +100,4 @@ clean:
 	rm -f rustopologic/RustTopologic/src/bindings.rs
 	rm -f rustopologic/RustTopologic/src/*.c
 	rm -f rustopologic/RustTopologic/Cargo.lock
-	cd rustopologic/RustTopologic/ && cargo clean && rm -rf include/
+	cd rustopologic/RustTopologic/ && cargo clean && rm -rf include/ && rm -f libtopologic.a

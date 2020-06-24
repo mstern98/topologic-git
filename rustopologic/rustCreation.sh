@@ -6,4 +6,5 @@ mkdir -p ../include
 cp  ../../../include/* ../include
 bindgen ../../../include/topologic.h -o bindings.rs
 cd ..
+cp ../../libtopologic.a .
 cargo build --verbose --release
