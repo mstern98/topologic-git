@@ -44,4 +44,8 @@ rustopologic/RustTopologic/include/*
 rustopologic/RustTopologic/*.a
 rustopologic/RustTopologic/rustTests/bindings.rs
 
+topologicsharp/*.cs
+topologicsharp/*.c
+topologicsharp/_topologicsharp.so
+
 

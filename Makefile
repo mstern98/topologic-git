@@ -35,6 +35,12 @@ TOPYLOGIC_SO=topylogic/_topylogic.so
 TOPYLOGIC_PY=topylogic/topylogic.py
 TOPYLOGIC_O=$(wildcard topylogic/*.o)
 
+CSHARP_I=topologicsharp/topologicsharp.i
+CSHARP_WRAP=topologicsharp/topologicsharp_wrap.c
+CSHARP_SO=topologicsharp/_topologicsharp.so
+CSHARP_CS=topologicsharp/topologicsharp.cs
+CSHARP_O=$(wildcard topologicsharp/*.o)
+
 TESTS=$(TEST_SRC:.c=)#ADD MORE AS THEY GO
 TEST_SRC=$(wildcard testing/*.c)  #ADD MORE IF NEED BE
 TEST_OBJ=$(TEST_SRC:.c=.o)
@@ -66,6 +72,11 @@ python2: $(OBJ) $(INCLUDES)
 	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python2.7
 	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
+csharp: $(OBJ) $(INCLUDES)
+	swig -csharp $(CSHARP_I)
+	$(CC) -c -fPIC $(CSHARP_WRAP) -o topologicsharp/topologicsharp.o #-I/usr/bin/csharp
+	#$(CC) -shared topologicsharp/topologicsharp.o $(OBJ) -o $(CSHARP_O)
+
 cpp: $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP) $(FLEX_CPP) $(FLEX_OBJ_PP) $(OBJ) $(INCLUDES) 
 	$(AR) rcs libtopologic.a $(OBJ) $(BISON_OBJ_PP) $(FLEX_OBJ_PP)
 
@@ -91,6 +102,8 @@ clean:
 	rm -f $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP)
 	rm -f $(OBJ) $(BIN)
 	rm -f $(TOPYLOGIC_WRAP) $(TOPYLOGIC_PY) $(TOPYLOGIC_SO) $(TOPYLOGIC_O)
+	rm -f $(CSHARP_WRAP) $(CSHARP_CS) $(CSHARP_SO) $(CSHARP_O)
+	rm -f topologicsharp/*.cs
 	rm -rf topylogic/__pycache__
 	rm -rf topylogic/build
 	-rm -f state_*

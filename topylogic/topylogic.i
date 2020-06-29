@@ -282,7 +282,7 @@ PyObject *callback(struct topylogic_function *tf, PyObject *args) {
     PyObject *get_edge_args() {
         return $self->edge_argv;
     }
-}
+};
 
 %extend vertex_request {
     vertex_request(struct graph *graph, int id, void (*f)(struct graph *, struct vertex_result *, void*, void*)=NULL, PyObject *glbl=NULL) {
