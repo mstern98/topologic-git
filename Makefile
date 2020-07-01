@@ -3,6 +3,7 @@
 
 CC=gcc
 CXX=g++
+MCS=$(MCS)
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
 CFLAGS=-Wall	-Werror	-g	-fPIC #-O2
@@ -73,9 +74,10 @@ python2: $(OBJ) $(INCLUDES)
 	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
 csharp: $(OBJ) $(INCLUDES)
-	swig -csharp $(CSHARP_I)
-	$(CC) -c -fPIC $(CSHARP_WRAP) -o topologicsharp/topologicsharp.o #-I/usr/bin/csharp
-	#$(CC) -shared topologicsharp/topologicsharp.o $(OBJ) -o $(CSHARP_O)
+	swig -outfile topologicsharp.cs -csharp  $(CSHARP_I) 
+	$(CC) -c -fPIC $(CSHARP_WRAP) -o topologicsharp/topologicsharp.o 
+	@bash topologicsharp/make_dll.sh
+	
 
 cpp: $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP) $(FLEX_CPP) $(FLEX_OBJ_PP) $(OBJ) $(INCLUDES) 
 	$(AR) rcs libtopologic.a $(OBJ) $(BISON_OBJ_PP) $(FLEX_OBJ_PP)
@@ -92,7 +94,7 @@ $(BISON_CPP): $(BISONPP)
 	$(CXX) -fPIC -g -c $(BISON_CPP) -o $(BISON_OBJ_PP)
 
 all:$(BIN)
-.PHONY : clean cpp python pyton2 
+.PHONY : clean cpp python python2 rust csharp
 
 clean:
 	rm -f libtopologic.a
@@ -108,6 +110,7 @@ clean:
 	rm -rf topylogic/build
 	-rm -f state_*
 	-rm -f topylogic/state_*
+	rm -f topologicsharp/*.dll
 	rm -f $(TESTS) $(TEST_OBJ)
 	-rm -f testing/*.exe
 	rm -f rustopologic/RustTopologic/src/bindings.rs

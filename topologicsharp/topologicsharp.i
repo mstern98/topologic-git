@@ -64,6 +64,7 @@
 %include "../include/graph.h"
 %include "../include/vertex.h"
 %include "../include/edge.h"
+%include "../include/context.h"
 %extend graph {
     graph(int max_state_changes = -1,
         unsigned int snapshot_timestamp = START_STOP,

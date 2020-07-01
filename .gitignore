@@ -47,5 +47,6 @@ rustopologic/RustTopologic/rustTests/bindings.rs
 topologicsharp/*.cs
 topologicsharp/*.c
 topologicsharp/_topologicsharp.so
+*.dll
 
 
