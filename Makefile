@@ -63,20 +63,20 @@ $(BIN): $(OBJ) $(INCLUDES) $(BISON_OBJ) $(FLEX_OBJ)
 $(TESTS): $(BIN) $(OBJ) $(TEST_OBJ)
 	$(CC) $(CFLAGS) -o $@ libtopologic.a $(TEST_DIR)/$(@F).o $(LDFLAGS)
 
-python: $(OBJ) $(INCLUDES)
-	swig -python $(TOPYLOGIC_I)
-	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python3.6m
-	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
+#python: $(OBJ) $(INCLUDES)
+#	swig -python $(TOPYLOGIC_I)
+#	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python3.6m
+#	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
-python2: $(OBJ) $(INCLUDES)
-	swig -python $(TOPYLOGIC_I)
-	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python2.7
-	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
+#python2: $(OBJ) $(INCLUDES)
+#	swig -python $(TOPYLOGIC_I)
+#	$(CC) -c -fPIC topylogic/topylogic_wrap.c -o topylogic/topylogic_wrap.o -I/usr/include/python2.7
+#	$(CC) -shared topylogic/topylogic_wrap.o $(OBJ) -o $(TOPYLOGIC_SO)
 
-csharp: $(OBJ) $(INCLUDES)
-	swig -outfile topologicsharp.cs -csharp  $(CSHARP_I) 
-	$(CC) -c -fPIC $(CSHARP_WRAP) -o topologicsharp/topologicsharp.o 
-	@bash topologicsharp/make_dll.sh
+#csharp: $(OBJ) $(INCLUDES)
+#	swig -outfile topologicsharp.cs -csharp  $(CSHARP_I) 
+#	$(CC) -c -fPIC $(CSHARP_WRAP) -o topologicsharp/topologicsharp.o 
+#	@bash topologicsharp/make_dll.sh
 	
 
 cpp: $(BISON_CPP) $(BISON_OBJ_PP) $(BISON_HPP) $(FLEX_CPP) $(FLEX_OBJ_PP) $(OBJ) $(INCLUDES) 
@@ -117,4 +117,4 @@ clean:
 	rm -f rustopologic/RustTopologic/src/*.c
 	rm -f rustopologic/RustTopologic/Cargo.lock
 	rm -f rustopologic/RustTopologic/rustTests/bindings.rs
-	cd rustopologic/RustTopologic/ && cargo clean && rm -rf include/ && rm -f libtopologic.a
+	#cd rustopologic/RustTopologic/ && cargo clean && rm -rf include/ && rm -f libtopologic.a
