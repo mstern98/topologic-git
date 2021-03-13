@@ -5,7 +5,7 @@ CC=gcc
 CXX=g++
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread -lfl
-CFLAGS=-Wall	-Werror	-g	-fPIC #-O2
+CFLAGS=-Wall	-Werror	-g	-fPIC -O2
 OBJ=$(SRC:.c=.o)
 AR=ar
 
@@ -47,7 +47,7 @@ $(FLEX_C):
 	mv lex.yy.c $(FLEX_C)
 	$(CC) -fPIC -g -c $(FLEX_C) -o $(FLEX_OBJ)
 $(BISON_C): $(BISON)
-	bison -d $(BISON) -o $(BISON_C)
+	bison -d $(BISON) -o $(BISON_C) -Wcounterexample
 	$(CC) -fPIC -g -c $(BISON_C) -o $(BISON_OBJ)
 
 $(BIN): $(OBJ) $(INCLUDES) $(BISON_OBJ) $(FLEX_OBJ)
@@ -78,7 +78,7 @@ $(BISON_CPP): $(BISONPP)
 	$(CXX) -fPIC -g -c $(BISON_CPP) -o $(BISON_OBJ_PP)
 
 all:$(BIN)
-.PHONY : clean cpp python pyton2 
+.PHONY : clean cpp python python2 
 
 clean:
 	rm -f libtopologic.a

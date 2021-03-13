@@ -8,6 +8,7 @@ int edge_f(void *args) {return 0;}
 int yylex();
 void yyerror(struct graph** graph, const char *s);
 extern FILE *yyin;
+extern int yylex(void);
 %}
 
 %union {
