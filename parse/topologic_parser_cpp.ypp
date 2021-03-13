@@ -3,8 +3,8 @@
 
 %{
 #include "../include/topologic.h"
-void f(struct graph *graph, struct vertex_result *args) {}
-int edge_f(void *args) {return 0;}
+void f(struct graph *graph, struct vertex_result *args, void *glbl, void *edge_vars) {}
+int edge_f(void *args, void *glbl, const void *const edge_vars) {return 0;}
 int yylex();
 void yyerror(struct graph** graph, const char *s);
 extern FILE *yyin;
@@ -28,7 +28,7 @@ extern FILE *yyin;
 %token COMMA
 %token MAX_STATE
 %token LVL_VERBOSE
-%token CONTEXT
+%token LEX_CONTEXT
 %token MEM_OPT
 %token MAX_LOOP
 %token <val> VALUE
@@ -60,7 +60,7 @@ state: MAX_STATE COLON VALUE {(*graph)->max_state_changes = $3;}
      ;
 verb: LVL_VERBOSE COLON VALUE {(*graph)->lvl_verbose = (enum VERBOSITY) $3;}
     ;
-context: CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
+context: LEX_CONTEXT COLON VALUE {(*graph)->context = (enum CONTEXT) $3;}
        ;
 mem_opt: MEM_OPT COLON VALUE {(*graph)->mem_option = (enum MEM_OPTION) $3;}
        ;

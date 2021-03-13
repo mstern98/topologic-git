@@ -5,6 +5,20 @@ The library provides a way for the client to define what information is saved lo
 
 This library can be used to create AI, ML, and simulations (such as of stock options, electron-electron interaction, etc.).
 
+## Download v1.0.0
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<button class="btn"><i class="fa fa-download"></i><a href="https://github.com/mstern98/Topologic/archive/v1.0.0.zip">Download Zip</a></button>
+
+<button class="btn"><i class="fa fa-download"></i><a href="https://github.com/mstern98/Topologic/archive/v1.0.0.tar.gz">Download tar</a></button>
+
+<button class="btn"><i class="fa fa-download"></i><a href="https://github.com/mstern98/Topologic/releases/download/v1.0.0/libtopologic.a">Download UNIX C</a></button>
+
+<button class="btn"><i class="fa fa-download"></i><a href="https://github.com/mstern98/Topologic/releases/download/v1.0.0/libtopologic_windows.a">Download Windows C</a></button>
+
+<button class="btn"><i class="fa fa-download"></i><a href="https://github.com/mstern98/Topologic/releases/download/v1.0.0/libtopologicpp.a">Download UNIX C++</a></button>
+
+<button class="btn"><i class="fa fa-download"></i><a href="https://github.com/mstern98/Topologic/releases/download/v1.0.0/libtopologicpp_windows.a">Download Windows C++</a></button>
+
 ## Installation
 Build C Library
 >make

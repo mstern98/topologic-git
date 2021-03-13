@@ -4,3 +4,4 @@
 *.y linguist-language=Yacc
 *.lex linguist-language=Lex
 *.i linguist-language=SWIG
+*.rs linguist-language=Rust

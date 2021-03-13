@@ -36,7 +36,7 @@ struct vertex
             //will compare with other vertices in graph
             //Must be unique. If non-unique ID, error
     int is_active;
-    void (*f)(struct graph *, struct vertex_result *);
+    void (*f)(struct graph *, struct vertex_result *, void *, void *);
     void *glbl;
     union shared_edge *shared;
     pthread_mutex_t lock;
@@ -51,14 +51,14 @@ struct vertex_request
     int id; //Hash for number passed in,
             //will compare with other vertices in graph
             //Must be unique. If non-unique ID, error
-    void (*f)(struct graph *, struct vertex_result *);
+    void (*f)(struct graph *, struct vertex_result *, void *, void *);
     void *glbl;
 };
 
 struct mod_vertex_request
 {
     struct vertex *vertex;
-    void (*f)(struct graph *, struct vertex_result *);
+    void (*f)(struct graph *, struct vertex_result *, void *, void *);
     void *glbl;
 };
 

@@ -25,7 +25,7 @@ struct edge
             //will compare with other Edges in graph
             //Also unique, a la vertex
             //Perhaps @nanosecond level
-    int (*f)(void *);
+    int (*f)(void *, void *, const void *const);
     void *glbl;
     const void *const *a_vars; //To be shared among vertex a and shared edge
     struct vertex *a;
@@ -39,7 +39,7 @@ struct edge_request
 {
     struct vertex *a;
     struct vertex *b;
-    int (*f)(void *);
+    int (*f)(void *, void *, const void *const);
     void *glbl;
 };
 
