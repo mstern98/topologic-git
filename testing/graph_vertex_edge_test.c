@@ -44,8 +44,6 @@ int testFuncEdge2(void* args, void *glbl, const void *const edge_vars){
 	return j;
 }
 
-
-
 int main(){
 	struct graph* graph = GRAPH_INIT(); //Start with basic setup; 
 	assert(graph!=NULL);
@@ -172,8 +170,8 @@ void test_graph_modify_edge(struct graph* graph){
 		assert(v!=NULL);
 		assert(v2!=NULL);
 
-		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
-		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
+		//struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
+		//if(e->glbl) {free(e->glbl); e->glbl = NULL;}
 		assert(modify_edge(v, v2, (testFuncEdge2), NULL)==0);
 		assert(modify_edge(v, v2, testFuncEdge, NULL)==0);
 		assert(modify_edge(NULL,v2, NULL, NULL)<0);
@@ -193,8 +191,8 @@ void test_graph_modify_bi_edge(struct graph* graph){
 		struct vertex* v2 = (struct vertex*)find(graph->vertices, ((i+1)>=TEST_SIZE ? 0 : i+1)); 
 		assert(v!=NULL);
 		assert(v2!=NULL);
-		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
-		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
+		//struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
+		//if(e->glbl) {free(e->glbl); e->glbl = NULL;}
 		assert(modify_bi_edge(v, v2, (testFuncEdge2), NULL)==0);
 		assert(modify_bi_edge(v, v2, testFuncEdge, NULL)==0);
 		assert(modify_bi_edge(NULL,v2, NULL, NULL)<=-1);
@@ -215,8 +213,8 @@ void test_graph_remove_bi_edge(struct graph* graph){
 		struct vertex* v2 = (struct vertex*)find(graph->vertices, ((i+1)>=TEST_SIZE ? 0 : i+1)); 
 		assert(v!=NULL);
 		assert(v2!=NULL);
-		struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
-		if(e->glbl) {free(e->glbl); e->glbl = NULL;}
+		//struct edge* e = (struct edge *) find(v->edge_tree, v2->id);
+		//if(e->glbl) {free(e->glbl); e->glbl = NULL;}
 		assert(remove_bi_edge(v, v2)==0); 
 	}
 	fprintf(stderr, "BI-DIRECTIONAL EDGE REMOVAL FROM GRAPH PASSED\n");

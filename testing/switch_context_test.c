@@ -32,7 +32,6 @@ void vertexFunction(struct graph *graph, struct vertex_result* args, void* glbl,
 	//return res;
 	struct request *request = create_request(GENERIC, NULL, request_nil);
 	submit_request(graph, request);
-	
 }
 
 int main()
@@ -93,7 +92,6 @@ void init(struct graph **graph)
 	assert(*graph != NULL);
 
 	//Setting up graphs and whatnot
-	//
 	int i = 0;
 	for (i = 0; i < MAXIMUM; i++)
 	{

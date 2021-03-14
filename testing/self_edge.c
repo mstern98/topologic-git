@@ -25,9 +25,7 @@ void vertexFunction(struct graph *graph, struct vertex_result* args, void* glbl,
 	//return res;
 }
 
-
 int main(){
-
 	struct graph* graph;
 
 	fprintf(stderr, "SELF EDGE/LOOP TEST BEGIN\n\n");
@@ -36,8 +34,6 @@ int main(){
 	runTest(graph);
 	cleanup(graph);
 	
-
-
 	return 0;
 }
 
@@ -53,9 +49,7 @@ void init(struct graph **graph)
 {
 	*graph = graph_init(100, START_STOP, 100, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
 	assert(*graph != NULL);
-
 }
-
 
 void setupSelfEdge(struct graph* graph){
 	int i = 0;
@@ -104,8 +98,6 @@ void setupSelfEdge(struct graph* graph){
 
 
 void runTest(struct graph* graph){
-	assert(graph!=NULL);
-
 	assert(graph != NULL);
 
 	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *) * ONE);
