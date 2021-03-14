@@ -54,7 +54,7 @@ $(FLEX_C):
 	mv lex.yy.c $(FLEX_C)
 	$(CC) -fPIC -g -c $(FLEX_C) -o $(FLEX_OBJ)
 $(BISON_C): $(BISON)
-	bison -d $(BISON) -o $(BISON_C) -Wcounterexample
+	bison -d $(BISON) -o $(BISON_C) #-Wcounterexample
 	$(CC) -fPIC -g -c $(BISON_C) -o $(BISON_OBJ)
 
 $(BIN): $(OBJ) $(INCLUDES) $(BISON_OBJ) $(FLEX_OBJ)
