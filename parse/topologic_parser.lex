@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: MIT WITH bison-exception */
 /* Copyright © 2020 Matthew Stern, Benjamin Michalowicz */
 
+%option noyywrap
+
 %{
 #include "topologic_parser.tab.h"
 %}
