@@ -208,15 +208,13 @@ int destroy_graph(struct graph *graph)
 		return -1;
 	}
 	graph->state = TERMINATE;
-
 	if (graph->red_vertex_count >= 0)
 	{
 		if (graph->context != SINGLE)
 		{
 			graph->red_locked = 0;
-			while (graph->red_vertex_count > 0)
-			{
-			}
+            if (graph->red_vertex_count > 0)
+                pthread_cond_wait(&graph->red_fire, &graph->color_lock);
 		}
 	}
 
@@ -225,9 +223,8 @@ int destroy_graph(struct graph *graph)
 		if (graph->context != SINGLE)
 		{
 			graph->black_locked = 0;
-			while (graph->black_vertex_count > 0)
-			{
-			}
+            if (graph->black_vertex_count > 0)
+                pthread_cond_wait(&graph->black_fire, &graph->color_lock);
 		}
 	}
 
@@ -241,7 +238,6 @@ int destroy_graph(struct graph *graph)
 	graph->remove_edges = NULL;
 	destroy_graph_stack(graph->remove_vertices);
 	graph->remove_vertices = NULL;
-
 	pthread_mutex_destroy(&graph->lock);
 	pthread_cond_destroy(&graph->pause_cond);
 	graph->red_locked = 0;

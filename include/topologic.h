@@ -12,6 +12,7 @@
 #include "./request.h"
 #include "./graph.h"
 
+#define PTHREAD_SLEEP_TIME 50 //milliseconds
 
 #ifndef SWIGPYTHON
 #ifndef _GNU_SOURCE

@@ -53,7 +53,7 @@ int main()
 void cleanup(struct graph *graph)
 {
 	assert(graph != NULL);
-	int i = 0;
+	/*int i = 0;
 
 	for (i = 0; i < MAXIMUM; i++)
 	{
@@ -81,7 +81,7 @@ void cleanup(struct graph *graph)
 			v->glbl = NULL;
 		}
 		remove_vertex(graph, v);
-	}
+	}*/
 	destroy_graph(graph);
 	graph = NULL;
 }
