@@ -28,16 +28,6 @@ Build C++ Library
 
 -creates libtopologic.a
 
-Build Python 3 Library
->make python
-
--creates topylogic/topylogic.so
-
-Build Python 2 Library
->make python2
-
--creates topylogic/topylogic.so
-
 Clean
 >make clean
 
