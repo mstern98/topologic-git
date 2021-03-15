@@ -88,7 +88,7 @@ rust:
 $(FLEX_CPP):
 	flex $(FLEXPP)
 	mv lex.yy.cc $(FLEX_CPP)
-	$(CXX) -fPIC -g -c $(FLEX_CPP) -o $(FLEX_OBJ_PP)
+	$(CXX) -fPIC -g -c $(FLEX_CPP) -o $(FLEX_OBJ_PP) -lfl
 $(BISON_CPP): $(BISONPP)
 	bison -d $(BISONPP) -o $(BISON_CPP)
 	$(CXX) -fPIC -g -c $(BISON_CPP) -o $(BISON_OBJ_PP)
