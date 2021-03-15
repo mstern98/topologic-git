@@ -6,7 +6,7 @@ CXX=g++
 MCS=$(MCS)
 
 LDFLAGS= -lm -lpthread -L. -ltopologic -pthread #-lfl
-CFLAGS=-Wall	-Werror	-g	-fPIC -O2
+CFLAGS=-Wall	-Werror	-g	-fPIC #-O2
 OBJ=$(SRC:.c=.o)
 AR=ar
 
