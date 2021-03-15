@@ -18,86 +18,45 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 	struct vertex *vertex = (struct vertex *)malloc(sizeof(struct vertex));
 	if (!vertex)
 	{
-		if (context != SINGLE)
-		{
-			pthread_mutex_unlock(&graph->lock);
-		}
 		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
-		return NULL;
+        goto unlock_graph;
 	}
 	vertex->context = context;
 
 	vertex->shared = (union shared_edge *)malloc(sizeof(union shared_edge));
 	if (!vertex->shared)
 	{
-		free(vertex);
-		vertex = NULL;
-		if (context != SINGLE)
-			pthread_mutex_unlock(&graph->lock);
 		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
-		return NULL;
+        goto free_vertex;
 	}
 	vertex->shared->vertex_data = NULL;
 
 	vertex->edge_tree = init_avl();
 	if (!vertex->edge_tree)
 	{
-		free(vertex->shared);
-		vertex->shared = NULL;
-		free(vertex);
-		vertex = NULL;
-		if (context != SINGLE)
-			pthread_mutex_unlock(&graph->lock);
-		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
-		return NULL;
+        topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
+        goto free_shared;
 	}
 
 	vertex->joining_vertices = init_avl();
 	if (!vertex->joining_vertices)
 	{
-		free(vertex->shared);
-		vertex->shared = NULL;
-		destroy_avl(vertex->edge_tree);
-		vertex->edge_tree = NULL;
-		free(vertex);
-		vertex = NULL;
-		if (context != SINGLE)
-			pthread_mutex_unlock(&graph->lock);
 		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
-		return NULL;
+        goto destroy_edge_tree;
 	}
 
 	if (insert(graph->vertices, vertex, id) < 0)
 	{
-		free(vertex->shared);
-		vertex->shared = NULL;
-		destroy_avl(vertex->edge_tree);
-		vertex->edge_tree = NULL;
-		destroy_avl(vertex->joining_vertices);
-		vertex->joining_vertices = NULL;
-		free(vertex);
-		vertex = NULL;
-		if (context != SINGLE)
-			pthread_mutex_unlock(&graph->lock);
 		topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
-		return NULL;
+        goto destroy_joining_vertices;
 	}
 
 	if (context != SINGLE)
 	{
 		if (pthread_mutex_init(&vertex->lock, NULL) < 0)
 		{
-			free(vertex->shared);
-			vertex->shared = NULL;
-			destroy_avl(vertex->edge_tree);
-			vertex->edge_tree = NULL;
-			destroy_avl(vertex->joining_vertices);
-			vertex->joining_vertices = NULL;
-			free(vertex);
-			vertex = NULL;
-			pthread_mutex_unlock(&graph->lock);
 			topologic_debug("%s;%s;%p", "create_vertex", "failed to initialize", (void *) NULL);
-			return NULL;
+            goto destroy_joining_vertices;
 		}
 	}
 
@@ -109,6 +68,25 @@ struct vertex *create_vertex(struct graph *graph, void (*f)(struct graph *, stru
 		pthread_mutex_unlock(&graph->lock);
 	topologic_debug("%s;%s;%p", "create_vertex", "succeeded", vertex);
 	return vertex;
+
+destroy_joining_vertices:
+	destroy_avl(vertex->joining_vertices);
+	vertex->joining_vertices = NULL;
+destroy_edge_tree:
+    destroy_avl(vertex->edge_tree);
+	vertex->edge_tree = NULL;
+free_shared:
+    free(vertex->shared);
+    vertex->shared = NULL;
+free_vertex:
+    free(vertex);
+	vertex = NULL;
+unlock_graph:
+    if (context != SINGLE)
+		pthread_mutex_unlock(&graph->lock);
+    topologic_debug("%s;%s", "create_vertex", "failed");
+    return NULL;
+
 }
 
 int remove_vertex(struct graph *graph, struct vertex *vertex)
