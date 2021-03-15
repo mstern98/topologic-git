@@ -52,7 +52,7 @@ all: $(BISON) $(BISON_C) $(BISON_H) $(FLEX) $(FLEX_C) $(BIN) $(TESTS)
 $(FLEX_C):
 	flex $(FLEX)
 	mv lex.yy.c $(FLEX_C)
-	$(CC) -fPIC -g -c $(FLEX_C) -o $(FLEX_OBJ)
+	$(CC) -fPIC -g -c $(FLEX_C) -o $(FLEX_OBJ) -lfl
 $(BISON_C): $(BISON)
 	bison -d $(BISON) -o $(BISON_C) #-Wcounterexample
 	$(CC) -fPIC -g -c $(BISON_C) -o $(BISON_OBJ)
