@@ -363,6 +363,9 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
     topologic_debug("%s;graph %p;vertex %p;args %p;color %d;iloop %d", "fire", graph, vertex, args, color, iloop);
+    int retval = 0;
+    struct vertex *next_vertex = NULL;
+
     if (!graph || !vertex)
     {
         topologic_debug("%s;%s;%d", "fire", "invalid args", -1);
@@ -402,22 +405,8 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     else
     {
         topologic_debug("%s;%s;%d", "fire", "invalid state", -1);
-        if (args->edge_argv)
-        {
-            free(args->edge_argv);
-            args->edge_argv = NULL;
-        }
-        if (args->vertex_argv)
-        {
-            free(args->vertex_argv);
-            args->vertex_argv = NULL;
-        }
-        if (args)
-        {
-            free(args);
-            args = NULL;
-        }
-        return -1;
+        retval = -1;
+        goto clean_fire;
     }
     
     pthread_mutex_lock(&vertex->lock);
@@ -425,83 +414,17 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     if (graph->state == TERMINATE)
     {
         topologic_debug("%s;%s;%d", "fire", "terminate", -1);
-        vertex->is_active = 0;
-        pthread_mutex_lock(&graph->lock);
-
-        if (color == RED)
-        {
-            --(graph->red_vertex_count);
-            --(graph->num_vertices);
-            if (graph->red_vertex_count == 0)
-                pthread_cond_signal(&graph->red_fire);
-        }
-        else
-        {
-            --(graph->black_vertex_count);
-            --(graph->num_vertices);
-            if (graph->black_vertex_count == 0)
-                pthread_cond_signal(&graph->black_fire);
-        }
-        pthread_mutex_unlock(&graph->lock);
-        pthread_mutex_unlock(&vertex->lock);
-        if (args->edge_argv)
-        {
-            free(args->edge_argv);
-            args->edge_argv = NULL;
-        }
-        if (args->vertex_argv)
-        {
-            free(args->vertex_argv);
-            args->vertex_argv = NULL;
-        }
-        if (args)
-        {
-            free(args);
-            args = NULL;
-        }
-        return -1;
+        retval = -1;
+        goto exit_fire;
     }
 
     if (graph->max_loop != -1 && iloop >= graph->max_loop)
     {
         topologic_debug("%s;%s;%d", "fire", "max loop hit", 0);
-        if (args->edge_argv)
-        {
-            free(args->edge_argv);
-            args->edge_argv = NULL;
-        }
-        if (args->vertex_argv)
-        {
-            free(args->vertex_argv);
-            args->vertex_argv = NULL;
-        }
-        if (args)
-        {
-            free(args);
-            args = NULL;
-        }
-        pthread_mutex_lock(&graph->lock);
-        if (color == RED)
-        {
-            --(graph->red_vertex_count);
-            --(graph->num_vertices);
-            if (graph->red_vertex_count <= 0)
-                pthread_cond_signal(&graph->red_fire);
-        }
-        else if (color == BLACK)
-        {
-            --(graph->black_vertex_count);
-            --(graph->num_vertices);
-            if (graph->black_vertex_count <= 0)
-                pthread_cond_signal(&graph->black_fire);
-        }
-        pthread_mutex_unlock(&graph->lock);
-        pthread_mutex_unlock(&vertex->lock);
-        return 0;
+        goto exit_fire;
     }
 
     (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
-    struct vertex *next_vertex = NULL;
 
     if (graph->max_state_changes != -1 && graph->state_count + 1 >= graph->max_state_changes)
         goto exit_fire;
@@ -526,43 +449,14 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
                 int iloop_b = 1;
                 if (edge->b == vertex)
                     iloop_b = iloop + 1;
-                printf("%p; next set\n", edge->b);
                 if (switch_vertex(graph, edge->b, args, flip_color, iloop_b) < 0)
                 {
                     topologic_debug("%s;%s;%d", "fire", "failed to switch", -1);
-                    pthread_mutex_lock(&graph->lock);
-                    if (color == RED)
-                    {
-                        --(graph->red_vertex_count);
-                        --(graph->num_vertices);
-                        if (graph->red_vertex_count == 0)
-                            pthread_cond_signal(&graph->red_fire);
-                    }
-                    else
-                    {
-                        --(graph->black_vertex_count);
-                        --(graph->num_vertices);
-                        if (graph->black_vertex_count == 0)
-                            pthread_cond_signal(&graph->black_fire);
-                    }
-                    pthread_mutex_unlock(&graph->lock);
-                    pthread_mutex_unlock(&vertex->lock);
-                    if (args->edge_argv)
-                    {
-                        free(args->edge_argv);
-                        args->edge_argv = NULL;
-                    }
-                    if (args->vertex_argv)
-                    {
-                        free(args->vertex_argv);
-                        args->vertex_argv = NULL;
-                    }
-                    if (args)
-                    {
-                        free(args);
-                        args = NULL;
-                    }
-                    return -1;
+                    retval = -1;
+                    destroy_stack(edges);
+                    edges = NULL;
+                    edge = NULL;
+                    goto exit_fire;
                 }
                 pthread_mutex_lock(&graph->lock);
                 ++(graph->num_vertices);
@@ -624,26 +518,24 @@ exit_fire:
         sleep_ms(PTHREAD_SLEEP_TIME);
         return fire(graph, next_vertex, args, flip_color, iloop_b);
     }
-    else
+clean_fire:
+    if (args->edge_argv)
     {
-        if (args->edge_argv)
-        {
-            free(args->edge_argv);
-            args->edge_argv = NULL;
-        }
-        if (args->vertex_argv)
-        {
-            free(args->vertex_argv);
-            args->vertex_argv = NULL;
-        }
-        if (args)
-        {
-            free(args);
-            args = NULL;
-        }
+        free(args->edge_argv);
+        args->edge_argv = NULL;
     }
-    topologic_debug("%s;%s;%d", "fire", "finished", 0);
-    return 0;
+    if (args->vertex_argv)
+    {
+        free(args->vertex_argv);
+        args->vertex_argv = NULL;
+    }
+    if (args)
+    {
+        free(args);
+        args = NULL;
+    }
+    topologic_debug("%s;%s;%d", "fire", "finished", retval);
+    return retval;
 }
 
 void *fire_pthread(void *vargp)
