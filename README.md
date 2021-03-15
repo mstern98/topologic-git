@@ -35,6 +35,8 @@ Debug
 >make CFLAGS=-DDEBUG
 
 ## TODO
+-Thread sanity
+
 -C# Wrap
 
 -Rust Wrap
