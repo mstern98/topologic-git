@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['find_341',['find',['../AVL_8h.html#a5b2ea4143e3eae4dfd4867b49dc0e245',1,'find(struct AVLTree *tree, int id):&#160;AVL.c'],['../AVL_8c.html#a5b2ea4143e3eae4dfd4867b49dc0e245',1,'find(struct AVLTree *tree, int id):&#160;AVL.c']]],
-  ['find_5fnode_342',['find_node',['../AVL_8c.html#a6f4bdf1e05872385a75c9b7a27810f04',1,'AVL.c']]],
-  ['fire_343',['fire',['../topologic_8h.html#afb681b8608003d4182ba5575a0b52412',1,'fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop):&#160;topologic.c'],['../topologic_8c.html#afb681b8608003d4182ba5575a0b52412',1,'fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop):&#160;topologic.c']]],
-  ['fire_5fpthread_344',['fire_pthread',['../topologic_8h.html#a1f0a7f66de404dee52b411a8f47bf2d0',1,'fire_pthread(void *vargp):&#160;topologic.c'],['../topologic_8c.html#a1f0a7f66de404dee52b411a8f47bf2d0',1,'fire_pthread(void *vargp):&#160;topologic.c']]]
+  ['get_272',['get',['../stack_8h.html#a169c01d83f09ceb7a318ea1dfcbed627',1,'get(struct stack *stack, int index):&#160;stack.c'],['../stack_8c.html#a169c01d83f09ceb7a318ea1dfcbed627',1,'get(struct stack *stack, int index):&#160;stack.c']]],
+  ['graph_5finit_273',['graph_init',['../topologic_8h.html#aee602e17db2f4404ab8db898ba35e6f1',1,'graph_init(int max_state_changes, int snapshot_timestamp, int max_loop, unsigned int lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option):&#160;graph.c'],['../graph_8c.html#aee602e17db2f4404ab8db898ba35e6f1',1,'graph_init(int max_state_changes, int snapshot_timestamp, int max_loop, unsigned int lvl_verbose, enum CONTEXT context, enum MEM_OPTION mem_option):&#160;graph.c']]]
 ];

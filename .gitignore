@@ -49,6 +49,8 @@ topologicsharp/*.c
 topologicsharp/_topologicsharp.so
 *.dll
 latex/*
+man/*
+html/*
 TopologicDoc.conf
 
 

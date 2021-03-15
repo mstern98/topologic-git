@@ -1,4 +1,9 @@
 var searchData=
 [
-  ['left_5frotate_354',['left_rotate',['../AVL_8c.html#ae9ba5106de74db7ff94cd5d23841621b',1,'AVL.c']]]
+  ['max_5fheight_281',['max_height',['../AVL_8c.html#ab70e832e5a59d48ddc3017c940934276',1,'AVL.c']]],
+  ['minnode_282',['minNode',['../AVL_8c.html#ab64f0819e0d4228108108a256e278a79',1,'AVL.c']]],
+  ['modify_5fbi_5fedge_283',['modify_bi_edge',['../topologic_8h.html#a41bafe53c1fe1cf3fb5b1b4caa04d44e',1,'modify_bi_edge(struct vertex *a, struct vertex *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl):&#160;edge.c'],['../edge_8c.html#a41bafe53c1fe1cf3fb5b1b4caa04d44e',1,'modify_bi_edge(struct vertex *a, struct vertex *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl):&#160;edge.c']]],
+  ['modify_5fedge_284',['modify_edge',['../topologic_8h.html#a17aa0b441e24cc7bd56f0aac2bd7c9bf',1,'modify_edge(struct vertex *a, struct vertex *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl):&#160;edge.c'],['../edge_8c.html#a17aa0b441e24cc7bd56f0aac2bd7c9bf',1,'modify_edge(struct vertex *a, struct vertex *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl):&#160;edge.c']]],
+  ['modify_5fshared_5fedge_5fvars_285',['modify_shared_edge_vars',['../topologic_8h.html#aa2dd88901e41db5462159822654f09ab',1,'modify_shared_edge_vars(struct vertex *vertex, void *edge_vars):&#160;vertex.c'],['../vertex_8c.html#aa2dd88901e41db5462159822654f09ab',1,'modify_shared_edge_vars(struct vertex *vertex, void *edge_vars):&#160;vertex.c']]],
+  ['modify_5fvertex_286',['modify_vertex',['../topologic_8h.html#ad415a21cdf44cf46b081e2ac490b37d2',1,'modify_vertex(struct vertex *vertex, void(*f)(struct graph *, struct vertex_result *, void *, void *), void *glbl):&#160;vertex.c'],['../vertex_8c.html#ad415a21cdf44cf46b081e2ac490b37d2',1,'modify_vertex(struct vertex *vertex, void(*f)(struct graph *, struct vertex_result *, void *, void *), void *glbl):&#160;vertex.c']]]
 ];
