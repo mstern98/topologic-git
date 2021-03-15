@@ -41,6 +41,9 @@ Build Python 2 Library
 Clean
 >make clean
 
+Debug
+>make CFLAGS=-DDEBUG
+
 ## TODO
 -C# Wrap
 
