@@ -1,0 +1,55 @@
+.TH "fireable" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+fireable
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <topologic\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "struct \fBgraph\fP * \fBgraph\fP"
+.br
+.ti -1c
+.RI "struct \fBvertex\fP * \fBvertex\fP"
+.br
+.ti -1c
+.RI "struct \fBvertex_result\fP * \fBargs\fP"
+.br
+.ti -1c
+.RI "enum \fBSTATES\fP \fBcolor\fP"
+.br
+.ti -1c
+.RI "int \fBiloop\fP"
+.br
+.in -1c
+.SH "Field Documentation"
+.PP 
+.SS "struct \fBvertex_result\fP* fireable::args"
+
+.PP
+Referenced by fire(), fire_pthread(), run(), and switch_vertex()\&.
+.SS "enum \fBSTATES\fP fireable::color"
+
+.PP
+Referenced by fire(), fire_pthread(), run(), and switch_vertex()\&.
+.SS "struct \fBgraph\fP* fireable::graph"
+
+.PP
+Referenced by fire_pthread(), run(), and switch_vertex()\&.
+.SS "int fireable::iloop"
+
+.PP
+Referenced by fire(), fire_pthread(), run(), and switch_vertex()\&.
+.SS "struct \fBvertex\fP* fireable::vertex"
+
+.PP
+Referenced by fire_pthread(), run(), and switch_vertex()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

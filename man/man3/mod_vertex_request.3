@@ -1,0 +1,41 @@
+.TH "mod_vertex_request" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+mod_vertex_request
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <vertex\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "struct \fBvertex\fP * \fBvertex\fP"
+.br
+.ti -1c
+.RI "void(* \fBf\fP )(struct \fBgraph\fP *, struct \fBvertex_result\fP *, void *, void *)"
+.br
+.ti -1c
+.RI "void * \fBglbl\fP"
+.br
+.in -1c
+.SH "Field Documentation"
+.PP 
+.SS "void(* mod_vertex_request::f) (struct \fBgraph\fP *, struct \fBvertex_result\fP *, void *, void *)"
+
+.PP
+Referenced by procces_request()\&.
+.SS "void* mod_vertex_request::glbl"
+
+.PP
+Referenced by procces_request()\&.
+.SS "struct \fBvertex\fP* mod_vertex_request::vertex"
+
+.PP
+Referenced by procces_request()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

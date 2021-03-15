@@ -48,7 +48,7 @@ topologicsharp/*.cs
 topologicsharp/*.c
 topologicsharp/_topologicsharp.so
 *.dll
-!.SRCINFO
-!PKGBUILD
+latex/*
+TopologicDoc.conf
 
 

@@ -1,0 +1,83 @@
+.TH "src/edge.c" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/edge.c
+.SH SYNOPSIS
+.br
+.PP
+\fC#include '\&.\&./include/topologic\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBedge\fP * \fBcreate_edge\fP (struct \fBvertex\fP *a, struct \fBvertex\fP *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl)"
+.br
+.ti -1c
+.RI "int \fBcreate_bi_edge\fP (struct \fBvertex\fP *a, struct \fBvertex\fP *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl, struct \fBedge\fP **edge_a_to_b, struct \fBedge\fP **edge_b_to_a)"
+.br
+.ti -1c
+.RI "int \fBremove_edge\fP (struct \fBvertex\fP *a, struct \fBvertex\fP *b)"
+.br
+.ti -1c
+.RI "int \fBremove_edge_id\fP (struct \fBvertex\fP *a, int id)"
+.br
+.ti -1c
+.RI "int \fBremove_bi_edge\fP (struct \fBvertex\fP *a, struct \fBvertex\fP *b)"
+.br
+.ti -1c
+.RI "int \fBmodify_edge\fP (struct \fBvertex\fP *a, struct \fBvertex\fP *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl)"
+.br
+.ti -1c
+.RI "int \fBmodify_bi_edge\fP (struct \fBvertex\fP *a, struct \fBvertex\fP *b, int(*f)(void *, void *, const void *const, const void *const), void *glbl)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "int create_bi_edge (struct \fBvertex\fP * a, struct \fBvertex\fP * b, int(*)(void *, void *, const void *const, const void *const) f, void * glbl, struct \fBedge\fP ** edge_a_to_b, struct \fBedge\fP ** edge_b_to_a)"
+@RETURNS 0 for success; -1 for fail See create_edge Will create an bidirectional edge between vertex a and b with some criteria determined by the function f\&. Will store the edges in edge_a and edge_b\&. If edge_a_to_b or edge_b_to_a is NULL it will not\&. 
+.PP
+References edge::a, edge::b, BI_EDGE, edge::bi_edge, edge::bi_edge_lock, vertex::context, create_edge(), edge::edge_type, edge::f, edge::glbl, remove_edge(), SINGLE, and topologic_debug\&.
+.PP
+Referenced by procces_request(), and test_graph_add_bi_edge()\&.
+.SS "struct \fBedge\fP* create_edge (struct \fBvertex\fP * a, struct \fBvertex\fP * b, int(*)(void *, void *, const void *const, const void *const) f, void * glbl)"
+@PARAM a: A vertex @PARAM b: Another vertex (can be 'a') @PARAM f: a function @PARAM glbl: global variables @RETURN the edge connecting a to b Will create an edge from vertex a to b with some criteria determined by the function f\&. NOTE: NULL glbl will mean no global variables\&. f cannot be NULL\&. 
+.PP
+References edge::a, edge::a_vars, edge::b, edge::b_vars, edge::bi_edge, vertex::context, EDGE, shared_edge::edge_data, vertex::edge_tree, edge::edge_type, edge::f, find(), edge::glbl, edge::id, vertex::id, insert(), vertex::joining_vertices, vertex::lock, remove_edge(), remove_ID(), SELF_EDGE, vertex::shared, SINGLE, SWITCH, and topologic_debug\&.
+.PP
+Referenced by create_bi_edge(), procces_request(), and test_graph_add_edge()\&.
+.SS "int modify_bi_edge (struct \fBvertex\fP * a, struct \fBvertex\fP * b, int(*)(void *, void *, const void *const, const void *const) f, void * glbl)"
+@PARAM a: a vertex @PARAM b: another vertex @PARAM f: a function @PARAM glbl: global variables @RETURN 0 for success; -1 for fail; -2 if only edge from a to b is modified; -3 if only edge from b to a is modified Modifies the edge between a and b's function and variables NOTE: NULL f, or glbl will mean no change\&. 
+.PP
+References edge::a, edge::b, edge::f, edge::glbl, modify_edge(), and topologic_debug\&.
+.PP
+Referenced by procces_request(), and test_graph_modify_bi_edge()\&.
+.SS "int modify_edge (struct \fBvertex\fP * a, struct \fBvertex\fP * b, int(*)(void *, void *, const void *const, const void *const) f, void * glbl)"
+@PARAM a: a vertex @PARAM b: another vertex @PARAM f: a function @PARAM glbl: global variables @RETURN 0 for success; -1 for fail Modifies the edge connecting a to b's function NOTE: NULL f, or glbl will mean no change\&. 
+.PP
+References edge::a, edge::b, vertex::context, vertex::edge_tree, edge::f, find(), edge::glbl, vertex::id, vertex::lock, SINGLE, and topologic_debug\&.
+.PP
+Referenced by modify_bi_edge(), procces_request(), and test_graph_modify_edge()\&.
+.SS "int remove_bi_edge (struct \fBvertex\fP * a, struct \fBvertex\fP * b)"
+@PARAM a: a vertex @PARAM b: another vertex @RETURN 0 for success; -1 for fail; -2 if only edge from a to b is removed; -3 if only edge from b to a is removed Removes the edge connecting a to b 
+.PP
+References edge::a, edge::b, remove_edge(), and topologic_debug\&.
+.PP
+Referenced by procces_request(), and test_graph_remove_bi_edge()\&.
+.SS "int remove_edge (struct \fBvertex\fP * a, struct \fBvertex\fP * b)"
+@PARAM a: a vertex @PARAM b: another vertex @RETURN 0 for success; -1 for fail Removes the edge connecting a to b 
+.PP
+References edge::a, edge::a_vars, edge::b, edge::b_vars, BI_EDGE, edge::bi_edge, edge::bi_edge_lock, vertex::context, EDGE, vertex::edge_tree, edge::edge_type, edge::f, edge::glbl, edge::id, vertex::id, vertex::joining_vertices, vertex::lock, remove_ID(), SINGLE, and topologic_debug\&.
+.PP
+Referenced by cleanup(), create_bi_edge(), create_edge(), procces_request(), remove_bi_edge(), and test_graph_remove_edge()\&.
+.SS "int remove_edge_id (struct \fBvertex\fP * a, int id)"
+@PARAM a: a vertex @PARAM id: id of edge to remove @RETURN 0 for success; -1 for fail Removes the edge in a with that id 
+.PP
+References edge::a, edge::a_vars, edge::b, edge::b_vars, BI_EDGE, edge::bi_edge, edge::bi_edge_lock, vertex::context, EDGE, vertex::edge_tree, edge::edge_type, edge::f, edge::glbl, edge::id, vertex::id, vertex::joining_vertices, vertex::lock, remove_ID(), SINGLE, and topologic_debug\&.
+.PP
+Referenced by procces_request(), and remove_vertex()\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

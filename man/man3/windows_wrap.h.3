@@ -1,0 +1,137 @@
+.TH "include/windows_wrap.h" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/windows_wrap.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <windows\&.h>\fP
+.br
+\fC#include <process\&.h>\fP
+.br
+\fC#include <stdbool\&.h>\fP
+.br
+
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void \fBpthread_mutexattr_t\fP"
+.br
+.ti -1c
+.RI "typedef void \fBpthread_condattr_t\fP"
+.br
+.ti -1c
+.RI "typedef void \fBpthread_attr_t\fP"
+.br
+.ti -1c
+.RI "typedef CRITICAL_SECTION \fBpthread_mutex_t\fP"
+.br
+.ti -1c
+.RI "typedef HANDLE \fBpthread_t\fP"
+.br
+.ti -1c
+.RI "typedef CONDITION_VARIABLE \fBpthread_cond_t\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBpthread_create\fP (\fBpthread_t\fP *thread, \fBpthread_attr_t\fP *attr, void *(*start_routine)(void *), void *arg)"
+.br
+.ti -1c
+.RI "int \fBpthread_detach\fP (\fBpthread_t\fP)"
+.br
+.ti -1c
+.RI "int \fBpthread_exit\fP (void *retval)"
+.br
+.ti -1c
+.RI "int \fBpthread_mutex_init\fP (\fBpthread_mutex_t\fP *mutex, \fBpthread_mutexattr_t\fP *attr)"
+.br
+.ti -1c
+.RI "int \fBpthread_mutex_destroy\fP (\fBpthread_mutex_t\fP *mutex)"
+.br
+.ti -1c
+.RI "int \fBpthread_mutex_lock\fP (\fBpthread_mutex_t\fP *mutex)"
+.br
+.ti -1c
+.RI "int \fBpthread_mutex_unlock\fP (\fBpthread_mutex_t\fP *mutex)"
+.br
+.ti -1c
+.RI "int \fBpthread_cond_init\fP (\fBpthread_cond_t\fP *cond, \fBpthread_condattr_t\fP *attr)"
+.br
+.ti -1c
+.RI "int \fBpthread_cond_destroy\fP (\fBpthread_cond_t\fP *cond)"
+.br
+.ti -1c
+.RI "int \fBpthread_cond_wait\fP (\fBpthread_cond_t\fP *cond, \fBpthread_mutex_t\fP *mutex)"
+.br
+.ti -1c
+.RI "int \fBpthread_cond_signal\fP (\fBpthread_cond_t\fP *cond)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef void \fBpthread_attr_t\fP"
+
+.SS "typedef CONDITION_VARIABLE \fBpthread_cond_t\fP"
+
+.SS "typedef void \fBpthread_condattr_t\fP"
+
+.SS "typedef CRITICAL_SECTION \fBpthread_mutex_t\fP"
+
+.SS "typedef void \fBpthread_mutexattr_t\fP"
+SRC: https://nachtimwald.com/2019/04/05/cross-platform-thread-wrapper/ 
+.SS "typedef HANDLE \fBpthread_t\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int pthread_cond_destroy (\fBpthread_cond_t\fP * cond)"
+
+.PP
+Referenced by destroy_graph(), and graph_init()\&.
+.SS "int pthread_cond_init (\fBpthread_cond_t\fP * cond, \fBpthread_condattr_t\fP * attr)"
+
+.PP
+Referenced by graph_init()\&.
+.SS "int pthread_cond_signal (\fBpthread_cond_t\fP * cond)"
+
+.PP
+Referenced by fire(), and pause_graph()\&.
+.SS "int pthread_cond_wait (\fBpthread_cond_t\fP * cond, \fBpthread_mutex_t\fP * mutex)"
+
+.PP
+Referenced by destroy_graph(), run(), and run_single()\&.
+.SS "int pthread_create (\fBpthread_t\fP * thread, \fBpthread_attr_t\fP * attr, void *(*)(void *) start_routine, void * arg)"
+
+.PP
+Referenced by run(), and switch_vertex()\&.
+.SS "int pthread_detach (\fBpthread_t\fP)"
+
+.PP
+Referenced by run(), and switch_vertex()\&.
+.SS "int pthread_exit (void * retval)"
+
+.PP
+Referenced by fire_pthread(), and run()\&.
+.SS "int pthread_mutex_destroy (\fBpthread_mutex_t\fP * mutex)"
+
+.PP
+Referenced by destroy_graph(), graph_init(), remove_edge(), remove_edge_id(), and remove_vertex()\&.
+.SS "int pthread_mutex_init (\fBpthread_mutex_t\fP * mutex, \fBpthread_mutexattr_t\fP * attr)"
+
+.PP
+Referenced by create_bi_edge(), create_vertex(), and graph_init()\&.
+.SS "int pthread_mutex_lock (\fBpthread_mutex_t\fP * mutex)"
+
+.PP
+Referenced by create_edge(), create_vertex(), fire(), modify_edge(), modify_shared_edge_vars(), modify_vertex(), pause_graph(), print_graph(), process_requests(), remove_edge(), remove_edge_id(), remove_vertex(), remove_vertex_id(), resume_graph(), run(), run_single(), and submit_request()\&.
+.SS "int pthread_mutex_unlock (\fBpthread_mutex_t\fP * mutex)"
+
+.PP
+Referenced by create_edge(), create_vertex(), fire(), modify_edge(), modify_shared_edge_vars(), modify_vertex(), pause_graph(), print_graph(), process_requests(), remove_edge(), remove_edge_id(), remove_vertex(), remove_vertex_id(), resume_graph(), run(), run_single(), and submit_request()\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

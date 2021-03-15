@@ -1,0 +1,47 @@
+.TH "src/topologic_json.c" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/topologic_json.c
+.SH SYNOPSIS
+.br
+.PP
+\fC#include '\&.\&./include/topologic\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBprint_edges\fP (struct \fBgraph\fP *\fBgraph\fP, struct \fBAVLTree\fP *edges, const char *indent, FILE *out)"
+.br
+.ti -1c
+.RI "void \fBprint_state\fP (struct \fBgraph\fP *\fBgraph\fP, FILE *out)"
+.br
+.ti -1c
+.RI "void \fBprint_graph\fP (struct \fBgraph\fP *\fBgraph\fP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void print_edges (struct \fBgraph\fP * graph, struct \fBAVLTree\fP * edges, const char * indent, FILE * out)"
+
+.PP
+References edge::a, edge::b, edge::bi_edge, destroy_stack(), edge::edge_type, edge::f, FUNCTIONS, edge::glbl, GLOBALS, edge::id, init_stack(), stack::length, graph::lvl_verbose, pop(), preorder(), and topologic_debug\&.
+.PP
+Referenced by print_state()\&.
+.SS "void print_graph (struct \fBgraph\fP * graph)"
+@PARAM graph: the graph Prints the graph with desired output TODO: Print enums
+.PP
+References graph::context, graph::lock, graph::lvl_verbose, graph::max_loop, graph::max_state_changes, NO_VERB, graph::num_vertices, print_state(), SINGLE, AVLTree::size, graph::snapshot_timestamp, START_STOP, graph::state_count, topologic_debug, and graph::vertices\&.
+.PP
+Referenced by main(), run(), and run_single()\&.
+.SS "void print_state (struct \fBgraph\fP * graph, FILE * out)"
+
+.PP
+References destroy_stack(), vertex::edge_tree, EDGES, vertex::f, FUNCTIONS, edge::glbl, vertex::glbl, GLOBALS, vertex::id, init_stack(), inorder(), vertex::is_active, stack::length, graph::lvl_verbose, pop(), print_edges(), vertex::shared, AVLTree::size, topologic_debug, VERTICES, and graph::vertices\&.
+.PP
+Referenced by print_graph()\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

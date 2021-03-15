@@ -1,0 +1,107 @@
+.TH "include/graph.h" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/graph.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <pthread\&.h>\fP
+.br
+\fC#include <signal\&.h>\fP
+.br
+\fC#include '\&./context\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBgraph\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMAX_ATTEMPTS\fP   4"
+.br
+.ti -1c
+.RI "#define \fBTHREAD_ATTEMPT_SLEEP\fP   3"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBMEM_OPTION\fP { \fBABORT\fP = 0, \fBWAIT\fP = 1, \fBCONTINUE\fP = 2 }"
+.br
+.ti -1c
+.RI "enum \fBSTATES\fP { \fBPRINT\fP = 0, \fBRED\fP = 1, \fBBLACK\fP = 2, \fBTERMINATE\fP = 3 }"
+.br
+.ti -1c
+.RI "enum \fBSNAPSHOT\fP { \fBNO_SNAP\fP = -1, \fBSTART_STOP\fP = 0 }"
+.br
+.ti -1c
+.RI "enum \fBVERBOSITY\fP { \fBNO_VERB\fP = 0, \fBVERTICES\fP = 1, \fBEDGES\fP = 2, \fBFUNCTIONS\fP = 4, \fBGLOBALS\fP = 8 }"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define MAX_ATTEMPTS   4"
+
+.SS "#define THREAD_ATTEMPT_SLEEP   3"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBMEM_OPTION\fP"
+Enum for memory handling when forking -- if mem amount is exceeded ABORT: Kill the program and clean WAIT: Wait until there is enough memory and try again CONTINUE: Ignore edge error and move on 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIABORT \fP\fP
+.TP
+\fB\fIWAIT \fP\fP
+.TP
+\fB\fICONTINUE \fP\fP
+.SS "enum \fBSNAPSHOT\fP"
+Enum for snapshots\&. NONE: Record nothing START_STOP: Record first and last state 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINO_SNAP \fP\fP
+.TP
+\fB\fISTART_STOP \fP\fP
+.SS "enum \fBSTATES\fP"
+Enum for state of global manager -- locking when printing and firing; Ensures proper locking between printing node information and firing information PRINT: Print, then lock RED: # Readers = 0 -> unlock print, goes to BLACK at finish BLACK: Wait until # Readers -> 0, then print 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIPRINT \fP\fP
+.TP
+\fB\fIRED \fP\fP
+.TP
+\fB\fIBLACK \fP\fP
+.TP
+\fB\fITERMINATE \fP\fP
+.SS "enum \fBVERBOSITY\fP"
+Enum for how verbose the records are NONE: Record nothing NODES: Record nodes EDGES: Record edges FUNCTIONS: Record the functions of nodes and/or edges GLOBALS: Record the globals of nodes and/or edges; Also will record shared edges 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINO_VERB \fP\fP
+.TP
+\fB\fIVERTICES \fP\fP
+.TP
+\fB\fIEDGES \fP\fP
+.TP
+\fB\fIFUNCTIONS \fP\fP
+.TP
+\fB\fIGLOBALS \fP\fP
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

@@ -1,0 +1,156 @@
+.TH "testing/graph_vertex_edge_test.c" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+testing/graph_vertex_edge_test.c
+.SH SYNOPSIS
+.br
+.PP
+\fC#include '\&.\&./include/topologic\&.h'\fP
+.br
+\fC#include '\&.\&./include/test\&.h'\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTEST_SIZE\fP   100"
+.br
+.ti -1c
+.RI "#define \fBTEST_ARGC\fP   3"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtest_graph_insert_vertex\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_add_edge\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_add_bi_edge\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_modify_vertex\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_modify_edge\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_modify_bi_edge\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_remove_vertex\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_remove_edge\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtest_graph_remove_bi_edge\fP (struct \fBgraph\fP *)"
+.br
+.ti -1c
+.RI "void \fBtestFunction\fP (struct \fBgraph\fP *\fBgraph\fP, struct \fBvertex_result\fP *argv, void *glbl, void *edge_vars)"
+.br
+.ti -1c
+.RI "void \fBtestFunction2\fP (struct \fBgraph\fP *\fBgraph\fP, struct \fBvertex_result\fP *argv, void *glbl, void *edge_vars)"
+.br
+.ti -1c
+.RI "int \fBtestFuncEdge\fP (void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b)"
+.br
+.ti -1c
+.RI "int \fBtestFuncEdge2\fP (void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b)"
+.br
+.ti -1c
+.RI "int \fBmain\fP ()"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TEST_ARGC   3"
+
+.SS "#define TEST_SIZE   100"
+
+.SH "Function Documentation"
+.PP 
+.SS "int main ()"
+
+.PP
+References destroy_graph(), GRAPH_INIT, test_graph_add_bi_edge(), test_graph_add_edge(), test_graph_insert_vertex(), test_graph_modify_bi_edge(), test_graph_modify_edge(), test_graph_modify_vertex(), test_graph_remove_bi_edge(), test_graph_remove_edge(), and test_graph_remove_vertex()\&.
+.SS "void test_graph_add_bi_edge (struct \fBgraph\fP * graph)"
+
+.PP
+References edge::a, edge::b, create_bi_edge(), edge::f, find(), edge::glbl, TEST_SIZE, testFuncEdge(), and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_add_edge (struct \fBgraph\fP * graph)"
+
+.PP
+References edge::a, edge::b, create_edge(), edge::f, find(), edge::glbl, TEST_SIZE, testFuncEdge(), and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_insert_vertex (struct \fBgraph\fP * graph)"
+
+.PP
+References create_vertex(), TEST_SIZE, and testFunction()\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_modify_bi_edge (struct \fBgraph\fP * graph)"
+
+.PP
+References find(), modify_bi_edge(), TEST_SIZE, testFuncEdge(), testFuncEdge2(), and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_modify_edge (struct \fBgraph\fP * graph)"
+
+.PP
+References find(), modify_edge(), TEST_SIZE, testFuncEdge(), testFuncEdge2(), and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_modify_vertex (struct \fBgraph\fP * graph)"
+
+.PP
+References find(), vertex::glbl, modify_vertex(), TEST_SIZE, testFunction(), testFunction2(), and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_remove_bi_edge (struct \fBgraph\fP * graph)"
+
+.PP
+References find(), remove_bi_edge(), TEST_SIZE, and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_remove_edge (struct \fBgraph\fP * graph)"
+
+.PP
+References vertex::edge_tree, find(), edge::glbl, vertex::id, remove_edge(), TEST_SIZE, and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "void test_graph_remove_vertex (struct \fBgraph\fP * graph)"
+
+.PP
+References find(), vertex::glbl, remove_vertex(), TEST_SIZE, and graph::vertices\&.
+.PP
+Referenced by main()\&.
+.SS "int testFuncEdge (void * args, void * glbl, const void *const edge_vars_a, const void *const edge_vars_b)"
+
+.PP
+Referenced by test_graph_add_bi_edge(), test_graph_add_edge(), test_graph_modify_bi_edge(), and test_graph_modify_edge()\&.
+.SS "int testFuncEdge2 (void * args, void * glbl, const void *const edge_vars_a, const void *const edge_vars_b)"
+
+.PP
+Referenced by test_graph_modify_bi_edge(), and test_graph_modify_edge()\&.
+.SS "void testFunction (struct \fBgraph\fP * graph, struct \fBvertex_result\fP * argv, void * glbl, void * edge_vars)"
+
+.PP
+Referenced by test_graph_insert_vertex(), and test_graph_modify_vertex()\&.
+.SS "void testFunction2 (struct \fBgraph\fP * graph, struct \fBvertex_result\fP * argv, void * glbl, void * edge_vars)"
+
+.PP
+References vertex_result::edge_argv, and vertex_result::vertex_argv\&.
+.PP
+Referenced by test_graph_modify_vertex()\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

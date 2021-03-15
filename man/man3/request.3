@@ -1,0 +1,44 @@
+.TH "request" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+request
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <request\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "enum \fBREQUESTS\fP \fBrequest\fP"
+.br
+.ti -1c
+.RI "void(* \fBf\fP )(void *)"
+.br
+.ti -1c
+.RI "void * \fBargs\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Request 
+.SH "Field Documentation"
+.PP 
+.SS "void* request::args"
+
+.PP
+Referenced by create_request(), destroy_request(), and procces_request()\&.
+.SS "void(* request::f) (void *)"
+
+.PP
+Referenced by create_request(), destroy_request(), procces_request(), and test_create_request()\&.
+.SS "enum \fBREQUESTS\fP request::request"
+
+.PP
+Referenced by create_request(), destroy_request(), procces_request(), submit_request(), test_create_request(), and test_destroy_request()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.

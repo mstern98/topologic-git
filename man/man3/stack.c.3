@@ -1,0 +1,65 @@
+.TH "src/stack.c" 3 "Mon Mar 15 2021" "Version 1.0.6" "Topologic" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/stack.c
+.SH SYNOPSIS
+.br
+.PP
+\fC#include '\&.\&./include/stack\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBstack\fP * \fBinit_stack\fP ()"
+.br
+.ti -1c
+.RI "void * \fBpop\fP (struct \fBstack\fP *\fBstack\fP)"
+.br
+.ti -1c
+.RI "void * \fBget\fP (struct \fBstack\fP *\fBstack\fP, int index)"
+.br
+.ti -1c
+.RI "int \fBpush\fP (struct \fBstack\fP *\fBstack\fP, void *data)"
+.br
+.ti -1c
+.RI "void \fBdestroy_stack\fP (struct \fBstack\fP *\fBstack\fP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void destroy_stack (struct \fBstack\fP * stack)"
+
+.PP
+References stack_node::data, stack::length, stack_node::next, and stack::root\&.
+.PP
+Referenced by destroy_graph_avl(), destroy_graph_stack(), fire(), graph_init(), main(), print_edges(), print_state(), remove_vertex(), run_single(), test_delete(), and test_inorder()\&.
+.SS "void* get (struct \fBstack\fP * stack, int index)"
+
+.PP
+References stack_node::data, stack::length, stack_node::next, and stack::root\&.
+.PP
+Referenced by test_get()\&.
+.SS "struct \fBstack\fP* init_stack ()"
+
+.PP
+References stack::length, and stack::root\&.
+.PP
+Referenced by destroy_graph_avl(), fire(), graph_init(), main(), print_edges(), print_state(), remove_vertex(), run_single(), test_delete(), and test_inorder()\&.
+.SS "void* pop (struct \fBstack\fP * stack)"
+
+.PP
+References stack_node::data, stack::length, stack_node::next, and stack::root\&.
+.PP
+Referenced by destroy_graph_avl(), destroy_graph_stack(), fire(), print_edges(), print_state(), process_requests(), remove_vertex(), run(), run_single(), start_set(), test_delete(), test_destroy_request(), test_inorder(), test_pop(), and test_pop_all()\&.
+.SS "int push (struct \fBstack\fP * stack, void * data)"
+
+.PP
+References stack_node::data, stack::length, stack_node::next, and stack::root\&.
+.PP
+Referenced by inorder_nodes(), postorder_nodes(), preorder_nodes(), stackify_nodes(), start_set(), submit_request(), test_get(), test_pop_all(), and test_push()\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Topologic from the source code\&.
