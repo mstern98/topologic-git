@@ -8,9 +8,13 @@ This library can be used to create AI, ML, and simulations (such as of stock opt
 ## Installation
 ### Arch Linux
 >yay -S topologic-git
+
 -To use in program use
+
 >#include <topologic/topologic.h>
+
 -Link with
+
 >gcc ... -ltopologic
 
 ### Manualy
