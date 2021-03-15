@@ -369,22 +369,8 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     if (!graph || !vertex)
     {
         topologic_debug("%s;%s;%d", "fire", "invalid args", -1);
-        if (args->edge_argv)
-        {
-            free(args->edge_argv);
-            args->edge_argv = NULL;
-        }
-        if (args->vertex_argv)
-        {
-            free(args->vertex_argv);
-            args->vertex_argv = NULL;
-        }
-        if (args)
-        {
-            free(args);
-            args = NULL;
-        }
-        return -1;
+        retval = -1;
+        goto clean_fire;
     }
 
     enum STATES flip_color = BLACK;
