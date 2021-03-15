@@ -24,23 +24,15 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *, vo
     void *exists = find(a->edge_tree, b->id);
     if (exists)
     {
-        if (context != SINGLE)
-        {
-            pthread_mutex_unlock(&a->lock);
-        }
         topologic_debug("%s;%s;%p", "create_edge", "edge exists", (void *) NULL);
-        return NULL;
+        goto exit_edge;
     }
 
     struct edge *edge = (struct edge *)malloc(sizeof(struct edge));
     if (!edge)
     {
-        if (context != SINGLE)
-        {
-            pthread_mutex_unlock(&a->lock);
-        }
         topologic_debug("%s;%s;%p", "create_edge", "failed to create edge", (void *) NULL);
-        return NULL;
+        goto exit_edge;
     }
 
     if (a == b)
@@ -61,62 +53,48 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *, vo
 
     if (insert(a->edge_tree, edge, edge->id) < 0)
     {
-        edge->a = NULL;
-        edge->b = NULL;
-        edge->a_vars = NULL;
-        edge->f = NULL;
-        edge->glbl = NULL;
-        edge->id = 0;
-        free(edge);
-        edge = NULL;
-        if (context != SINGLE)
-        {
-            pthread_mutex_unlock(&a->lock);
-        }
         topologic_debug("%s;%s;%p", "create_edge", "failed to insert edge", (void *) NULL);
-        return NULL;
+        goto free_edge;
     }
 
     if (context != SINGLE)
     {
         if (edge->edge_type == SELF_EDGE)
-        {
             pthread_mutex_unlock(&a->lock);
-        }
         pthread_mutex_lock(&b->lock);
     }
     if (insert(b->joining_vertices, a, a->id) < 0)
     {
-        remove_ID(a->edge_tree, edge->id);
-        edge->a = NULL;
-        edge->b = NULL;
-        edge->a_vars = NULL;
-        edge->f = NULL;
-        edge->glbl = NULL;
-        edge->id = 0;
-        free(edge);
-        edge = NULL;
-        if (context != SINGLE)
-        {
-            pthread_mutex_unlock(&b->lock);
-
-            if (edge->edge_type != SELF_EDGE)
-            {
-                pthread_mutex_unlock(&a->lock);
-            }
-        }
+        topologic_debug("%s;%s;%p", "create_edge", "failed to connect edge with b", (void *) NULL);
+        goto remove_edge;
     }
 
     if (context != SINGLE)
     {
         pthread_mutex_unlock(&b->lock);
         if (edge->edge_type != SELF_EDGE)
-        {
             pthread_mutex_unlock(&a->lock);
-        }
     }
     topologic_debug("%s;%s;%p", "create_edge", "success", edge);
     return edge;
+
+remove_edge:
+    remove_ID(a->edge_tree, edge->id);
+    if (context != SINGLE && edge->edge_type != SELF_EDGE)
+        pthread_mutex_unlock(&b->lock);
+free_edge:
+    edge->a = NULL;
+    edge->b = NULL;
+    edge->a_vars = NULL;
+    edge->f = NULL;
+    edge->glbl = NULL;
+    edge->id = 0;
+    free(edge);
+    edge = NULL;
+exit_edge:
+    if (context != SINGLE)
+        pthread_mutex_unlock(&a->lock);
+    return NULL;
 }
 
 int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const), void *glbl, struct edge **edge_a_to_b, struct edge **edge_b_to_a)
