@@ -13,7 +13,7 @@ void cleanup(struct graph *);
 #define MAXIMUM 24
 #define DEFAULT_BUFFER 64
 
-int edgeFunction(void *args, void *glbl, const void *const edge_vars)
+int edgeFunction(void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b)
 {
 	int x = *(int *)(args);
 	int y = *(int *)(args + sizeof(int));

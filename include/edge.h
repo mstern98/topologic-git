@@ -25,9 +25,10 @@ struct edge
             //will compare with other Edges in graph
             //Also unique, a la vertex
             //Perhaps @nanosecond level
-    int (*f)(void *, void *, const void *const);
+    int (*f)(void *, void *, const void *const a_vars, const void *const b_vars);
     void *glbl;
     const void *const *a_vars; //To be shared among vertex a and shared edge
+    const void *const *b_vars; //To be shared among vertex b. Will be NULL for context=SWITCH
     struct vertex *a;
     struct vertex *b;
     enum edge_type edge_type;
@@ -39,7 +40,7 @@ struct edge_request
 {
     struct vertex *a;
     struct vertex *b;
-    int (*f)(void *, void *, const void *const);
+    int (*f)(void *, void *, const void *const, const void *const);
     void *glbl;
 };
 

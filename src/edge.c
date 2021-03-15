@@ -3,7 +3,7 @@
 
 #include "../include/topologic.h"
 
-struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const), void *glbl)
+struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const, const void *const), void *glbl)
 {
     topologic_debug("%s;a %p;b %p;f %p;glbl %p", "create_edge", a, b, f, glbl);
     if (!a || !b)
@@ -46,6 +46,10 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(void *, vo
     edge->glbl = glbl;
 
     edge->a_vars = a->shared->edge_data;
+    if (context != SWITCH)
+        edge->b_vars = b->shared->edge_data;
+    else
+        edge->b_vars = NULL;
 
     edge->f = f;
     //MAKE UNIQUE
@@ -86,6 +90,7 @@ free_edge:
     edge->a = NULL;
     edge->b = NULL;
     edge->a_vars = NULL;
+    edge->b_vars = NULL;
     edge->f = NULL;
     edge->glbl = NULL;
     edge->id = 0;
@@ -97,7 +102,7 @@ exit_edge:
     return NULL;
 }
 
-int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const), void *glbl, struct edge **edge_a_to_b, struct edge **edge_b_to_a)
+int create_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const, const void *const), void *glbl, struct edge **edge_a_to_b, struct edge **edge_b_to_a)
 {
     topologic_debug("%s;a %p;b %p;f %p;glbl %p", "create_edge", a, b, f, glbl);
     if (!a || !b || !f || a == b)
@@ -179,6 +184,7 @@ int remove_edge(struct vertex *a, struct vertex *b)
 
     struct edge *edge = (struct edge *)data;
     edge->a_vars = NULL;
+    edge->b_vars = NULL;
     edge->a = NULL;
     edge->b = NULL;
     edge->f = NULL;
@@ -235,6 +241,7 @@ int remove_edge_id(struct vertex *a, int id)
     remove_ID(edge->b->joining_vertices, a->id);
 
     edge->a_vars = NULL;
+    edge->b_vars = NULL;
     edge->a = NULL;
     edge->b = NULL;
     edge->f = NULL;
@@ -286,7 +293,7 @@ int remove_bi_edge(struct vertex *a, struct vertex *b)
     return ret;
 }
 
-int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const), void *glbl)
+int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const, const void *const), void *glbl)
 {
     topologic_debug("%s;a %p;b %p;f %p;glbl %p", "modify_edge", a, b, f, glbl);
     if (!a || !b)
@@ -326,7 +333,7 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, con
     return 0;
 }
 
-int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const), void *glbl)
+int modify_bi_edge(struct vertex *a, struct vertex *b, int (*f)(void *, void *, const void *const, const void *const), void *glbl)
 {
     topologic_debug("%s;a %p;b %p;f %p;glbl %p", "modify_bi_edge", a, b, f, glbl);
     if (!a || !b || a == b)

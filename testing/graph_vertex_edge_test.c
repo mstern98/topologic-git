@@ -32,11 +32,11 @@ void testFunction2(struct graph *graph, struct vertex_result* argv, void* glbl, 
 }
 
 
-int testFuncEdge(void* args, void *glbl, const void *const edge_vars){
+int testFuncEdge(void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 	return 0;
 }
 
-int testFuncEdge2(void* args, void *glbl, const void *const edge_vars){
+int testFuncEdge2(void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 	int i = 0;
 	int j = *(int*)(args+i);
 	j+=i;
@@ -99,7 +99,7 @@ void test_graph_insert_vertex(struct graph* graph){
 void test_graph_add_edge(struct graph* graph){
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int (*f)(void*, void *, const void * const) = testFuncEdge;
+		int (*f)(void*, void *, const void * const, const void * const) = testFuncEdge;
 		void* glbl=malloc(32);
 
 		struct vertex* a = find(graph->vertices, (i));
@@ -122,7 +122,7 @@ void test_graph_add_bi_edge(struct graph* graph){
 
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int (*f)(void*, void *, const void * const) = testFuncEdge;
+		int (*f)(void*, void *, const void * const, const void * const) = testFuncEdge;
 		void* glbl=malloc(32);
 
 		struct vertex* a = find(graph->vertices, (i));

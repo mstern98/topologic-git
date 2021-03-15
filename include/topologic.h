@@ -81,7 +81,8 @@ struct vertex *create_vertex(struct graph *graph,
                              void (*f)(struct graph *, struct vertex_result *, void *, void *),
                              int id,
                              void *glbl);
-#define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL)
+#define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL, PROTECT_B_VARS)
+#define CREATE_VERTEX_GLBL(graph, f, id, glbl) create_vertex(graph, f, id, glbl, PROTECT_B_VARS)
 
 /**
 @PARAM a: A vertex
@@ -95,7 +96,7 @@ NOTE: NULL glbl will mean no global variables. f cannot be NULL.
 **/
 struct edge *create_edge(struct vertex *a,
                          struct vertex *b,
-                         int (*f)(void *, void *, const void *const),
+                         int (*f)(void *, void *, const void *const, const void *const),
                          void *glbl);
 #define CREATE_EDGE(a, b, f) create_edge(a, b, f, NULL)
 
@@ -110,7 +111,7 @@ If edge_a_to_b or edge_b_to_a is NULL it will not.
 **/
 int create_bi_edge(struct vertex *a,
                    struct vertex *b,
-                   int (*f)(void *, void *, const void *const),
+                   int (*f)(void *, void *, const void *const, const void *const),
                    void *glbl,
                    struct edge **edge_a_to_b,
                    struct edge **edge_b_to_a);
@@ -205,7 +206,7 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_edge(struct vertex *a,
                 struct vertex *b,
-                int (*f)(void *, void *, const void *const),
+                int (*f)(void *, void *, const void *const, const void *const),
                 void *glbl);
 
 #define MODIFY_EDGE(a, b, f) modify_edge(a, b, f, NULL)
@@ -226,7 +227,7 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_bi_edge(struct vertex *a,
                    struct vertex *b,
-                   int (*f)(void *, void *, const void *const),
+                   int (*f)(void *, void *, const void *const, const void *const),
                    void *glbl);
 #define MODIFY_BI_EDGE(a, b, f) modify_bi_edge(a, b, f, NULL)
 #define MODIFY_BI_EDGE_GLOBALS(a, b, glbl) modify_bi_edge(a, b, NULL, glbl)

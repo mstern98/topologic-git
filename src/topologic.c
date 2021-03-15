@@ -5,7 +5,7 @@
 
 void sleep_ms(int milliseconds)
 {
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     Sleep(milliseconds);
 #else
     struct timespec ts;
@@ -107,7 +107,7 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
         (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
         while ((edge = (struct edge *)pop(edges)) != NULL)
         {
-            if (successor == 0 && (edge->f)(args->edge_argv, edge->glbl, edge->a_vars))
+            if (successor == 0 && (edge->f)(args->edge_argv, edge->glbl, edge->a_vars, edge->b_vars))
             {
                 topologic_debug("%s;%s;%p", "run_single", "next vertex", edge->b);
                 vertex->is_active = 0;
@@ -424,13 +424,13 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         {
             pthread_mutex_lock(&edge->bi_edge_lock);
         }
-        if ((edge->f)(args->edge_argv, edge->glbl, edge->a_vars))
+        if ((edge->f)(args->edge_argv, edge->glbl, edge->a_vars, edge->b_vars))
         {
             if (edge->edge_type == BI_EDGE)
             {
                 pthread_mutex_unlock(&edge->bi_edge_lock);
             }
-            if (graph->context == SWITCH)
+            if (graph->context == SWITCH || graph->context == SWITCH_UNSAFE)
             {
                 int iloop_b = 1;
                 if (edge->b == vertex)

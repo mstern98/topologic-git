@@ -18,12 +18,14 @@ SINGLE: Is the same as NONE
 SWITCH: All valid edges are taken. 
         A process per vertex is spawned and
         previous process is killed.
+SWITCH_UNSAGE: Same as SWITCH but will pass edge->b_vars to edge->f
 **/
 enum CONTEXT
 {
         NONE = 0,
         SINGLE = 1,
-        SWITCH = 2
+        SWITCH = 2,
+        SWITCH_UNSAFE = 3,
 };
 
 #ifdef __cplusplus

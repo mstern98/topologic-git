@@ -19,7 +19,7 @@ void cleanup(struct graph*);
 #define MAX_EDGES MAX_VERTICES
 #define DEFAULT_BUFFER 32
 
-int edgeFunction(void* args, void *glbl, const void *const edge_vars){
+int edgeFunction(void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 
 	int x = *(int*)(args);
 	int y = *(int*)(args+4);
