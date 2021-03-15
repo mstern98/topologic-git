@@ -391,7 +391,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         while (graph->red_locked)
         {
         }
-        pthread_mutex_lock(&vertex->lock);
     }
     else if (color == BLACK)
     {
@@ -399,7 +398,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         while (graph->black_locked)
         {
         }
-        pthread_mutex_lock(&vertex->lock);
     }
     else
     {
@@ -422,6 +420,8 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         return -1;
     }
     
+    pthread_mutex_lock(&vertex->lock);
+
     if (graph->state == TERMINATE)
     {
         topologic_debug("%s;%s;%d", "fire", "terminate", -1);
@@ -501,8 +501,11 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     }
 
     (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
-
     struct vertex *next_vertex = NULL;
+
+    if (graph->max_state_changes != -1 && graph->state_count + 1 >= graph->max_state_changes)
+        goto exit_fire;
+
     struct stack *edges = init_stack();
     preorder(vertex->edge_tree, edges);
     struct edge *edge = NULL;
@@ -523,6 +526,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
                 int iloop_b = 1;
                 if (edge->b == vertex)
                     iloop_b = iloop + 1;
+                printf("%p; next set\n", edge->b);
                 if (switch_vertex(graph, edge->b, args, flip_color, iloop_b) < 0)
                 {
                     topologic_debug("%s;%s;%d", "fire", "failed to switch", -1);
@@ -583,6 +587,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     destroy_stack(edges);
     edges = NULL;
 
+exit_fire:
     pthread_mutex_lock(&graph->lock);
     if (color == RED)
     {
