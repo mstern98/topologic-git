@@ -551,53 +551,13 @@ void *fire_pthread(void *vargp)
 int switch_vertex(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
     topologic_debug("%s;graph %p;vertex %p;args %p;color %d;iloop %d", "switch_vertex", graph, vertex, args, color, iloop);
-    struct fireable *argv = (struct fireable *)malloc(sizeof(struct fireable));
-    if (!argv)
+    struct fireable *argv = create_fireable(graph, vertex, args, color, iloop);
+    if (!argv) 
     {
-        topologic_debug("%s;%s;%d", "switch_vertex", "invalid args", -1);
+        topologic_debug("%s;%s;%d", "switch_vertex", "failed to create fireable", -1);
         return -1;
     }
-    argv->args = (struct vertex_result *)malloc(sizeof(struct vertex_result));
-    if (!argv->args)
-    {
-        topologic_debug("%s;%s;%d", "switch_vertex", "failed to malloc args", -1);
-        free(argv);
-        return -1;
-    }
-    argv->args->vertex_argv = NULL;
-    if (args->vertex_argv && args->vertex_size > 0)
-    {
-        argv->args->vertex_argv = malloc(sizeof(args->vertex_size));
-        if (!argv->args->vertex_argv)
-        {
-            free(argv->args);
-            free(argv);
-            topologic_debug("%s;%s;%d", "switch_vertex", "failed to malloc edge_args", -1);
-            return -1;
-        }
-        memcpy(argv->args->vertex_argv, args->vertex_argv, args->vertex_size);
-    }
-    argv->args->edge_argv = NULL;
-    if (args->edge_argv && args->edge_size > 0)
-    {
-        argv->args->edge_argv = malloc(sizeof(args->edge_size));
-        if (!argv->args->vertex_argv)
-        {
-            free(argv->args->vertex_argv);
-            free(argv->args);
-            free(argv);
-            topologic_debug("%s;%s;%d", "switch_vertex", "failed to malloc vertex_args", -1);
-            return -1;
-        }
-        memcpy(argv->args->edge_argv, args->edge_argv, args->edge_size);
-    }
-
-    argv->args->vertex_size = args->vertex_size;
-    argv->args->edge_size = args->edge_size;
-    argv->graph = graph;
-    argv->vertex = vertex;
-    argv->color = color;
-    argv->iloop = iloop;
+    
     int thread_result = 0;
     int thread_attempts = 0;
     pthread_t thread;

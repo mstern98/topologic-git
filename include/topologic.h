@@ -11,6 +11,7 @@
 #include "./vertex.h"
 #include "./request.h"
 #include "./graph.h"
+#include "./fireable.h"
 
 #define PTHREAD_SLEEP_TIME 50 //milliseconds
 
@@ -33,14 +34,7 @@
 extern "C" {
 #endif
 
-struct fireable
-{
-        struct graph *graph;
-        struct vertex *vertex;
-        struct vertex_result *args;
-        enum STATES color;
-        int iloop;
-};
+struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop);
 
 /**
  Wrapper function for fire, fire_1
