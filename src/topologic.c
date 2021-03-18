@@ -540,7 +540,7 @@ void *fire_pthread(void *vargp)
     enum STATES color = fireable->color;
     int iloop = fireable->iloop;
 
-    free(vargp);
+    destroy_fireable((struct fireable *) vargp);
     sleep_ms(PTHREAD_SLEEP_TIME);
     int ret_val = fire(graph, v, args, color, iloop);
     topologic_debug("%s;%s;%d", "fire_pthread", "finished", ret_val);
@@ -570,7 +570,7 @@ create_switch_threads:
         {
             perror("Creating initial Threads: ");
             topologic_debug("%s;%s;%d", "switch_vertex", "Couldn't create threads", -1);
-            free(argv);
+            destroy_fireable(argv);
             return -1;
         }
         else
@@ -579,13 +579,13 @@ create_switch_threads:
             {
             case CONTINUE:
                 topologic_debug("%s;%s;%d", "switch_vertex", "Continue", -1);
-                free(argv);
+                destroy_fireable(argv);
                 return -1;
             case WAIT:
                 if (thread_attempts > MAX_ATTEMPTS)
                 {
                     topologic_debug("%s;%s;%d", "switch_vertex", "Max Thread Attempts Hit", -1);
-                    free(argv);
+                    destroy_fireable(argv);
                     return -1;
                 }
                 sleep(THREAD_ATTEMPT_SLEEP);
@@ -593,7 +593,7 @@ create_switch_threads:
                 goto create_switch_threads;
             case ABORT:
                 topologic_debug("%s;%s;%d", "switch_vertex", "Failed to Create Thread", -1);
-                free(argv);
+                destroy_fireable(argv);
                 return -1;
             }
         }

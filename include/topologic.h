@@ -35,6 +35,7 @@ extern "C" {
 #endif
 
 struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop);
+void destroy_fireable(struct fireable *fireable);
 
 /**
  Wrapper function for fire, fire_1

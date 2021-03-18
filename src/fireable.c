@@ -61,3 +61,14 @@ free_fireable:
     fireable = NULL;
     return NULL;
 }
+
+void destroy_fireable(struct fireable *fireable)
+{
+    if (!fireable) return;
+    fireable->args = NULL;
+    fireable->graph = NULL;
+    fireable->vertex = NULL;
+    fireable->color = 0;
+    fireable->iloop = 0;
+    free(fireable);
+}
