@@ -5,16 +5,17 @@
 
 struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop) 
 {
+    topologic_debug("%s;graph %p;vertex %p;vertex_results %p;color %d;iloop %d", "create_fireable", graph, vertex, args, color, iloop);
     struct fireable *fireable = (struct fireable *)malloc(sizeof(struct fireable));
     if (!fireable)
     {
-        topologic_debug("%s;%s;%p", "fireable", "could not create fireable", NULL);
+        topologic_debug("%s;%s;%p", "create_fireable", "could not create fireable", NULL);
         return NULL;
     }
     fireable->args = (struct vertex_result *)malloc(sizeof(struct vertex_result));
     if (!fireable->args)
     {
-        topologic_debug("%s;%s;%p", "fireable", "failed to malloc args", NULL);
+        topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc args", NULL);
         goto free_fireable;
     }
     fireable->args->vertex_argv = NULL;
@@ -23,7 +24,7 @@ struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, str
         fireable->args->vertex_argv = malloc(sizeof(args->vertex_size));
         if (!fireable->args->vertex_argv)
         {
-            topologic_debug("%s;%s;%p", "fireable", "failed to malloc edge_args", NULL);
+            topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc edge_args", NULL);
             goto free_args;
         }
         memcpy(fireable->args->vertex_argv, args->vertex_argv, args->vertex_size);
@@ -34,7 +35,7 @@ struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, str
         fireable->args->edge_argv = malloc(sizeof(args->edge_size));
         if (!fireable->args->vertex_argv)
         {
-            topologic_debug("%s;%s;%p", "fireable", "failed to malloc vertex_args", NULL);
+            topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc vertex_args", NULL);
             goto free_vertex_argv;
         }
         memcpy(fireable->args->edge_argv, args->edge_argv, args->edge_size);
@@ -47,7 +48,7 @@ struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, str
     fireable->color = color;
     fireable->iloop = iloop;
    
-    topologic_debug("%s;%s;%p", "fireable", "success", fireable);
+    topologic_debug("%s;%s;%p", "create_fireable", "success", fireable);
     return fireable;
 
 free_vertex_argv:
@@ -62,13 +63,19 @@ free_fireable:
     return NULL;
 }
 
-void destroy_fireable(struct fireable *fireable)
+int destroy_fireable(struct fireable *fireable)
 {
-    if (!fireable) return;
+    topologic_debug("%s;fireable %p", "destroy_fireable", fireable);
+    if (!fireable) {
+        topologic_debug("%s;failed;%d", "destroy_fireable", -1);
+        return -1;
+    }
     fireable->args = NULL;
     fireable->graph = NULL;
     fireable->vertex = NULL;
     fireable->color = 0;
     fireable->iloop = 0;
     free(fireable);
+    topologic_debug("%s;success;%d", "destroy_fireable", 0);
+    return 0;
 }
