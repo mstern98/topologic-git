@@ -23,9 +23,10 @@ SWITCH_UNSAGE: Same as SWITCH but will pass edge->b_vars to edge->f
 enum CONTEXT
 {
         NONE = 0,
+        NONE_UNSAFE = 8,
         SINGLE = 1,
         SWITCH = 2,
-        SWITCH_UNSAFE = 3,
+        SWITCH_UNSAFE = 10,
 };
 
 #ifdef __cplusplus

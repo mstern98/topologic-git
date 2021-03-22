@@ -46,7 +46,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(int, void 
     edge->glbl = glbl;
 
     edge->a_vars = a->shared->edge_data;
-    if (context != SWITCH)
+    if (context != SWITCH && context != NONE)
         edge->b_vars = b->shared->edge_data;
     else
         edge->b_vars = NULL;
@@ -168,16 +168,12 @@ int remove_edge(struct vertex *a, struct vertex *b)
     remove_ID(b->joining_vertices, a->id);
 
     if (a->context != SINGLE)
-    {
         pthread_mutex_lock(&a->lock);
-    }
     void *data = remove_ID(a->edge_tree, b->id);
     if (!data)
     {
         if (a->context != SINGLE)
-        {
             pthread_mutex_unlock(&a->lock);
-        }
         topologic_debug("%s;%s;%d", "remove_edge", "invalid edge", -1);
         return -1;
     }
@@ -193,9 +189,7 @@ int remove_edge(struct vertex *a, struct vertex *b)
     if (edge->edge_type == BI_EDGE)
     {
         if (a->context != SINGLE)
-        {
             pthread_mutex_destroy(&edge->bi_edge_lock);
-        }
         edge->bi_edge->bi_edge = NULL;
         edge->bi_edge->edge_type = EDGE;
     }
@@ -210,9 +204,7 @@ int remove_edge(struct vertex *a, struct vertex *b)
     free(edge);
     edge = NULL;
     if (a->context != SINGLE)
-    {
         pthread_mutex_unlock(&a->lock);
-    }
     topologic_debug("%s;%s;%d", "create_bi_edge", "removed", 0);
     return 0;
 }
@@ -250,25 +242,19 @@ int remove_edge_id(struct vertex *a, int id)
     if (edge->edge_type == BI_EDGE)
     {
         if (a->context != SINGLE)
-        {
             pthread_mutex_destroy(&edge->bi_edge_lock);
-        }
         edge->bi_edge->bi_edge = NULL;
         edge->bi_edge->edge_type = EDGE;
     }
     else
-    {
         free(edge->glbl);
-    }
     edge->glbl = NULL;
     edge->bi_edge = NULL;
 
     free(edge);
     edge = NULL;
     if (a->context != SINGLE)
-    {
         pthread_mutex_unlock(&a->lock);
-    }
     topologic_debug("%s;%s;%d", "remove_edge_id", "removed edge", 0);
     return 0;
 }
@@ -302,23 +288,17 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *, void *
         return -1;
     }
     if (a->context != SINGLE)
-    {
         pthread_mutex_lock(&a->lock);
-    }
     struct edge *edge = (struct edge *)find(a->edge_tree, b->id);
     if (!edge)
     {
         if (a->context != SINGLE)
-        {
             pthread_mutex_unlock(&a->lock);
-        }
         topologic_debug("%s;%s;%d", "modify_edge", "invalid edge", -1);
         return -1;
     }
     if (f)
-    {
         edge->f = f;
-    }
     if (glbl)
     {
         if (edge->glbl)
@@ -326,9 +306,7 @@ int modify_edge(struct vertex *a, struct vertex *b, int (*f)(int, void *, void *
         edge->glbl = glbl;
     }
     if (a->context != SINGLE)
-    {
         pthread_mutex_unlock(&a->lock);
-    }
     topologic_debug("%s;%s;%d", "modify_edge", "success", 0);
     return 0;
 }

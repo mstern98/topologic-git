@@ -124,22 +124,16 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 		if (context != SINGLE)
 		{
 			if (edge->edge_type == SELF_EDGE)
-			{
 				pthread_mutex_unlock(&vertex->lock);
-			}
 			pthread_mutex_lock(&(edge->b->lock));
 		}
 		remove_ID(edge->b->joining_vertices, vertex->id);
 		if (context != SINGLE)
-		{
 			pthread_mutex_unlock(&(edge->b->lock));
-		}
 		if (edge->edge_type == BI_EDGE)
 		{
 			if (context != SINGLE)
-			{
 				pthread_mutex_destroy(&edge->bi_edge_lock);
-			}
 			edge->bi_edge->bi_edge = NULL;
 			edge->bi_edge->edge_type = EDGE;
 		}
@@ -159,9 +153,7 @@ int remove_vertex(struct graph *graph, struct vertex *vertex)
 	vertex->joining_vertices = NULL;
 	struct vertex *joining_vertex = NULL;
 	while ((joining_vertex = (struct vertex *)pop(stack)) != NULL)
-	{
 		remove_edge_id(joining_vertex, vertex->id);
-	}
 
 	destroy_stack(stack);
 	stack = NULL;
@@ -221,9 +213,7 @@ int modify_vertex(struct vertex *vertex, void (*f)(int, struct graph *, struct v
 		pthread_mutex_lock(&vertex->lock);
 
 	if (f != NULL)
-	{
 		vertex->f = f;
-	}
 	if (glbl != NULL)
 	{
 		if (vertex->glbl)
