@@ -19,7 +19,7 @@ void cleanup(struct graph*);
 #define MAX_EDGES MAX_VERTICES
 #define DEFAULT_BUFFER 32
 
-int edgeFunction(void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
+int edgeFunction(int id, void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 
 	int x = *(int*)(args);
 	int y = *(int*)(args+4);
@@ -27,7 +27,7 @@ int edgeFunction(void* args, void *glbl, const void *const edge_vars_a, const vo
 
 }
 
-void vertexFunction(struct graph *graph, struct vertex_result* args, void *glbl, void *edge_vars){
+void vertexFunction(int id, struct graph *graph, struct vertex_result* args, void *glbl, void *edge_vars){
 }
 
 int main(){
@@ -77,7 +77,7 @@ void test_create_request(struct graph* graph){
 	for(i=0; i<MAX_VERTICES; i++){
 		struct request* request;
 		int id = i;
-		void (*f)(struct graph *, struct vertex_result*, void *, void *) = vertexFunction;
+		void (*f)(int, struct graph *, struct vertex_result*, void *, void *) = vertexFunction;
 		void* glbl = NULL;
 		struct vertex_request *v_req = malloc(sizeof(struct vertex_request));
 
@@ -99,7 +99,7 @@ void test_submit_request(struct graph* graph){
 	int i = 0;
 	for(i=0; i<MAX_VERTICES; i++){
 		int id = i;
-		void (*f)(struct graph *, struct vertex_result*, void *, void *) = vertexFunction;
+		void (*f)(int, struct graph *, struct vertex_result*, void *, void *) = vertexFunction;
 		void* glbl = NULL;
 		
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));

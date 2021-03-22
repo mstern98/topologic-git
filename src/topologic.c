@@ -104,10 +104,10 @@ int run_single(struct graph *graph, struct vertex_result **init_vertex_args)
             pthread_cond_wait(&graph->pause_cond, &graph->lock);
         }
         pthread_mutex_unlock(&graph->lock);
-        (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
+        (vertex->f)(vertex->id, graph, args, vertex->glbl, vertex->shared->vertex_data);
         while ((edge = (struct edge *)pop(edges)) != NULL)
         {
-            if (successor == 0 && (edge->f)(args->edge_argv, edge->glbl, edge->a_vars, edge->b_vars))
+            if (successor == 0 && (edge->f)(edge->id, args->edge_argv, edge->glbl, edge->a_vars, edge->b_vars))
             {
                 topologic_debug("%s;%s;%p", "run_single", "next vertex", edge->b);
                 vertex->is_active = 0;
@@ -410,7 +410,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         goto exit_fire;
     }
 
-    (vertex->f)(graph, args, vertex->glbl, vertex->shared->vertex_data);
+    (vertex->f)(vertex->id, graph, args, vertex->glbl, vertex->shared->vertex_data);
 
     if (graph->max_state_changes != -1 && graph->state_count + 1 >= graph->max_state_changes)
         goto exit_fire;
@@ -424,7 +424,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         {
             pthread_mutex_lock(&edge->bi_edge_lock);
         }
-        if ((edge->f)(args->edge_argv, edge->glbl, edge->a_vars, edge->b_vars))
+        if ((edge->f)(edge->id, args->edge_argv, edge->glbl, edge->a_vars, edge->b_vars))
         {
             if (edge->edge_type == BI_EDGE)
             {

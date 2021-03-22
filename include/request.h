@@ -32,6 +32,17 @@ enum REQUESTS
         GENERIC = 12
 };
 
+/**
+Enum for handling failed requests
+NO_FAIL_REQUEST: All request must succeed else end the graph
+IGNORE_FAIL_REQUEST: Ignore a request if it fails
+**/
+enum REQUEST_FLAG
+{
+    NO_FAIL_REQUEST = 0,
+    IGNORE_FAIL_REQUEST = 1
+};
+
 /** Request **/
 struct request
 {

@@ -20,10 +20,10 @@ void test_graph_remove_bi_edge(struct graph*);
 #define TEST_SIZE 100
 #define TEST_ARGC 3
 
-void testFunction(struct graph *graph, struct vertex_result* argv, void* glbl, void* edge_vars){
+void testFunction(int id, struct graph *graph, struct vertex_result* argv, void* glbl, void* edge_vars){
 }
 
-void testFunction2(struct graph *graph, struct vertex_result* argv, void* glbl, void* edge_vars){
+void testFunction2(int id, struct graph *graph, struct vertex_result* argv, void* glbl, void* edge_vars){
 	struct vertex_result* res = argv;
 	assert(res!=NULL);
 
@@ -32,11 +32,11 @@ void testFunction2(struct graph *graph, struct vertex_result* argv, void* glbl, 
 }
 
 
-int testFuncEdge(void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
+int testFuncEdge(int id, void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 	return 0;
 }
 
-int testFuncEdge2(void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
+int testFuncEdge2(int id, void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 	int i = 0;
 	int j = *(int*)(args+i);
 	j+=i;
@@ -89,7 +89,7 @@ void test_graph_insert_vertex(struct graph* graph){
 	for(i=0; i<TEST_SIZE; i++){
 		//Dummy values
 		int id = i;
-		void (*f)(struct graph *, struct vertex_result *, void *, void *) = testFunction;
+		void (*f)(int, struct graph *, struct vertex_result *, void *, void *) = testFunction;
 		void* glbl = malloc(32); //32 bytes of just random stuff for now
 		assert(create_vertex(graph, f, id, glbl)!=NULL);
 	}
@@ -99,7 +99,7 @@ void test_graph_insert_vertex(struct graph* graph){
 void test_graph_add_edge(struct graph* graph){
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int (*f)(void*, void *, const void * const, const void * const) = testFuncEdge;
+		int (*f)(int, void*, void *, const void * const, const void * const) = testFuncEdge;
 		void* glbl=malloc(32);
 
 		struct vertex* a = find(graph->vertices, (i));
@@ -122,7 +122,7 @@ void test_graph_add_bi_edge(struct graph* graph){
 
 	int i = 0;
 	for(i=0; i<TEST_SIZE; i++){
-		int (*f)(void*, void *, const void * const, const void * const) = testFuncEdge;
+		int (*f)(int, void*, void *, const void * const, const void * const) = testFuncEdge;
 		void* glbl=malloc(32);
 
 		struct vertex* a = find(graph->vertices, (i));
@@ -199,11 +199,7 @@ void test_graph_modify_bi_edge(struct graph* graph){
 		assert(modify_bi_edge(v,v2,NULL,NULL)==0);
 	}
 	fprintf(stderr, "EDGE MODIFICATION PASSED\n");
-
-
 }
-
-
 
 void test_graph_remove_bi_edge(struct graph* graph){
 	assert(graph!=NULL);
@@ -218,7 +214,6 @@ void test_graph_remove_bi_edge(struct graph* graph){
 		assert(remove_bi_edge(v, v2)==0); 
 	}
 	fprintf(stderr, "BI-DIRECTIONAL EDGE REMOVAL FROM GRAPH PASSED\n");
-
 }
 
 void test_graph_remove_edge(struct graph* graph){

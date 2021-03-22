@@ -17,14 +17,14 @@ void request_nil() {
 	printf("RQST\n");
 }
 
-int edgeFunction(void *args, void* glbl, const void* const edge_vars_a, const void *const edge_vars_b)
+int edgeFunction(int id, void *args, void* glbl, const void* const edge_vars_a, const void *const edge_vars_b)
 {
 	int x = *(int *)(args);
 	int y = *(int *)(args + sizeof(int));
 	return ((x * y) / 2) << 2;
 }
 
-void vertexFunction(struct graph *graph, struct vertex_result* args, void* glbl, void* edge_vars)
+void vertexFunction(int id, struct graph *graph, struct vertex_result* args, void* glbl, void* edge_vars)
 {
 	struct vertex_result *res = (struct vertex_result *)args;
 	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->edge_argv);
@@ -88,7 +88,7 @@ void cleanup(struct graph *graph)
 
 void init(struct graph **graph)
 {
-	*graph = graph_init(10, START_STOP, 10, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE);
+	*graph = graph_init(50, START_STOP, 10, VERTICES | EDGES | FUNCTIONS | GLOBALS, SWITCH, CONTINUE, IGNORE_FAIL_REQUEST);
 	assert(*graph != NULL);
 
 	//Setting up graphs and whatnot
@@ -96,7 +96,7 @@ void init(struct graph **graph)
 	for (i = 0; i < MAXIMUM; i++)
 	{
 		int id = i;
-		void (*f)(struct graph *, struct vertex_result*, void* glbl, void* edge_vars) = vertexFunction;
+		void (*f)(int, struct graph *, struct vertex_result*, void* glbl, void* edge_vars) = vertexFunction;
 		//struct vertex_result *(*f)(void *) = vertexFunction;
 		void *glbl = NULL;
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
@@ -126,6 +126,14 @@ void init(struct graph **graph)
 		struct request *req = create_request(CREAT_EDGE, edge_req, NULL);
 		assert(submit_request(*graph, req) == 0);
 	}
+    struct edge_request *edge_req = malloc(sizeof(struct edge_request));
+    edge_req->a = verts[1];
+    edge_req->b = verts[0];
+    edge_req->f = &edgeFunction;
+    edge_req->glbl = NULL;
+    struct request *req = create_request(CREAT_EDGE, edge_req, NULL);
+    assert(submit_request(*graph, req) == 0);
+
 	assert(process_requests(*graph) == 0);
 }
 
@@ -133,7 +141,7 @@ void setup_start_set(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	int ids[3] = {1,2,3};
+	int ids[3] = {0,1,2};
 	assert(start_set(graph, &ids[0], 1) == 0);
 	ids[0] = 3;
 	assert(start_set(graph, &ids[0], 1)==0);

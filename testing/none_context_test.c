@@ -13,7 +13,7 @@ void cleanup(struct graph *);
 #define MAXIMUM 24
 #define DEFAULT_BUFFER 64
 
-int edgeFunction(void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b)
+int edgeFunction(int id, void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b)
 {
 	int x = *(int *)(args);
 	int y = *(int *)(args + sizeof(int));
@@ -21,7 +21,7 @@ int edgeFunction(void *args, void *glbl, const void *const edge_vars_a, const vo
 	return ((x * y) / 2) << 2;
 }
 
-void vertexFunction(struct graph *graph, struct vertex_result* args, void* glbl, void* edge_vars)
+void vertexFunction(int id, struct graph *graph, struct vertex_result* args, void* glbl, void* edge_vars)
 {
 	struct vertex_result *res = (struct vertex_result *)args;
 	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->vertex_argv);
@@ -54,7 +54,7 @@ void cleanup(struct graph *graph)
 
 void init(struct graph **graph)
 {
-	*graph = graph_init(100, START_STOP, 1, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
+	*graph = graph_init(100, START_STOP, 1, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE, IGNORE_FAIL_REQUEST);
 	assert(*graph != NULL);
 
 	//Setting up graphs and whatnot
@@ -63,7 +63,7 @@ void init(struct graph **graph)
 	for (i = 0; i < MAXIMUM; i++)
 	{
 		int id = i;
-		void (*f)(struct graph *, struct vertex_result*, void* glbl, void* edge_vars) = vertexFunction;
+		void (*f)(int, struct graph *, struct vertex_result*, void* glbl, void* edge_vars) = vertexFunction;
 		//struct vertex_result *(*f)(void *) = vertexFunction;
 		void *glbl = NULL;
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
@@ -100,12 +100,12 @@ void setup_start_set(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	int ids[2] = {0, 4};
+	int ids[3] = {0, 1, 4};
 	assert(start_set(graph, &ids[0], 1) == 0);
 	ids[0] = 3;
 	assert(start_set(graph, &ids[0], 1)==0);
 	ids[0] = 9;
-	assert(start_set(graph, ids, 2)==0);
+	assert(start_set(graph, ids, 3)==0);
 	fprintf(stderr, "START SET TESTS COMPLETED\n");
 }
 
@@ -113,11 +113,11 @@ void test_run_none(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *) * 2);
+	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *) * 3);
 	assert(vertex_args != NULL);
 
 	int i = 0;
-	for (i = 0; i < 2; ++i) {
+	for (i = 0; i < 3; ++i) {
 		int edge_args[2] = {i + 1, i + 4};
 		void *edge = malloc(sizeof(int) * 2);
 		memcpy(edge, &edge_args[0], sizeof(int));

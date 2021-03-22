@@ -9,7 +9,7 @@ void cleanup(struct graph*);
 
 #define ONE 1
 
-int edgeFunction(void *args, void* glbl, const void* const edge_vars_a, const void *const edge_vars_b)
+int edgeFunction(int id, void *args, void* glbl, const void* const edge_vars_a, const void *const edge_vars_b)
 {
 	int x = *(int *)(args);
 	int y = *(int *)(args + sizeof(int));
@@ -17,7 +17,7 @@ int edgeFunction(void *args, void* glbl, const void* const edge_vars_a, const vo
 	return ((x * y) / 2) << 2;
 }
 
-void vertexFunction(struct graph *graph, struct vertex_result* args, void* glbl, void* edge_vars)
+void vertexFunction(int id, struct graph *graph, struct vertex_result* args, void* glbl, void* edge_vars)
 {
 	struct vertex_result *res = (struct vertex_result *)args;
 	fprintf(stderr, "FIRING: %p, %d\n", res, *(int *) res->vertex_argv);
@@ -47,7 +47,7 @@ void cleanup(struct graph *graph)
 
 void init(struct graph **graph)
 {
-	*graph = graph_init(100, START_STOP, 100, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE);
+	*graph = graph_init(100, START_STOP, 100, VERTICES | EDGES | FUNCTIONS | GLOBALS, NONE, CONTINUE, IGNORE_FAIL_REQUEST);
 	assert(*graph != NULL);
 }
 
@@ -58,7 +58,7 @@ void setupSelfEdge(struct graph* graph){
 	for (i = 0; i < ONE; i++)
 	{
 		int id = i;
-		void (*f)(struct graph *, struct vertex_result*, void* glbl, void* edge_vars) = vertexFunction;
+		void (*f)(int, struct graph *, struct vertex_result*, void* glbl, void* edge_vars) = vertexFunction;
 		//struct vertex_result *(*f)(void *) = vertexFunction;
 		void *glbl = NULL;
 		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));

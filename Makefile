@@ -63,10 +63,11 @@ $(BISON_CPP): $(BISONPP)
 	$(CXX) -fPIC -g -c $(BISON_CPP) -o $(BISON_OBJ_PP)
 
 all:$(BIN)
-.PHONY : clean cpp python python2 rust csharp
+.PHONY : clean cpp
 
 clean:
 	rm -f libtopologic.a
+	rm -f $(TEST_OBJ) $(TESTS)
 	rm -f $(FLEX_C) $(FLEX_OBJ)
 	rm -f $(BISON_C) $(BISON_OBJ) $(BISON_H)
 	rm -f $(FLEX_CPP) $(FLEX_OBJ_PP)

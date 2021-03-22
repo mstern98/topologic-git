@@ -12,6 +12,7 @@
 
 #include <signal.h>
 #include "./context.h"
+#include "./request.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,6 +82,7 @@ struct graph
 {
         enum CONTEXT context;
         enum MEM_OPTION mem_option;
+        enum REQUEST_FLAG request_flag;
         struct AVLTree *vertices;
         struct stack *start;
         struct stack *modify;

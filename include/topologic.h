@@ -34,7 +34,20 @@
 extern "C" {
 #endif
 
+/**
+@PARAM graph: the graph
+@PARAM vertex: a vertex in the graph
+@PARAM vertex_result: the vertex_results to copy
+@PARAM color: next vertices color
+@PARAM iloop: the count of the number of times the vertex has been called
+Create a fireable structure
+**/
 struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop);
+
+/**
+@PARAM fireable: the fireable to destroy
+Frees the fireable struct
+**/
 int destroy_fireable(struct fireable *fireable);
 
 /**
@@ -57,9 +70,10 @@ struct graph *graph_init(int max_state_changes,
                          int max_loop,
                          unsigned int lvl_verbose,
                          enum CONTEXT context,
-                         enum MEM_OPTION mem_option);
+                         enum MEM_OPTION mem_option,
+                         enum REQUEST_FLAG request_flag);
 #define MAX_LOOPS 100
-#define GRAPH_INIT() graph_init(-1, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SINGLE, CONTINUE)
+#define GRAPH_INIT() graph_init(-1, START_STOP, MAX_LOOPS, VERTICES | EDGES | FUNCTIONS | GLOBALS, SINGLE, CONTINUE, IGNORE_FAIL_REQUEST)
 
 /**
 @PARAM graph: the graph
@@ -73,7 +87,7 @@ NOTE: NULL glbl will mean no global variables.
       f cannot be NULL.
 **/
 struct vertex *create_vertex(struct graph *graph,
-                             void (*f)(struct graph *, struct vertex_result *, void *, void *),
+                             void (*f)(int, struct graph *, struct vertex_result *, void *, void *),
                              int id,
                              void *glbl);
 #define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL, PROTECT_B_VARS)
@@ -91,7 +105,7 @@ NOTE: NULL glbl will mean no global variables. f cannot be NULL.
 **/
 struct edge *create_edge(struct vertex *a,
                          struct vertex *b,
-                         int (*f)(void *, void *, const void *const, const void *const),
+                         int (*f)(int, void *, void *, const void *const, const void *const),
                          void *glbl);
 #define CREATE_EDGE(a, b, f) create_edge(a, b, f, NULL)
 
@@ -106,7 +120,7 @@ If edge_a_to_b or edge_b_to_a is NULL it will not.
 **/
 int create_bi_edge(struct vertex *a,
                    struct vertex *b,
-                   int (*f)(void *, void *, const void *const, const void *const),
+                   int (*f)(int, void *, void *, const void *const, const void *const),
                    void *glbl,
                    struct edge **edge_a_to_b,
                    struct edge **edge_b_to_a);
@@ -174,7 +188,7 @@ NOTE: NULL f, or glbl will mean no change.
 Modifies the vertices function
 **/
 int modify_vertex(struct vertex *vertex,
-                  void (*f)(struct graph *, struct vertex_result *, void *, void *),
+                  void (*f)(int, struct graph *, struct vertex_result *, void *, void *),
                   void *glbl);
 #define MODIFY_VERTEX(vertex, f) modify_vertex(vertex, f, NULL)
 #define MODIFY_VERTEX_GLOBALS(vertex, glbl) modify_vertex(vertex, NULL, glbl)
@@ -201,7 +215,7 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_edge(struct vertex *a,
                 struct vertex *b,
-                int (*f)(void *, void *, const void *const, const void *const),
+                int (*f)(int, void *, void *, const void *const, const void *const),
                 void *glbl);
 
 #define MODIFY_EDGE(a, b, f) modify_edge(a, b, f, NULL)
@@ -222,7 +236,7 @@ NOTE: NULL f, or glbl will mean no change.
 **/
 int modify_bi_edge(struct vertex *a,
                    struct vertex *b,
-                   int (*f)(void *, void *, const void *const, const void *const),
+                   int (*f)(int, void *, void *, const void *const, const void *const),
                    void *glbl);
 #define MODIFY_BI_EDGE(a, b, f) modify_bi_edge(a, b, f, NULL)
 #define MODIFY_BI_EDGE_GLOBALS(a, b, glbl) modify_bi_edge(a, b, NULL, glbl)

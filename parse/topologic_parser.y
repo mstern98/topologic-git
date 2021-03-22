@@ -3,8 +3,8 @@
 
 %{
 #include "../include/topologic.h"
-void f(struct graph *graph, struct vertex_result *args, void *glbl, void *edge_vars) {}
-int edge_f(void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b) {return 0;}
+void f(int id, struct graph *graph, struct vertex_result *args, void *glbl, void *edge_vars) {}
+int edge_f(int id, void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b) {return 0;}
 void yyerror(struct graph** graph, const char *s);
 extern FILE *yyin;
 int yylex(void);

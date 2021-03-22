@@ -270,7 +270,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(req) < 0)
+        if (procces_request(req) < 0 && graph->request_flag == NO_FAIL_REQUEST)
         {
             topologic_debug("%s;%s;%d", "process_requests", "failed to process general requests", -1);
             return -1;
@@ -282,7 +282,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(req) < 0)
+        if (procces_request(req) < 0 && graph->request_flag == NO_FAIL_REQUEST)
         {
             topologic_debug("%s;%s;%d", "process_requests", "failed to remove edges", -1);
             return -1;
@@ -294,7 +294,7 @@ int process_requests(struct graph *graph)
     {
         if (graph->context != SINGLE)
             pthread_mutex_unlock(&graph->lock);
-        if (procces_request(req) < 0)
+        if (procces_request(req) < 0 && graph->request_flag == NO_FAIL_REQUEST)
         {
             topologic_debug("%s;%s;%d", "process_requests", "failed to remove vertices", -1);
             return -1;
