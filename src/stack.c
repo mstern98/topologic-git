@@ -4,9 +4,7 @@ struct stack *init_stack()
 {
     struct stack *stack = (struct stack*) malloc(sizeof(struct stack));
     if (!stack)
-    {
         return NULL;
-    }
     stack->root = NULL;
     stack->length = 0;
     return stack;
@@ -15,9 +13,7 @@ struct stack *init_stack()
 void *pop(struct stack *stack)
 {
     if (!stack || stack->length <= 0)
-    {
         return NULL;
-    }
 
     struct stack_node *node = stack->root;
     void *data = node->data;
@@ -35,9 +31,7 @@ void *get(struct stack *stack, int index)
 {
     if (!stack || stack->length == 0)
     if (index < 0 || !stack || index >= stack->length)
-    {
         return NULL;
-    }
 
     int i = 0;
     struct stack_node *node = stack->root;
@@ -50,15 +44,11 @@ void *get(struct stack *stack, int index)
 int push(struct stack *stack, void *data)
 {
     if (!stack)
-    {
         return -1;
-    }
 
     struct stack_node *node = (struct stack_node*) malloc(sizeof(struct stack_node));
     if (!node)
-    {
         return -1;
-    }
 
     node->data = data;
     node->next = stack->root;
