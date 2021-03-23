@@ -12,20 +12,22 @@ int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routin
     if (!thread || !start_routine)
         return 1;
 
-    *thread = CreateThread(NULL, 0, start_routine, arg, 0, NULL);
+    *thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) start_routine, arg, 0, NULL);
     if (!(*thread))
         return 1;
     return 0;
 }
 
-int pthread_detach(phtread_t thread)
+int pthread_detach(pthread_t thread)
 {
-    CloseHandle(thread);
+    return CloseHandle(thread);
 }
 
 int pthread_exit(void *retval)
 {
-    ExitThread(retval);
+    DWORD exit_value;
+    ExitThread(exit_value);
+    return exit_value;
 }
 
 int pthread_mutex_init(pthread_mutex_t *mutex, pthread_mutexattr_t *attr)
@@ -82,7 +84,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
 {
     if (!cond || !mutex)
         return 1;
-    if (!SleepConditionVariableCS(cond, mutex, NULL))
+    if (!SleepConditionVariableCS(cond, mutex, INFINITE))
         return 1;
     return 0;
 }
