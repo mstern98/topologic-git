@@ -38,7 +38,7 @@ int testFuncEdge(int id, void* args, void *glbl, const void *const edge_vars_a, 
 
 int testFuncEdge2(int id, void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 	int i = 0;
-	int j = *(int*)(args+i);
+	int j = *(int*)(((char *)args)+i);
 	j+=i;
 
 	return j;
@@ -102,13 +102,13 @@ void test_graph_add_edge(struct graph* graph){
 		int (*f)(int, void*, void *, const void * const, const void * const) = testFuncEdge;
 		void* glbl=malloc(32);
 
-		struct vertex* a = find(graph->vertices, (i));
+		struct vertex* a = (struct vertex *) find(graph->vertices, (i));
 		assert(a!=NULL);
 		struct vertex* b;
 		if(i+1==TEST_SIZE){
-				b = find(graph->vertices, (0));
+				b = (struct vertex *) find(graph->vertices, (0));
 		}else{
-				b = find(graph->vertices, (i+1));
+				b = (struct vertex *) find(graph->vertices, (i+1));
 		}
 		assert(b!=NULL);
 		struct edge* edge;
@@ -125,13 +125,13 @@ void test_graph_add_bi_edge(struct graph* graph){
 		int (*f)(int, void*, void *, const void * const, const void * const) = testFuncEdge;
 		void* glbl=malloc(32);
 
-		struct vertex* a = find(graph->vertices, (i));
+		struct vertex* a = (struct vertex *) find(graph->vertices, (i));
 		assert(a!=NULL);
 		struct vertex* b;
 		if(i+1==TEST_SIZE){
-			b = find(graph->vertices, (0));
+			b = (struct vertex *) find(graph->vertices, (0));
 		}else{
-			b = find(graph->vertices, (i+1));
+			b = (struct vertex *) find(graph->vertices, (i+1));
 		}
 		assert(b!=NULL);
 		struct edge* edge_a_to_b, *edge_b_to_a;
@@ -148,7 +148,7 @@ void test_graph_modify_vertex(struct graph* graph){
 
 	int i = 0;
 	for(i = 0; i<TEST_SIZE; i++){
-		struct vertex* v = (struct vertex*)find(graph->vertices, i);
+		struct vertex* v = (struct vertex*) find(graph->vertices, i);
 		assert(v!=NULL);
 		if (v->glbl) {free(v->glbl); v->glbl = NULL;}
 		assert(modify_vertex(v, testFunction2, NULL)==0);

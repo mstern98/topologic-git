@@ -18,6 +18,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(int, void 
     }
 
     enum CONTEXT context = a->context;
+    struct edge *edge = NULL;
 
     if (context != SINGLE)
         pthread_mutex_lock(&a->lock);
@@ -28,7 +29,7 @@ struct edge *create_edge(struct vertex *a, struct vertex *b, int (*f)(int, void 
         goto exit_edge;
     }
 
-    struct edge *edge = (struct edge *)malloc(sizeof(struct edge));
+    edge = (struct edge *)malloc(sizeof(struct edge));
     if (!edge)
     {
         topologic_debug("%s;%s;%p", "create_edge", "failed to create edge", (void *) NULL);

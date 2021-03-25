@@ -9,13 +9,13 @@ struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, str
     struct fireable *fireable = (struct fireable *)malloc(sizeof(struct fireable));
     if (!fireable)
     {
-        topologic_debug("%s;%s;%p", "create_fireable", "could not create fireable", NULL);
+        topologic_debug("%s;%s;%p", "create_fireable", "could not create fireable", (void *) NULL);
         return NULL;
     }
     fireable->args = (struct vertex_result *)malloc(sizeof(struct vertex_result));
     if (!fireable->args)
     {
-        topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc args", NULL);
+        topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc args", (void *) NULL);
         goto free_fireable;
     }
     fireable->args->vertex_argv = NULL;
@@ -24,7 +24,7 @@ struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, str
         fireable->args->vertex_argv = malloc(sizeof(args->vertex_size));
         if (!fireable->args->vertex_argv)
         {
-            topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc edge_args", NULL);
+            topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc edge_args", (void *) NULL);
             goto free_args;
         }
         memcpy(fireable->args->vertex_argv, args->vertex_argv, args->vertex_size);
@@ -35,7 +35,7 @@ struct fireable *create_fireable(struct graph *graph, struct vertex *vertex, str
         fireable->args->edge_argv = malloc(sizeof(args->edge_size));
         if (!fireable->args->vertex_argv)
         {
-            topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc vertex_args", NULL);
+            topologic_debug("%s;%s;%p", "create_fireable", "failed to malloc vertex_args", (void *) NULL);
             goto free_vertex_argv;
         }
         memcpy(fireable->args->edge_argv, args->edge_argv, args->edge_size);
@@ -73,7 +73,7 @@ int destroy_fireable(struct fireable *fireable)
     fireable->args = NULL;
     fireable->graph = NULL;
     fireable->vertex = NULL;
-    fireable->color = 0;
+    fireable->color = PRINT;
     fireable->iloop = 0;
     free(fireable);
     topologic_debug("%s;success;%d", "destroy_fireable", 0);

@@ -28,7 +28,7 @@ int main() {
 }
 
 void test_push(struct stack *stack) {
-    int *value = malloc(sizeof(int));
+    int *value = (int *) malloc(sizeof(int));
     *value = VALUE;
     assert(push(stack, value) == 0);
     fprintf(stderr, "STACK PUSH PASSED\n");
@@ -44,13 +44,13 @@ void test_pop(struct stack *stack) {
 }
 
 void test_pop_all(struct stack *stack) {
-    int **data = malloc(sizeof(int *) * 6);
+    int **data = (int **) malloc(sizeof(int *) * 6);
     
     int length = 6;
     int i = 0;
 
     for (i = 0; i < length; i++) {
-        data[i] = malloc(sizeof(int));
+        data[i] = (int *) malloc(sizeof(int));
         *(data[i]) = i;
     }
     for (i = length - 1; i >= 0; i--) {
@@ -68,7 +68,7 @@ void test_pop_all(struct stack *stack) {
 void test_get(struct stack *stack) {
     int a = 100;
     int b = 1000;
-    char *c = "HI";
+    char c[] = "HI";
 
     assert(push(stack, &a) == 0);
     assert(push(stack, &b) == 0);

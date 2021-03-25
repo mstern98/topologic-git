@@ -22,7 +22,7 @@ void cleanup(struct graph*);
 int edgeFunction(int id, void* args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b){
 
 	int x = *(int*)(args);
-	int y = *(int*)(args+4);
+	int y = *(int*)(((char *) args)+4);
 	return x*y;
 
 }
@@ -79,7 +79,7 @@ void test_create_request(struct graph* graph){
 		int id = i;
 		void (*f)(int, struct graph *, struct vertex_result*, void *, void *) = vertexFunction;
 		void* glbl = NULL;
-		struct vertex_request *v_req = malloc(sizeof(struct vertex_request));
+		struct vertex_request *v_req = (struct vertex_request *) malloc(sizeof(struct vertex_request));
 
 		v_req->f = f;
 		v_req->glbl = glbl;
@@ -102,7 +102,7 @@ void test_submit_request(struct graph* graph){
 		void (*f)(int, struct graph *, struct vertex_result*, void *, void *) = vertexFunction;
 		void* glbl = NULL;
 		
-		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
+		struct vertex_request *vert_req = (struct vertex_request *) malloc(sizeof(struct vertex_request));
 		vert_req->graph = graph;
 		vert_req->id=id;
 		vert_req->f = f;

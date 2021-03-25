@@ -24,7 +24,7 @@ Build C Library
 -creates libtopologic.a
 
 Build C++ Library
->make cpp
+>make CC=g++
 
 -creates libtopologic.a
 
@@ -36,12 +36,6 @@ Debug
 
 ## TODO
 -Thread sanity
-
--C# Wrap
-
--Rust Wrap
-
--Python (2/3) Wrap
 
 # Errata
 ## Edge/vertex modification

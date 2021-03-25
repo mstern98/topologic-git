@@ -14,7 +14,7 @@ int main() {
     struct AVLTree *tree = init_avl();
     assert(tree != NULL);
 
-    int *vals = malloc(sizeof(int) * 100);
+    int *vals = (int *) malloc(sizeof(int) * 100);
     
     test_insert(tree, vals);
     test_inorder(tree);
@@ -42,7 +42,7 @@ void test_inorder(struct AVLTree *tree) {
     inorder(tree, stack);
     int *ret = NULL;
     int i = 99;
-    while ((ret = pop(stack)) != NULL) {
+    while ((ret = (int *) pop(stack)) != NULL) {
         assert(*ret == i);
         --i;
     }

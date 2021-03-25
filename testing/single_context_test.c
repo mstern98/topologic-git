@@ -16,7 +16,7 @@ void cleanup(struct graph *);
 int edgeFunction(int id, void *args, void *glbl, const void *const edge_vars_a, const void *const edge_vars_b)
 {
 	int x = *(int *)(args);
-	int y = *(int *)(args + sizeof(int));
+	int y = *(int *)(((char *) args) + sizeof(int));
 	return ((x * y) / 2) << 2;
 }
 
@@ -50,11 +50,11 @@ void cleanup(struct graph *graph)
 
 	for (i = 0; i < MAXIMUM; i++)
 	{
-		struct vertex *v = (struct vertex *)find(graph->vertices, i);
-		struct vertex *v2 = (struct vertex *)find(graph->vertices, ((i + 1) >= MAXIMUM ? 0 : i + 1));
+		struct vertex *v = (struct vertex *) find(graph->vertices, i);
+		struct vertex *v2 = (struct vertex *) find(graph->vertices, ((i + 1) >= MAXIMUM ? 0 : i + 1));
 		assert(v != NULL);
 		assert(v2 != NULL);
-		struct edge *e = (struct edge *)find(v->edge_tree, v2->id);
+		struct edge *e = (struct edge *) find(v->edge_tree, v2->id);
 		if (e->glbl)
 		{
 			free(e->glbl);
@@ -65,7 +65,7 @@ void cleanup(struct graph *graph)
 
 	for (i = 0; i < MAXIMUM; i++)
 	{
-		struct vertex *v = (struct vertex *)find(graph->vertices, i);
+		struct vertex *v = (struct vertex *) find(graph->vertices, i);
 		if (v == NULL)
 			continue;
 		if (v->glbl)
@@ -92,7 +92,7 @@ void init(struct graph **graph)
 		int id = i;
 		void (*f)(int, struct graph *, struct vertex_result *, void *, void *) = vertexFunction;
 		void *glbl = NULL;
-		struct vertex_request *vert_req = malloc(sizeof(struct vertex_request));
+		struct vertex_request *vert_req = (struct vertex_request *) malloc(sizeof(struct vertex_request));
 		vert_req->graph = *graph;
 		vert_req->id = id;
 		vert_req->f = f;
@@ -110,7 +110,7 @@ void init(struct graph **graph)
 	}
 	for (i = 0; i < MAXIMUM; i++)
 	{
-		struct edge_request *edge_req = malloc(sizeof(struct edge_request));
+		struct edge_request *edge_req = (struct edge_request *) malloc(sizeof(struct edge_request));
 		assert(edge_req != NULL);
 		edge_req->a = verts[i];
 		edge_req->b = ((i + 1) >= MAXIMUM ? verts[0] : verts[i + 1]);
@@ -137,18 +137,18 @@ void test_run_single(struct graph *graph)
 {
 	assert(graph != NULL);
 
-	struct vertex_result **vertex_args = malloc(sizeof(struct vertex_result *));
+	struct vertex_result **vertex_args = (struct vertex_result **) malloc(sizeof(struct vertex_result *));
 	assert(vertex_args != NULL);
 
 	int i = 0;
 	int edge_args[2] = {i + 1, i + 4};
 	void *edge = malloc(sizeof(int) * 2);
 	memcpy(edge, &edge_args[0], sizeof(int));
-	memcpy(edge + sizeof(int), &edge_args[1], sizeof(int));
+	memcpy(((char *) edge) + sizeof(int), &edge_args[1], sizeof(int));
 	void *vertex = malloc(sizeof(int));
 	*(int *)vertex = 10;
 
-	struct vertex_result *v = malloc(sizeof(struct vertex_result));
+	struct vertex_result *v = (struct vertex_result *) malloc(sizeof(struct vertex_result));
 	v->edge_argv = edge;
 	v->vertex_argv = vertex;
 	vertex_args[i] = v;

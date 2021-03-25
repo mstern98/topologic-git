@@ -363,8 +363,11 @@ int run(struct graph *graph, struct vertex_result **init_vertex_args)
 int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args, enum STATES color, int iloop)
 {
     topologic_debug("%s;graph %p;vertex %p;args %p;color %d;iloop %d", "fire", graph, vertex, args, color, iloop);
-    int retval = 0;
+    int retval = 0, iloop_b = 0;
     struct vertex *next_vertex = NULL;
+    struct stack *edges = NULL;
+    struct edge *edge = NULL;
+    enum STATES flip_color = BLACK;
 
     if (!graph || !vertex)
     {
@@ -372,8 +375,6 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
         retval = -1;
         goto clean_fire;
     }
-
-    enum STATES flip_color = BLACK;
 
     if (color == RED)
     {
@@ -415,9 +416,9 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
     if (graph->max_state_changes != -1 && graph->state_count + 1 >= graph->max_state_changes)
         goto exit_fire;
 
-    struct stack *edges = init_stack();
+    edges = init_stack();
     preorder(vertex->edge_tree, edges);
-    struct edge *edge = NULL;
+    edge = NULL;
     while ((edge = (struct edge *)pop(edges)) != NULL)
     {
         if (edge->edge_type == BI_EDGE)
@@ -432,7 +433,7 @@ int fire(struct graph *graph, struct vertex *vertex, struct vertex_result *args,
             }
             if (graph->context == SWITCH || graph->context == SWITCH_UNSAFE)
             {
-                int iloop_b = 1;
+                iloop_b = 1;
                 if (edge->b == vertex)
                     iloop_b = iloop + 1;
                 if (switch_vertex(graph, edge->b, args, flip_color, iloop_b) < 0)
@@ -487,7 +488,7 @@ exit_fire:
     vertex->is_active = 0;
     pthread_mutex_unlock(&vertex->lock);
 
-    int iloop_b = 1;
+    iloop_b = 1;
     if (next_vertex == vertex)
         iloop_b = iloop + 1;
     if (graph->context == NONE && next_vertex != NULL)
