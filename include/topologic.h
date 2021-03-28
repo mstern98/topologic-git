@@ -90,8 +90,8 @@ struct vertex *create_vertex(struct graph *graph,
                              void (*f)(int, struct graph *, struct vertex_result *, void *, void *),
                              int id,
                              void *glbl);
-#define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL, PROTECT_B_VARS)
-#define CREATE_VERTEX_GLBL(graph, f, id, glbl) create_vertex(graph, f, id, glbl, PROTECT_B_VARS)
+#define CREATE_VERTEX(graph, f, id) create_vertex(graph, f, id, NULL)
+#define CREATE_VERTEX_GLBL(graph, f, id, glbl) create_vertex(graph, f, id, glbl)
 
 /**
 @PARAM a: A vertex
